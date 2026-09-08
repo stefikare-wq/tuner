@@ -1313,6 +1313,26 @@ var panel=document.getElementById('console');
     var display = panel.querySelector('[data-val="eq' + idx + '"]');
     if (display) display.textContent = (val > 0 ? '+' : '') + val.toFixed(1) + ' dB';
   });
+
+  // ===== AJOUT : Mise à jour du remplissage des curseurs =====
+  function updateSliderFill(slider) {
+    const min = parseFloat(slider.min);
+    const max = parseFloat(slider.max);
+    const val = parseFloat(slider.value);
+    const pct = ((val - min) / (max - min)) * 100;
+    slider.style.setProperty('--p', pct + '%');
+  }
+
+  // Appliquer à tous les curseurs de la console
+  const allSliders = panel.querySelectorAll('input[type=range]');
+  allSliders.forEach(function(s) {
+    updateSliderFill(s);
+    s.addEventListener('input', function() {
+      updateSliderFill(this);
+    });
+  });
+  // ===== FIN AJOUT =====
+
 })();
 
 // ===================== INIT =====================
