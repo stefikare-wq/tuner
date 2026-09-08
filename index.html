@@ -327,7 +327,7 @@
   </div>
   <div class="card scope-card">
     <div class="scope-head">
-      <h2>OSCILLOSCOPE</h2>
+      <h2>OSCILLOSCOPE - 3 BANDES</h2>
       <div class="legend">
         <span><i style="background:#FF3D9E;box-shadow:0 0 10px #FF3D9E"></i>Bass</span>
         <span><i style="background:#2FE7FF;box-shadow:0 0 10px #2FE7FF"></i>Medium</span>
@@ -403,6 +403,11 @@ let currentStation = null;
 let bassFilter = null;
 let midFilter = null;
 let highFilter = null;
+
+// Analyseurs pour les bandes de fréquences
+let bassAnalyser = null;
+let midAnalyser = null;
+let highAnalyser = null;
 
 // Éléments UI
 const bufferFill = document.getElementById('bufferFill');
@@ -527,8 +532,50 @@ function createAudioContext() {
   highFilter.frequency.value = 4000;
   highFilter.gain.value = 0;
   
+  // Analyseur principal
   analyserNode = audioCtx.createAnalyser();
   analyserNode.fftSize = 2048;
+  
+  // Analyseurs pour les 3 bandes de fréquences
+  bassAnalyser = audioCtx.createAnalyser();
+  bassAnalyser.fftSize = 2048;
+  bassAnalyser.smoothingTimeConstant = 0.3;
+  
+  midAnalyser = audioCtx.createAnalyser();
+  midAnalyser.fftSize = 2048;
+  midAnalyser.smoothingTimeConstant = 0.3;
+  
+  highAnalyser = audioCtx.createAnalyser();
+  highAnalyser.fftSize = 2048;
+  highAnalyser.smoothingTimeConstant = 0.3;
+  
+  // Créer des filtres pour séparer les bandes
+  const bassSplit = audioCtx.createBiquadFilter();
+  bassSplit.type = 'lowpass';
+  bassSplit.frequency.value = 250;
+  
+  const midSplit = audioCtx.createBiquadFilter();
+  midSplit.type = 'bandpass';
+  midSplit.frequency.value = 1000;
+  midSplit.Q.value = 0.7;
+  
+  const highSplit = audioCtx.createBiquadFilter();
+  highSplit.type = 'highpass';
+  highSplit.frequency.value = 4000;
+  
+  // Connecter les analyseurs
+  // On prend le signal après l'EQ pour voir l'effet de l'égaliseur
+  highFilter.connect(bassSplit);
+  bassSplit.connect(bassAnalyser);
+  
+  highFilter.connect(midSplit);
+  midSplit.connect(midAnalyser);
+  
+  highFilter.connect(highSplit);
+  highSplit.connect(highAnalyser);
+  
+  // Les analyseurs sont connectés, mais on ne les connecte pas à la destination
+  // pour ne pas avoir de double son
   
   return audioCtx;
 }
@@ -656,9 +703,7 @@ function updateVolume() {
   const volSlider = document.getElementById('volume');
   if (!volSlider) return;
   const v = parseFloat(volSlider.value);
-  // Conversion dB en gain linéaire
   gainNode.gain.value = Math.pow(10, v / 20);
-  // Mettre à jour l'affichage
   const val = document.querySelector('[data-val="gain"]');
   if (val) {
     val.textContent = (v > 0 ? '+' : '') + v.toFixed(1) + ' dB';
@@ -671,7 +716,6 @@ function updateBalance() {
   if (!balSlider) return;
   const v = parseFloat(balSlider.value);
   pannerNode.pan.value = v;
-  // Mettre à jour l'affichage
   const val = document.getElementById('balanceVal');
   if (val) {
     if (v === 0) val.textContent = 'Centre';
@@ -699,7 +743,6 @@ function setStatus(msg) {
 
 async function togglePlay(station) {
   if (isPlaying) {
-    // ARRÊT
     if (abortController) {
       try { abortController.abort(); } catch(e) {}
     }
@@ -714,6 +757,9 @@ async function togglePlay(station) {
     midFilter = null;
     highFilter = null;
     analyserNode = null;
+    bassAnalyser = null;
+    midAnalyser = null;
+    highAnalyser = null;
     
     const power = document.getElementById('power');
     const power2 = document.getElementById('power2');
@@ -1045,7 +1091,7 @@ document.getElementById('addUrl').addEventListener('click',function(){
   box.value=''; box.blur(); playStation(CORE[CORE.length-1]);
 });
 
-// ===================== Onde, oscilloscope =====================
+// ===================== OSCILLOSCOPE 3 BANDES =====================
 var bars=[];
 for(var i=0;i<34;i++){ var e=document.createElement('i'); wave.appendChild(e); bars.push(e); }
 var cv=document.getElementById('scope'), cx=cv.getContext('2d'), dpr=1;
@@ -1054,61 +1100,120 @@ function sizeCanvas(){ dpr=Math.min(window.devicePixelRatio||1,2);
 window.addEventListener('resize',sizeCanvas);
 setTimeout(sizeCanvas,0); sizeCanvas();
 
-function trace(buf,color,scale,alpha){
-  var W=cv.width,H=cv.height,n=buf.length,mid=H/2;
-  var path=new Path2D();
-  for(var i=0;i<n;i+=2){
-    var x=i/n*W, y=mid+((buf[i]-128)/128)*(H*scale);
-    if(i===0) path.moveTo(x,y); else path.lineTo(x,y);
+function traceBand(analyser, color, scale, alpha) {
+  if (!analyser) return;
+  const bufferLength = analyser.fftSize;
+  const dataArray = new Uint8Array(bufferLength);
+  analyser.getByteTimeDomainData(dataArray);
+  
+  const W = cv.width, H = cv.height, mid = H / 2;
+  const path = new Path2D();
+  const step = Math.max(1, Math.floor(bufferLength / W));
+  
+  for (let i = 0; i < W; i++) {
+    const idx = Math.min(i * step, bufferLength - 1);
+    const v = (dataArray[idx] - 128) / 128;
+    const y = mid + v * (H * scale);
+    if (i === 0) path.moveTo(i, y);
+    else path.lineTo(i, y);
   }
-  cx.lineJoin='round'; cx.lineCap='round'; cx.strokeStyle=color; cx.shadowColor=color;
-  cx.globalAlpha=alpha*.22; cx.lineWidth=9*dpr;   cx.shadowBlur=34*dpr; cx.stroke(path);
-  cx.globalAlpha=alpha*.5;  cx.lineWidth=4.5*dpr; cx.shadowBlur=18*dpr; cx.stroke(path);
-  cx.globalAlpha=alpha;     cx.lineWidth=1.8*dpr; cx.shadowBlur=8*dpr;  cx.stroke(path);
-  cx.globalAlpha=1; cx.shadowBlur=0;
+  
+  cx.lineJoin = 'round';
+  cx.lineCap = 'round';
+  cx.strokeStyle = color;
+  cx.shadowColor = color;
+  
+  // Trait avec glow
+  cx.globalAlpha = alpha * 0.22;
+  cx.lineWidth = 9 * dpr;
+  cx.shadowBlur = 34 * dpr;
+  cx.stroke(path);
+  
+  cx.globalAlpha = alpha * 0.5;
+  cx.lineWidth = 4.5 * dpr;
+  cx.shadowBlur = 18 * dpr;
+  cx.stroke(path);
+  
+  cx.globalAlpha = alpha;
+  cx.lineWidth = 2 * dpr;
+  cx.shadowBlur = 8 * dpr;
+  cx.stroke(path);
+  
+  cx.globalAlpha = 1;
+  cx.shadowBlur = 0;
 }
-var idle=0;
-var dL = new Uint8Array(1024);
+
+var idle = 0;
 (function loop(){
   requestAnimationFrame(loop);
-  var playing=isPlaying, live=playing&&analyserNode;
+  const playing = isPlaying;
+  const live = playing && bassAnalyser && midAnalyser && highAnalyser;
 
-  if(live && analyserNode){
+  // Mettre à jour les barres de la wave
+  if (live && bassAnalyser) {
     try {
-      analyserNode.getByteTimeDomainData(dL);
-      for(var k=0;k<bars.length;k++){
-        bars[k].style.height=Math.max(3,Math.abs(dL[k*30+40]-128)/128*44)+'px';
+      const data = new Uint8Array(bassAnalyser.fftSize);
+      bassAnalyser.getByteTimeDomainData(data);
+      for (let k = 0; k < bars.length; k++) {
+        const idx = Math.min(k * 30 + 40, data.length - 1);
+        bars[k].style.height = Math.max(3, Math.abs(data[idx] - 128) / 128 * 44) + 'px';
       }
     } catch(e) {}
-    cx.clearRect(0,0,cv.width,cv.height);
-    cx.strokeStyle='rgba(140,190,255,.16)'; cx.lineWidth=1*dpr;
-    cx.shadowColor='rgba(47,231,255,.7)'; cx.shadowBlur=10*dpr;
-    cx.beginPath(); cx.moveTo(0,cv.height/2); cx.lineTo(cv.width,cv.height/2); cx.stroke();
-    cx.shadowBlur=0;
-    if(dL) {
-      trace(dL,'#2FE7FF',.3,.9);
-    }
   } else {
-    idle+=.045;
-    for(var j=0;j<bars.length;j++){
-      bars[j].style.height=playing?(9+Math.sin(idle+j*.38)*7+Math.sin(idle*1.8+j)*3)+'px':'3px';
+    idle += 0.045;
+    for (let j = 0; j < bars.length; j++) {
+      bars[j].style.height = playing ? 
+        (9 + Math.sin(idle + j * 0.38) * 7 + Math.sin(idle * 1.8 + j) * 3) + 'px' : 
+        '3px';
     }
-    cx.clearRect(0,0,cv.width,cv.height);
-    cx.strokeStyle='rgba(140,190,255,.16)'; cx.lineWidth=1*dpr;
-    cx.shadowColor='rgba(47,231,255,.7)'; cx.shadowBlur=10*dpr;
-    cx.beginPath(); cx.moveTo(0,cv.height/2); cx.lineTo(cv.width,cv.height/2); cx.stroke();
-    cx.shadowBlur=0;
-    ['#FF3D9E','#2FE7FF','#B9FF45'].forEach(function(c,n){
-      var p=new Path2D();
-      for(var x=0;x<cv.width;x+=4){
-        var yy=cv.height/2+Math.sin(x/(60+n*22)+idle*(1+n*.35)+n*2)*(playing?12:5)*dpr;
-        if(x===0) p.moveTo(x,yy); else p.lineTo(x,yy);
+  }
+
+  // Dessiner l'oscilloscope
+  cx.clearRect(0, 0, cv.width, cv.height);
+  
+  // Ligne centrale
+  cx.strokeStyle = 'rgba(140,190,255,.16)';
+  cx.lineWidth = 1 * dpr;
+  cx.shadowColor = 'rgba(47,231,255,.7)';
+  cx.shadowBlur = 10 * dpr;
+  cx.beginPath();
+  cx.moveTo(0, cv.height / 2);
+  cx.lineTo(cv.width, cv.height / 2);
+  cx.stroke();
+  cx.shadowBlur = 0;
+
+  if (live) {
+    // Tracer les 3 bandes avec des couleurs et échelles différentes
+    traceBand(bassAnalyser, '#FF3D9E', 0.34, 0.95);  // Bass - rose
+    traceBand(midAnalyser, '#2FE7FF', 0.30, 0.9);    // Medium - cyan
+    traceBand(highAnalyser, '#B9FF45', 0.26, 0.85);  // High - vert
+  } else {
+    // Animation en veille
+    ['#FF3D9E', '#2FE7FF', '#B9FF45'].forEach(function(c, n) {
+      const p = new Path2D();
+      for (let x = 0; x < cv.width; x += 4) {
+        const yy = cv.height / 2 + Math.sin(x / (60 + n * 22) + idle * (1 + n * 0.35) + n * 2) * (playing ? 12 : 5) * dpr;
+        if (x === 0) p.moveTo(x, yy);
+        else p.lineTo(x, yy);
       }
-      cx.lineJoin='round'; cx.lineCap='round'; cx.strokeStyle=c; cx.shadowColor=c;
-      cx.globalAlpha=.16; cx.lineWidth=9*dpr;   cx.shadowBlur=30*dpr; cx.stroke(p);
-      cx.globalAlpha=.42; cx.lineWidth=4*dpr;   cx.shadowBlur=16*dpr; cx.stroke(p);
-      cx.globalAlpha=.85; cx.lineWidth=1.6*dpr; cx.shadowBlur=7*dpr;  cx.stroke(p);
-      cx.globalAlpha=1; cx.shadowBlur=0;
+      cx.lineJoin = 'round';
+      cx.lineCap = 'round';
+      cx.strokeStyle = c;
+      cx.shadowColor = c;
+      cx.globalAlpha = 0.16;
+      cx.lineWidth = 9 * dpr;
+      cx.shadowBlur = 30 * dpr;
+      cx.stroke(p);
+      cx.globalAlpha = 0.42;
+      cx.lineWidth = 4 * dpr;
+      cx.shadowBlur = 16 * dpr;
+      cx.stroke(p);
+      cx.globalAlpha = 0.85;
+      cx.lineWidth = 1.6 * dpr;
+      cx.shadowBlur = 7 * dpr;
+      cx.stroke(p);
+      cx.globalAlpha = 1;
+      cx.shadowBlur = 0;
     });
   }
 })();
@@ -1181,23 +1286,17 @@ var panel=document.getElementById('console');
   h+='</div></div></div>';
   panel.innerHTML=h;
 
-  // Volume - avec écoute en temps réel
+  // Volume
   var volSlider = document.getElementById('volume');
-  volSlider.addEventListener('input', function() {
-    updateVolume();
-  });
-  // Init volume
+  volSlider.addEventListener('input', function() { updateVolume(); });
   updateVolume();
 
-  // Balance - avec écoute en temps réel
+  // Balance
   var balSlider = document.getElementById('balance');
-  balSlider.addEventListener('input', function() {
-    updateBalance();
-  });
-  // Init balance
+  balSlider.addEventListener('input', function() { updateBalance(); });
   updateBalance();
 
-  // EQ - mise à jour en temps réel
+  // EQ
   var eqSliders = panel.querySelectorAll('[data-eq]');
   eqSliders.forEach(function(slider) {
     slider.addEventListener('input', function() {
@@ -1208,7 +1307,6 @@ var panel=document.getElementById('console');
       updateEQ();
     });
   });
-  // Init EQ displays
   eqSliders.forEach(function(slider) {
     var idx = parseInt(slider.dataset.eq);
     var val = parseFloat(slider.value);
@@ -1221,7 +1319,6 @@ var panel=document.getElementById('console');
 render('Ouvre les stations pour choisir');
 paint();
 
-// Exposer les fonctions pour le débogage
 window.togglePlay = togglePlay;
 window.updateVolume = updateVolume;
 window.updateBalance = updateBalance;
