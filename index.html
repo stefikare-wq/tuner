@@ -482,7 +482,7 @@ if (isSL) {
    CONFIGURATION
    ========================================================= */
 const CORS_PROXY = 'https://soft-brook-0e52.stefikare.workers.dev/?url=';
-const CHUNK_SIZE = 48 * 1024;
+const CHUNK_SIZE = 96 * 1024;
 const MAX_BUFFER_DURATION = 6.0;
 const MIN_BUFFER_DURATION = 2.5;
 const FADE_DURATION = 0.04;
@@ -525,6 +525,9 @@ let cfSplitter=null, cfMerger=null;
 let cfGainLL=null, cfGainLR=null, cfGainRL=null, cfGainRR=null;
 let bassAnalyser=null, midAnalyser=null, highAnalyser=null;
 
+/* Le graphe audio persistant - connecté UNE SEULE FOIS */
+let graphBuilt = false;
+
 /* Buffers d'analyse pré-alloués (évite le garbage collector) */
 let _dataBass = null;
 let _dataMid = null;
@@ -566,34 +569,21 @@ function createReverbImpulse(ctx, duration, decay) {
   return impulse;
 }
 
+/* ============================================================
+   scheduleBuffer CORRIGÉ
+   Ne reconnecte QUE la source → fadeGain → cfSplitter
+   Tout le reste du graphe est déjà connecté une seule fois
+   ============================================================ */
 function scheduleBuffer(audioBuffer, mySession) {
-  if (!audioCtx || sessionId !== mySession) return false;
+  if (!audioCtx || sessionId !== mySession || !graphBuilt) return false;
   try {
     const source = audioCtx.createBufferSource();
     source.buffer = audioBuffer;
     const fadeGain = audioCtx.createGain();
+
+    /* UNIQUEMENT 2 connexions par chunk au lieu de 30 */
     source.connect(fadeGain);
     fadeGain.connect(cfSplitter);
-    cfMerger.connect(pannerNode);
-    pannerNode.connect(gainNode);
-    gainNode.connect(eqSplitter);
-    eqSplitter.connect(leftEQFilters[0], 0);
-    eqSplitter.connect(rightEQFilters[0], 1);
-    leftEQFilters[leftEQFilters.length-1].connect(eqMerger, 0, 0);
-    rightEQFilters[rightEQFilters.length-1].connect(eqMerger, 0, 1);
-    eqMerger.connect(lowpassFilter);
-    lowpassFilter.connect(highpassFilter);
-    highpassFilter.connect(bandpassFilter);
-    bandpassFilter.connect(dryGain);
-    bandpassFilter.connect(delayNode);
-    delayNode.connect(feedbackGain);
-    feedbackGain.connect(delayNode);
-    delayNode.connect(convolverNode);
-    convolverNode.connect(wetGain);
-    dryGain.connect(limiterNode);
-    wetGain.connect(limiterNode);
-    limiterNode.connect(analyserNode);
-    analyserNode.connect(audioCtx.destination);
 
     const now = audioCtx.currentTime;
     let startTime;
@@ -636,6 +626,10 @@ async function decodeAndSchedule(chunk, mySession) {
   } catch (e) { console.warn('Decode error:', e); isProcessing = false; return false; }
 }
 
+/* ============================================================
+   createAudioContext CORRIGÉ
+   Construit TOUT le graphe une seule fois et ne le retouche plus
+   ============================================================ */
 function createAudioContext() {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   pannerNode = audioCtx.createStereoPanner(); pannerNode.pan.value = 0;
@@ -689,6 +683,30 @@ function createAudioContext() {
   eqMerger.connect(midSplit); midSplit.connect(midAnalyser);
   eqMerger.connect(highSplit); highSplit.connect(highAnalyser);
 
+  /* ⭐ LE GRAPHE PERSISTANT — CONSTRUIT UNE SEULE FOIS ⭐ */
+  cfMerger.connect(pannerNode);
+  pannerNode.connect(gainNode);
+  gainNode.connect(eqSplitter);
+  eqSplitter.connect(leftEQFilters[0], 0);
+  eqSplitter.connect(rightEQFilters[0], 1);
+  leftEQFilters[leftEQFilters.length-1].connect(eqMerger, 0, 0);
+  rightEQFilters[rightEQFilters.length-1].connect(eqMerger, 0, 1);
+  eqMerger.connect(lowpassFilter);
+  lowpassFilter.connect(highpassFilter);
+  highpassFilter.connect(bandpassFilter);
+  bandpassFilter.connect(dryGain);
+  bandpassFilter.connect(delayNode);
+  delayNode.connect(feedbackGain);
+  feedbackGain.connect(delayNode);
+  delayNode.connect(convolverNode);
+  convolverNode.connect(wetGain);
+  dryGain.connect(limiterNode);
+  wetGain.connect(limiterNode);
+  limiterNode.connect(analyserNode);
+  analyserNode.connect(audioCtx.destination);
+
+  graphBuilt = true;
+
   /* Pré-allocation des buffers d'analyse (une seule fois) */
   _dataBass = new Uint8Array(bassAnalyser.fftSize);
   _dataMid  = new Uint8Array(midAnalyser.fftSize);
@@ -716,6 +734,7 @@ async function closeAudioContext() {
   cfSplitter = null; cfMerger = null;
   cfGainLL = null; cfGainLR = null; cfGainRL = null; cfGainRR = null;
   _dataBass = null; _dataMid = null; _dataHigh = null; _waveData = null;
+  graphBuilt = false;
   pendingChunks = [];
   isProcessing = false;
   firstChunkScheduled = false;
@@ -1120,7 +1139,7 @@ async function studioTogglePlay(station) {
   }
 }
 
-/* Keep-alive iOS - désactivé en mode SL (source de micro-freezes) */
+/* Keep-alive iOS - désactivé en mode SL */
 if (!isSL) {
   setInterval(async () => {
     if (audioCtx && isPlaying) {
@@ -1528,7 +1547,6 @@ function sizeCanvas(){ dpr=Math.min(window.devicePixelRatio||1,2);
 window.addEventListener('resize',sizeCanvas);
 setTimeout(sizeCanvas,0); sizeCanvas();
 
-/* Version optimisée : buffer dataArray réutilisé, path recréé mais léger */
 function traceBand(analyser, dataArray, color, scale, alpha) {
   if (!analyser || !dataArray) return;
   analyser.getByteTimeDomainData(dataArray);
@@ -1570,7 +1588,6 @@ var MIN_FRAME_INTERVAL = isSL ? 50 : 16;
 
   if (live) {
     try {
-      /* Lecture unique pour les bars */
       bassAnalyser.getByteTimeDomainData(_waveData);
       const step = Math.floor(_waveData.length / bars.length);
       for (let k = 0; k < bars.length; k++) {
@@ -1591,7 +1608,6 @@ var MIN_FRAME_INTERVAL = isSL ? 50 : 16;
   cx.beginPath(); cx.moveTo(0, cv.height/2); cx.lineTo(cv.width, cv.height/2); cx.stroke();
 
   if (live) {
-    /* Réutilisation des buffers pré-alloués (zéro allocation) */
     traceBand(bassAnalyser, _dataBass, '#FF3D9E', 0.34, 0.95);
     traceBand(midAnalyser,  _dataMid,  '#2FE7FF', 0.30, 0.9);
     traceBand(highAnalyser, _dataHigh, '#B9FF45', 0.26, 0.85);
