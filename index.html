@@ -56,7 +56,7 @@
   .top5-list::-webkit-scrollbar{display:none}
   .t5{flex:none;display:flex;align-items:center;gap:9px;border:1px solid var(--edge2);
       border-radius:14px;background:var(--mod);padding:9px 14px;min-width:150px;
-      transition:all .2s var(--e);position:relative}
+      transition:border-color .2s var(--e);position:relative}
   .t5:hover{border-color:var(--cyan)}
   .t5.play{border-color:var(--cyan);background:rgba(47,231,255,.08)}
   .t5 .rk{font-size:15px;font-weight:800;color:var(--magenta);flex:none}
@@ -360,7 +360,7 @@
   .icon.is{color:var(--magenta);border-color:var(--magenta)}
   .buffer-info{font-size:11px;color:var(--muted);text-align:center;margin-top:6px}
   .buffer-bar{width:100%;height:3px;background:rgba(255,255,255,0.08);border-radius:3px;margin-top:4px;overflow:hidden}
-  .buffer-fill{height:100%;width:0%;background:var(--cyan);border-radius:3px;transition:width .3s ease}
+  .buffer-fill{height:100%;width:0%;background:var(--cyan);border-radius:3px}
   @media (min-width:900px){
     .app{padding-bottom:20px}
     .bar{display:none}
@@ -525,6 +525,12 @@ let cfSplitter=null, cfMerger=null;
 let cfGainLL=null, cfGainLR=null, cfGainRL=null, cfGainRR=null;
 let bassAnalyser=null, midAnalyser=null, highAnalyser=null;
 
+/* Buffers d'analyse pré-alloués (évite le garbage collector) */
+let _dataBass = null;
+let _dataMid = null;
+let _dataHigh = null;
+let _waveData = null;
+
 const bufferFill = document.getElementById('bufferFill');
 const bufferStatus = document.getElementById('bufferStatus');
 
@@ -682,6 +688,13 @@ function createAudioContext() {
   eqMerger.connect(bassSplit); bassSplit.connect(bassAnalyser);
   eqMerger.connect(midSplit); midSplit.connect(midAnalyser);
   eqMerger.connect(highSplit); highSplit.connect(highAnalyser);
+
+  /* Pré-allocation des buffers d'analyse (une seule fois) */
+  _dataBass = new Uint8Array(bassAnalyser.fftSize);
+  _dataMid  = new Uint8Array(midAnalyser.fftSize);
+  _dataHigh = new Uint8Array(highAnalyser.fftSize);
+  _waveData = new Uint8Array(bassAnalyser.fftSize);
+
   return audioCtx;
 }
 
@@ -702,6 +715,7 @@ async function closeAudioContext() {
   dryGain = null; wetGain = null; limiterNode = null;
   cfSplitter = null; cfMerger = null;
   cfGainLL = null; cfGainLR = null; cfGainRL = null; cfGainRR = null;
+  _dataBass = null; _dataMid = null; _dataHigh = null; _waveData = null;
   pendingChunks = [];
   isProcessing = false;
   firstChunkScheduled = false;
@@ -1106,11 +1120,14 @@ async function studioTogglePlay(station) {
   }
 }
 
-setInterval(async () => {
-  if (audioCtx && isPlaying) {
-    if (audioCtx.state === 'suspended') await audioCtx.resume();
-  }
-}, 1000);
+/* Keep-alive iOS - désactivé en mode SL (source de micro-freezes) */
+if (!isSL) {
+  setInterval(async () => {
+    if (audioCtx && isPlaying) {
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
+    }
+  }, 1000);
+}
 
 function soma(id,n,c,g,q){ q=q||128;
   var m=function(h,b){ return 'https://'+h+'.somafm.com/'+id+'-'+b+'-mp3'; };
@@ -1149,7 +1166,7 @@ var CORE=[
   soma('thetrip','The Trip','trance','Progressive house, trance'),
   rm('harder','RauteMusik HardeR','trance','Hardstyle, schranz'),
   soma('spacestation','Space Station Soma','trance','Électronique spatiale',320),
-  soma('brfm','Black Rock FM','trance','Électronique du désert'),
+  soma('brfm','Black Rock FM','trance','Électro du désert'),
   soma('reggae','Heavyweight Reggae','dub','Reggae, ska, rocksteady',256),
   fip('fipreggae','FIP Reggae','dub','Reggae, dub'),
   fip('fipmonde','FIP Monde','dub','Musiques du monde'),
@@ -1500,7 +1517,7 @@ document.getElementById('addUrl').addEventListener('click',function(){
 });
 
 /* =========================================================
-   OSCILLOSCOPE (sans glow)
+   OSCILLOSCOPE - ANTI-GC
    ========================================================= */
 var BARS_COUNT = isSL ? 16 : 34;
 var bars=[];
@@ -1511,14 +1528,16 @@ function sizeCanvas(){ dpr=Math.min(window.devicePixelRatio||1,2);
 window.addEventListener('resize',sizeCanvas);
 setTimeout(sizeCanvas,0); sizeCanvas();
 
-function traceBand(analyser, color, scale, alpha) {
-  if (!analyser) return;
-  const bufferLength = analyser.fftSize;
-  const dataArray = new Uint8Array(bufferLength);
+/* Version optimisée : buffer dataArray réutilisé, path recréé mais léger */
+function traceBand(analyser, dataArray, color, scale, alpha) {
+  if (!analyser || !dataArray) return;
   analyser.getByteTimeDomainData(dataArray);
+
+  const bufferLength = analyser.fftSize;
   const W = cv.width, H = cv.height, mid = H / 2;
-  const path = new Path2D();
   const step = Math.max(1, Math.floor(bufferLength / W));
+
+  const path = new Path2D();
   for (let i = 0; i < W; i++) {
     const idx = Math.min(i * step, bufferLength - 1);
     const v = (dataArray[idx] - 128) / 128;
@@ -1526,6 +1545,7 @@ function traceBand(analyser, color, scale, alpha) {
     if (i === 0) path.moveTo(i, y);
     else path.lineTo(i, y);
   }
+
   cx.lineJoin='round'; cx.lineCap='round';
   cx.strokeStyle=color;
   cx.globalAlpha=alpha;
@@ -1546,15 +1566,16 @@ var MIN_FRAME_INTERVAL = isSL ? 50 : 16;
   lastFrameTime = t;
 
   const playing = isPlaying;
-  const live = playing && bassAnalyser && midAnalyser && highAnalyser;
+  const live = playing && bassAnalyser && midAnalyser && highAnalyser && _waveData;
 
-  if (live && bassAnalyser) {
+  if (live) {
     try {
-      const data = new Uint8Array(bassAnalyser.fftSize);
-      bassAnalyser.getByteTimeDomainData(data);
+      /* Lecture unique pour les bars */
+      bassAnalyser.getByteTimeDomainData(_waveData);
+      const step = Math.floor(_waveData.length / bars.length);
       for (let k = 0; k < bars.length; k++) {
-        const idx = Math.min(k * Math.floor(data.length / bars.length) + 40, data.length - 1);
-        bars[k].style.height = Math.max(3, Math.abs(data[idx] - 128) / 128 * 44) + 'px';
+        const idx = Math.min(k * step + 40, _waveData.length - 1);
+        bars[k].style.height = Math.max(3, Math.abs(_waveData[idx] - 128) / 128 * 44) + 'px';
       }
     } catch(e) {}
   } else {
@@ -1570,9 +1591,10 @@ var MIN_FRAME_INTERVAL = isSL ? 50 : 16;
   cx.beginPath(); cx.moveTo(0, cv.height/2); cx.lineTo(cv.width, cv.height/2); cx.stroke();
 
   if (live) {
-    traceBand(bassAnalyser, '#FF3D9E', 0.34, 0.95);
-    traceBand(midAnalyser, '#2FE7FF', 0.30, 0.9);
-    traceBand(highAnalyser, '#B9FF45', 0.26, 0.85);
+    /* Réutilisation des buffers pré-alloués (zéro allocation) */
+    traceBand(bassAnalyser, _dataBass, '#FF3D9E', 0.34, 0.95);
+    traceBand(midAnalyser,  _dataMid,  '#2FE7FF', 0.30, 0.9);
+    traceBand(highAnalyser, _dataHigh, '#B9FF45', 0.26, 0.85);
   } else {
     ['#FF3D9E', '#2FE7FF', '#B9FF45'].forEach(function(c, n) {
       const p = new Path2D();
