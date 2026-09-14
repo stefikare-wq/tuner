@@ -112,9 +112,7 @@
   .legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted)}
   .legend i{display:inline-block;width:18px;height:3px;border-radius:2px;
             vertical-align:middle;margin-right:7px}
-  .scope-card::after{content:"";position:absolute;top:0;bottom:0;width:34%;pointer-events:none;
-    background:linear-gradient(90deg,transparent,rgba(47,231,255,.07),transparent);
-    animation:sweep 7s linear infinite}
+  .scope-card::after{display:none}
   @keyframes sweep{0%{transform:translateX(-120%)}100%{transform:translateX(420%)}}
   canvas{display:block;width:100%;height:var(--scopeH);min-height:150px;border-radius:14px;
          border:1px solid rgba(47,231,255,.2);
