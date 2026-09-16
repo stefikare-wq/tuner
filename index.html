@@ -70,10 +70,6 @@
                 cursor:pointer;opacity:0;transition:opacity .2s var(--e);font-weight:700;line-height:1}
   .t5:hover .t5remove,.t5:active .t5remove{opacity:1}
   @media(hover:none){.t5 .t5remove{opacity:.85}}
-  .wave{display:flex;align-items:flex-end;gap:2px;height:34px;width:150px;flex:none}
-  .wave i{flex:1;border-radius:3px;height:3px;background:var(--cyan);opacity:.28;
-          transition:height .08s linear,opacity .6s var(--e)}
-  .wave.on i{opacity:1}
   .tb-btns{display:flex;gap:9px;flex-wrap:wrap}
   .pill{display:inline-flex;align-items:center;justify-content:center;border-radius:100px;
         min-height:52px;padding:0 26px;font-size:15px;font-weight:600;
@@ -83,16 +79,64 @@
   .pill.ghost{background:rgba(234,241,255,.06);color:var(--ice);
               border:1px solid var(--edge2)}
   .pill.stop{background:linear-gradient(135deg,#FF3D9E,#B01E75)}
-  .scope-card{padding:14px 14px 10px;overflow:hidden}
+  .scope-card{padding:14px 14px 10px;overflow:hidden;transition:box-shadow .3s var(--e)}
+  .scope-card.scope-off{box-shadow:none}
+  .scope-card.scope-off canvas{opacity:.22;filter:grayscale(.8)}
   .scope-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
               flex-wrap:wrap;gap:10px}
   .scope-head h2{font-size:11.5px;letter-spacing:.2em;margin:0;opacity:.8}
-  .legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted)}
+  .legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted);
+          transition:opacity .25s var(--e)}
+  .scope-card.scope-off .legend{opacity:.35}
   .legend i{display:inline-block;width:18px;height:3px;border-radius:2px;
             vertical-align:middle;margin-right:7px}
+
+  .scope-mode{
+    margin-left:auto;
+    display:inline-flex;
+    align-items:stretch;
+    border:1px solid var(--edge2);
+    border-radius:10px;
+    overflow:hidden;
+    background:rgba(5,12,20,.75);
+    flex:none;
+  }
+  .scope-mode button{
+    min-width:54px;
+    height:30px;
+    padding:0 10px;
+    font:800 10px/1 inherit;
+    letter-spacing:.1em;
+    color:var(--muted);
+    background:transparent;
+    border-right:1px solid var(--edge2);
+    cursor:pointer;
+    transition:all .18s var(--e);
+    touch-action:manipulation;
+  }
+  .scope-mode button:last-child{border-right:0}
+  .scope-mode button:hover{color:var(--ice);background:rgba(234,241,255,.05)}
+  .scope-mode button[data-mode="osc"].active{
+    color:#03121A;background:var(--magenta);
+    text-shadow:none;
+  }
+  .scope-mode button[data-mode="bar"].active{
+    color:#03121A;background:var(--cyan);
+    text-shadow:none;
+  }
+  .scope-mode button[data-mode="off"].active{
+    color:#03121A;background:#87909f;
+    text-shadow:none;
+  }
+  .scope-mode button:active{transform:scale(.96)}
+  @media(max-width:500px){
+    .scope-mode button{min-width:44px;height:28px;padding:0 8px;font-size:9px}
+  }
+
   canvas{display:block;width:100%;height:var(--scopeH);min-height:150px;border-radius:14px;
          border:1px solid rgba(47,231,255,.2);
-         background:radial-gradient(75% 130% at 50% 50%,#0B1426,#05060C)}
+         background:radial-gradient(75% 130% at 50% 50%,#0B1426,#05060C);
+         transition:opacity .25s var(--e),filter .25s var(--e)}
   .grip{height:16px;display:flex;align-items:center;justify-content:center;cursor:ns-resize;
         touch-action:none;flex:none}
   .grip i{width:80px;height:4px;border-radius:99px;background:rgba(140,190,255,.22);
@@ -395,7 +439,6 @@
       <div class="track" id="npTrack"></div>
       <div class="sub" id="npState">Ouvre les stations pour choisir</div>
     </div>
-    <div class="wave" id="wave"></div>
     <div class="tb-btns">
       <button class="pill" id="power">Écouter</button>
       <button class="pill ghost" id="engineSwitch">🌙 SCREEN OFF</button>
@@ -410,13 +453,18 @@
     </div>
     <div class="top5-list" id="top5List"></div>
   </div>
-  <div class="card scope-card">
+  <div class="card scope-card" id="scopeCard">
     <div class="scope-head">
-      <h2>OSCILLOSCOPE - 3 BANDES</h2>
-      <div class="legend">
+      <h2 id="scopeTitle">OSCILLOSCOPE · 3 BANDES</h2>
+      <div class="legend" id="scopeLegend">
         <span><i style="background:#FF3D9E"></i>Bass</span>
         <span><i style="background:#2FE7FF"></i>Medium</span>
         <span><i style="background:#B9FF45"></i>High</span>
+      </div>
+      <div class="scope-mode" id="scopeMode" role="tablist" aria-label="Mode d'affichage">
+        <button data-mode="osc" type="button" role="tab" class="active" title="Oscilloscope 3 bandes">OSC</button>
+        <button data-mode="bar" type="button" role="tab" title="VU-mètre 10 bandes (5 G + 5 D)">BAR</button>
+        <button data-mode="off" type="button" role="tab" title="Éteint — économie maximale">OFF</button>
       </div>
     </div>
     <canvas id="scope"></canvas>
@@ -467,9 +515,6 @@
 (function(){
 "use strict";
 
-/* =========================================================
-   DÉTECTION SECOND LIFE
-   ========================================================= */
 const isSL = /Second Life|SLPlugin|LLMedia|llcorehttp/i.test(navigator.userAgent)
           || /secondlife/i.test(navigator.appName || '')
           || /VLC|LibVLC/i.test(navigator.userAgent);
@@ -478,9 +523,6 @@ if (isSL) {
   console.info('[Tuner] Mode Second Life détecté');
 }
 
-/* =========================================================
-   CONFIGURATION
-   ========================================================= */
 const CORS_PROXY = 'https://soft-brook-0e52.stefikare.workers.dev/?url=';
 const CHUNK_SIZE = 96 * 1024;
 const MAX_BUFFER_DURATION = 6.0;
@@ -525,14 +567,17 @@ let cfSplitter=null, cfMerger=null;
 let cfGainLL=null, cfGainLR=null, cfGainRL=null, cfGainRR=null;
 let bassAnalyser=null, midAnalyser=null, highAnalyser=null;
 
-/* Le graphe audio persistant - connecté UNE SEULE FOIS */
+/* Analysers 10 bandes pour le mode BAR (5 Gauche + 5 Droite) */
+let anaLBands = [];   // 5 analyseurs gauche
+let anaRBands = [];   // 5 analyseurs droite
+let _dataLBands = []; // buffers pré-alloués
+let _dataRBands = [];
+
 let graphBuilt = false;
 
-/* Buffers d'analyse pré-alloués (évite le garbage collector) */
 let _dataBass = null;
 let _dataMid = null;
 let _dataHigh = null;
-let _waveData = null;
 
 const bufferFill = document.getElementById('bufferFill');
 const bufferStatus = document.getElementById('bufferStatus');
@@ -569,19 +614,12 @@ function createReverbImpulse(ctx, duration, decay) {
   return impulse;
 }
 
-/* ============================================================
-   scheduleBuffer CORRIGÉ
-   Ne reconnecte QUE la source → fadeGain → cfSplitter
-   Tout le reste du graphe est déjà connecté une seule fois
-   ============================================================ */
 function scheduleBuffer(audioBuffer, mySession) {
   if (!audioCtx || sessionId !== mySession || !graphBuilt) return false;
   try {
     const source = audioCtx.createBufferSource();
     source.buffer = audioBuffer;
     const fadeGain = audioCtx.createGain();
-
-    /* UNIQUEMENT 2 connexions par chunk au lieu de 30 */
     source.connect(fadeGain);
     fadeGain.connect(cfSplitter);
 
@@ -626,10 +664,6 @@ async function decodeAndSchedule(chunk, mySession) {
   } catch (e) { console.warn('Decode error:', e); isProcessing = false; return false; }
 }
 
-/* ============================================================
-   createAudioContext CORRIGÉ
-   Construit TOUT le graphe une seule fois et ne le retouche plus
-   ============================================================ */
 function createAudioContext() {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   pannerNode = audioCtx.createStereoPanner(); pannerNode.pan.value = 0;
@@ -683,7 +717,6 @@ function createAudioContext() {
   eqMerger.connect(midSplit); midSplit.connect(midAnalyser);
   eqMerger.connect(highSplit); highSplit.connect(highAnalyser);
 
-  /* ⭐ LE GRAPHE PERSISTANT — CONSTRUIT UNE SEULE FOIS ⭐ */
   cfMerger.connect(pannerNode);
   pannerNode.connect(gainNode);
   gainNode.connect(eqSplitter);
@@ -705,13 +738,62 @@ function createAudioContext() {
   limiterNode.connect(analyserNode);
   analyserNode.connect(audioCtx.destination);
 
+  /* =========================================================
+     CHAÎNE D'ANALYSE 10 BANDES (5 Gauche + 5 Droite)
+     On branche en parallèle sur limiterNode un splitter stéréo,
+     puis pour chaque canal on crée 5 filtres + 5 analyseurs.
+     Aucun impact sur le signal audio (branche morte).
+     ========================================================= */
+  const stereoSplit = audioCtx.createChannelSplitter(2);
+  limiterNode.connect(stereoSplit);
+
+  /* Configuration des 5 bandes (alignées sur les libellés EQ) */
+  const BANDS = [
+    {type:'lowpass',  freq:120,  q:0.7},   /* Sub    · 60  Hz */
+    {type:'bandpass', freq:250,  q:1.5},   /* Bass   · 250 Hz */
+    {type:'bandpass', freq:1000, q:1.5},   /* Medium · 1k  Hz */
+    {type:'bandpass', freq:4000, q:1.5},   /* Hi-Mid · 4k  Hz */
+    {type:'highpass', freq:8000, q:0.7}    /* High   · 12k Hz */
+  ];
+
+  anaLBands = [];
+  anaRBands = [];
+  _dataLBands = [];
+  _dataRBands = [];
+
+  for (let i = 0; i < 5; i++) {
+    /* Canal GAUCHE */
+    const fL = audioCtx.createBiquadFilter();
+    fL.type = BANDS[i].type;
+    fL.frequency.value = BANDS[i].freq;
+    fL.Q.value = BANDS[i].q;
+    const aL = audioCtx.createAnalyser();
+    aL.fftSize = 1024;
+    aL.smoothingTimeConstant = 0.55;
+    stereoSplit.connect(fL, 0);
+    fL.connect(aL);
+    anaLBands.push(aL);
+    _dataLBands.push(new Uint8Array(aL.fftSize));
+
+    /* Canal DROITE */
+    const fR = audioCtx.createBiquadFilter();
+    fR.type = BANDS[i].type;
+    fR.frequency.value = BANDS[i].freq;
+    fR.Q.value = BANDS[i].q;
+    const aR = audioCtx.createAnalyser();
+    aR.fftSize = 1024;
+    aR.smoothingTimeConstant = 0.55;
+    stereoSplit.connect(fR, 1);
+    fR.connect(aR);
+    anaRBands.push(aR);
+    _dataRBands.push(new Uint8Array(aR.fftSize));
+  }
+
   graphBuilt = true;
 
-  /* Pré-allocation des buffers d'analyse (une seule fois) */
   _dataBass = new Uint8Array(bassAnalyser.fftSize);
   _dataMid  = new Uint8Array(midAnalyser.fftSize);
   _dataHigh = new Uint8Array(highAnalyser.fftSize);
-  _waveData = new Uint8Array(bassAnalyser.fftSize);
 
   return audioCtx;
 }
@@ -728,12 +810,14 @@ async function closeAudioContext() {
   eqSplitter = null; eqMerger = null;
   leftEQFilters = []; rightEQFilters = [];
   analyserNode = null; bassAnalyser = null; midAnalyser = null; highAnalyser = null;
+  anaLBands = []; anaRBands = [];
+  _dataLBands = []; _dataRBands = [];
   lowpassFilter = null; highpassFilter = null; bandpassFilter = null;
   delayNode = null; feedbackGain = null; convolverNode = null;
   dryGain = null; wetGain = null; limiterNode = null;
   cfSplitter = null; cfMerger = null;
   cfGainLL = null; cfGainLR = null; cfGainRL = null; cfGainRR = null;
-  _dataBass = null; _dataMid = null; _dataHigh = null; _waveData = null;
+  _dataBass = null; _dataMid = null; _dataHigh = null;
   graphBuilt = false;
   pendingChunks = [];
   isProcessing = false;
@@ -1139,7 +1223,6 @@ async function studioTogglePlay(station) {
   }
 }
 
-/* Keep-alive iOS - désactivé en mode SL */
 if (!isSL) {
   setInterval(async () => {
     if (audioCtx && isPlaying) {
@@ -1294,7 +1377,7 @@ function renderTop5(){
 
 var npName=document.getElementById('npName'),npState=document.getElementById('npState'),
     barName=document.getElementById('barName'),barSub=document.getElementById('barSub'),
-    eyebrow=document.getElementById('eyebrow'),wave=document.getElementById('wave'),
+    eyebrow=document.getElementById('eyebrow'),
     power=document.getElementById('power'),power2=document.getElementById('power2'),
     listMsg=document.getElementById('listMsg'),favBtn=document.getElementById('fav');
 function render(state){
@@ -1304,7 +1387,6 @@ function render(state){
     power.classList.toggle('stop', p);
   }
   if (power2) power2.textContent = p ? '❚❚' : '▶';
-  wave.classList.toggle('on', p);
   if(state!==undefined){ npState.textContent=state; barSub.textContent=state; }
   if(currentStation) favBtn.classList.toggle('is',favs.some(function(x){return x.u===currentStation.u;}));
 }
@@ -1536,25 +1618,22 @@ document.getElementById('addUrl').addEventListener('click',function(){
 });
 
 /* =========================================================
-   OSCILLOSCOPE - ANTI-GC
+   OSCILLOSCOPE / VU-MÈTRE 10 BANDES — ANTI-GC
    ========================================================= */
-var BARS_COUNT = isSL ? 16 : 34;
-var bars=[];
-for(var i=0;i<BARS_COUNT;i++){ var e=document.createElement('i'); wave.appendChild(e); bars.push(e); }
 var cv=document.getElementById('scope'), cx=cv.getContext('2d'), dpr=1;
 function sizeCanvas(){ dpr=Math.min(window.devicePixelRatio||1,2);
   cv.width=cv.clientWidth*dpr; cv.height=cv.clientHeight*dpr; }
 window.addEventListener('resize',sizeCanvas);
 setTimeout(sizeCanvas,0); sizeCanvas();
 
+var scopeMode = 'osc';
+
 function traceBand(analyser, dataArray, color, scale, alpha) {
   if (!analyser || !dataArray) return;
   analyser.getByteTimeDomainData(dataArray);
-
   const bufferLength = analyser.fftSize;
   const W = cv.width, H = cv.height, mid = H / 2;
   const step = Math.max(1, Math.floor(bufferLength / W));
-
   const path = new Path2D();
   for (let i = 0; i < W; i++) {
     const idx = Math.min(i * step, bufferLength - 1);
@@ -1563,7 +1642,6 @@ function traceBand(analyser, dataArray, color, scale, alpha) {
     if (i === 0) path.moveTo(i, y);
     else path.lineTo(i, y);
   }
-
   cx.lineJoin='round'; cx.lineCap='round';
   cx.strokeStyle=color;
   cx.globalAlpha=alpha;
@@ -1571,6 +1649,98 @@ function traceBand(analyser, dataArray, color, scale, alpha) {
   cx.shadowBlur=0;
   cx.stroke(path);
   cx.globalAlpha=1;
+}
+
+/* Calcule le RMS d'un buffer d'analyse temporelle */
+function rms(buf) {
+  let s = 0;
+  const n = buf.length;
+  for (let j = 0; j < n; j += 2) {
+    const d = (buf[j] - 128) / 128;
+    s += d * d;
+  }
+  return Math.sqrt(s / (n / 2));
+}
+
+/* ===== Mode BAR : 5 barres gauche + 5 barres droite =====
+   Chaque barre = une bande d'égaliseur (Sub, Bass, Medium, Hi-Mid, High)
+   pour le canal correspondant. */
+function drawBars10(live, playing) {
+  const W = cv.width, H = cv.height;
+  const LABELS = ['60', '250', '1k', '4k', '12k'];
+  const COLOR_L = '#FF3D9E';
+  const COLOR_R = '#2FE7FF';
+
+  const padding   = 10 * dpr;
+  const bottomPad = 24 * dpr;
+  const groupGap  = 32 * dpr;   // séparation entre groupes G et D
+  const barGap    = 5 * dpr;    // écart entre barres d'un même groupe
+
+  const totalW    = W - 2 * padding;
+  const totalGaps = 8 * barGap + groupGap;
+  const barW      = Math.max(2, (totalW - totalGaps) / 10);
+  const maxH      = H - 2 * padding - bottomPad;
+  const baseY     = H - padding - bottomPad;
+
+  /* Centre vertical du groupe pour dessiner le "label channel" au-dessus */
+  for (let i = 0; i < 10; i++) {
+    const isLeft = i < 5;
+    const idx    = isLeft ? i : i - 5;
+    const a      = isLeft ? anaLBands[idx] : anaRBands[idx];
+    const buf    = isLeft ? _dataLBands[idx] : _dataRBands[idx];
+    const color  = isLeft ? COLOR_L : COLOR_R;
+
+    /* Position x de la barre */
+    let x;
+    if (i < 5) {
+      x = padding + i * (barW + barGap);
+    } else {
+      x = padding + 5 * barW + 4 * barGap + groupGap + (i - 5) * (barW + barGap);
+    }
+
+    /* Niveau RMS → normalisé */
+    let level = 0;
+    if (live && a && buf) {
+      a.getByteTimeDomainData(buf);
+      level = rms(buf);
+    } else if (playing) {
+      level = 0.015 + 0.008 * Math.sin(idle * 1.4 + i * 0.5);
+    }
+    const norm = Math.min(1, Math.pow(level * 5, 0.55));
+    const barH = Math.max(2.5 * dpr, norm * maxH);
+    const y    = baseY - barH;
+
+    /* --- Barre --- */
+    /* Halo externe */
+    cx.shadowColor = color;
+    cx.shadowBlur  = 20 * dpr;
+    cx.globalAlpha = 0.35;
+    cx.fillStyle   = color;
+    cx.fillRect(x, y, barW, barH);
+
+    /* Corps principal */
+    cx.shadowBlur  = 8 * dpr;
+    cx.globalAlpha = 0.95;
+    cx.fillRect(x, y, barW, barH);
+
+    /* Reflet blanc en haut */
+    cx.shadowBlur  = 0;
+    cx.globalAlpha = 0.55;
+    cx.fillStyle   = '#ffffff';
+    cx.fillRect(x, y, barW, Math.min(2 * dpr, barH));
+
+    cx.globalAlpha = 1;
+
+    /* --- Label fréquence sous la barre --- */
+    cx.fillStyle    = color;
+    cx.shadowColor  = color;
+    cx.shadowBlur   = 6 * dpr;
+    cx.font         = 'bold ' + Math.round(9 * dpr) + 'px -apple-system,sans-serif';
+    cx.textAlign    = 'center';
+    cx.textBaseline = 'middle';
+    cx.fillText(LABELS[idx], x + barW / 2, baseY + 11 * dpr);
+    cx.shadowBlur = 0;
+  }
 }
 
 var idle = 0;
@@ -1583,49 +1753,89 @@ var MIN_FRAME_INTERVAL = isSL ? 50 : 16;
   if (t - lastFrameTime < MIN_FRAME_INTERVAL) return;
   lastFrameTime = t;
 
-  const playing = isPlaying;
-  const live = playing && bassAnalyser && midAnalyser && highAnalyser && _waveData;
+  idle += 0.045;
 
-  if (live) {
-    try {
-      bassAnalyser.getByteTimeDomainData(_waveData);
-      const step = Math.floor(_waveData.length / bars.length);
-      for (let k = 0; k < bars.length; k++) {
-        const idx = Math.min(k * step + 40, _waveData.length - 1);
-        bars[k].style.height = Math.max(3, Math.abs(_waveData[idx] - 128) / 128 * 44) + 'px';
-      }
-    } catch(e) {}
-  } else {
-    idle += 0.045;
-    for (let j = 0; j < bars.length; j++) {
-      bars[j].style.height = playing ? (9 + Math.sin(idle + j*0.38)*7 + Math.sin(idle*1.8+j)*3) + 'px' : '3px';
+  const playing = isPlaying;
+  const live = playing && bassAnalyser && midAnalyser && highAnalyser;
+
+  cx.clearRect(0, 0, cv.width, cv.height);
+  if (scopeMode === 'off') return;
+
+  if (scopeMode === 'osc') {
+    cx.strokeStyle='rgba(140,190,255,.16)'; cx.lineWidth=1*dpr;
+    cx.shadowBlur=0;
+    cx.beginPath(); cx.moveTo(0, cv.height/2); cx.lineTo(cv.width, cv.height/2); cx.stroke();
+
+    if (live) {
+      traceBand(bassAnalyser, _dataBass, '#FF3D9E', 0.34, 0.95);
+      traceBand(midAnalyser,  _dataMid,  '#2FE7FF', 0.30, 0.9);
+      traceBand(highAnalyser, _dataHigh, '#B9FF45', 0.26, 0.85);
+    } else {
+      ['#FF3D9E', '#2FE7FF', '#B9FF45'].forEach(function(c, n) {
+        const p = new Path2D();
+        for (let x = 0; x < cv.width; x += 4) {
+          const yy = cv.height/2 + Math.sin(x/(60+n*22) + idle*(1+n*0.35) + n*2) * (playing?12:5) * dpr;
+          if (x === 0) p.moveTo(x, yy); else p.lineTo(x, yy);
+        }
+        cx.lineJoin='round'; cx.lineCap='round';
+        cx.strokeStyle=c;
+        cx.globalAlpha=0.85; cx.lineWidth=1.8*dpr; cx.shadowBlur=0;
+        cx.stroke(p);
+        cx.globalAlpha=1;
+      });
+    }
+  } else if (scopeMode === 'bar') {
+    drawBars10(live && anaLBands.length === 5, playing);
+  }
+})();
+
+/* ===== Sélecteur 3 positions ===== */
+function setScopeMode(m) {
+  if (m !== 'osc' && m !== 'bar' && m !== 'off') return;
+  scopeMode = m;
+
+  var btns = document.querySelectorAll('#scopeMode button');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle('active', btns[i].dataset.mode === m);
+  }
+
+  var titleEl = document.getElementById('scopeTitle');
+  if (titleEl) {
+    if (m === 'osc')      titleEl.textContent = 'OSCILLOSCOPE · 3 BANDES';
+    else if (m === 'bar') titleEl.textContent = 'SPECTRE · 5 BANDES × 2';
+    else                  titleEl.textContent = 'AFFICHAGE · ÉTEINT';
+  }
+
+  var legendEl = document.getElementById('scopeLegend');
+  if (legendEl) {
+    if (m === 'osc') {
+      legendEl.innerHTML =
+        '<span><i style="background:#FF3D9E"></i>Bass</span>' +
+        '<span><i style="background:#2FE7FF"></i>Medium</span>' +
+        '<span><i style="background:#B9FF45"></i>High</span>';
+    } else if (m === 'bar') {
+      legendEl.innerHTML =
+        '<span><i style="background:#FF3D9E"></i>Gauche · 60 · 250 · 1k · 4k · 12k</span>' +
+        '<span><i style="background:#2FE7FF"></i>Droite · 60 · 250 · 1k · 4k · 12k</span>';
     }
   }
 
-  cx.clearRect(0, 0, cv.width, cv.height);
-  cx.strokeStyle='rgba(140,190,255,.16)'; cx.lineWidth=1*dpr;
-  cx.shadowBlur=0;
-  cx.beginPath(); cx.moveTo(0, cv.height/2); cx.lineTo(cv.width, cv.height/2); cx.stroke();
+  var card = document.getElementById('scopeCard');
+  if (card) card.classList.toggle('scope-off', m === 'off');
 
-  if (live) {
-    traceBand(bassAnalyser, _dataBass, '#FF3D9E', 0.34, 0.95);
-    traceBand(midAnalyser,  _dataMid,  '#2FE7FF', 0.30, 0.9);
-    traceBand(highAnalyser, _dataHigh, '#B9FF45', 0.26, 0.85);
-  } else {
-    ['#FF3D9E', '#2FE7FF', '#B9FF45'].forEach(function(c, n) {
-      const p = new Path2D();
-      for (let x = 0; x < cv.width; x += 4) {
-        const yy = cv.height/2 + Math.sin(x/(60+n*22) + idle*(1+n*0.35) + n*2) * (playing?12:5) * dpr;
-        if (x === 0) p.moveTo(x, yy); else p.lineTo(x, yy);
-      }
-      cx.lineJoin='round'; cx.lineCap='round';
-      cx.strokeStyle=c;
-      cx.globalAlpha=0.85; cx.lineWidth=1.8*dpr; cx.shadowBlur=0;
-      cx.stroke(p);
-      cx.globalAlpha=1;
-    });
+  if (m === 'off') {
+    try { cx.clearRect(0, 0, cv.width, cv.height); } catch(e) {}
   }
-})();
+}
+
+var scopeModeEl = document.getElementById('scopeMode');
+if (scopeModeEl) {
+  scopeModeEl.addEventListener('click', function(e) {
+    var b = e.target.closest('button[data-mode]');
+    if (!b) return;
+    setScopeMode(b.dataset.mode);
+  });
+}
 
 /* =========================================================
    DRAWER, GRIP
