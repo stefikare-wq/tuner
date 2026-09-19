@@ -37,61 +37,58 @@
                    linear-gradient(180deg,var(--panel),var(--deep));
         display:flex;flex-direction:column;overflow:hidden}
 
-  .topbar{padding:18px 20px;flex:0 0 auto}
-  .brand-row{display:flex;align-items:center;gap:14px;margin-bottom:12px}
-  .orb{width:38px;height:38px;border-radius:50%;border:4px solid var(--cyan);position:relative;flex:none}
-  .orb::after{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--cyan)}
-  .brand{font-weight:900;letter-spacing:.12em;color:#bff8ff;font-size:24px}
-  .brand small{opacity:.5;font-size:14px;letter-spacing:.1em;margin-left:6px}
+  /* TOPBAR compacte */
+  .topbar{padding:14px 18px;flex:0 0 auto}
+  .brand-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .orb{width:32px;height:32px;border-radius:50%;border:3.5px solid var(--cyan);position:relative;flex:none}
+  .orb::after{content:'';position:absolute;inset:7px;border-radius:50%;background:var(--cyan)}
+  .brand{font-weight:900;letter-spacing:.12em;color:#bff8ff;font-size:20px}
+  .brand small{opacity:.5;font-size:12px;letter-spacing:.1em;margin-left:5px}
 
-  .now{font-size:32px;font-weight:600;line-height:1.15;letter-spacing:-.03em;margin:0}
-  .sub{font-size:20px;color:var(--muted);min-height:26px;margin-top:4px}
+  .now{font-size:28px;font-weight:600;line-height:1.15;letter-spacing:-.03em;margin:0}
+  .sub{font-size:18px;color:var(--muted);min-height:24px;margin-top:3px}
   .sub.live{color:var(--lime)}
 
-  .add-form{display:flex;flex-direction:column;gap:8px;margin-top:14px}
-  .add-form .txtin{min-height:60px;font-size:20px;padding:0 18px}
-  .add-form .row2{display:flex;gap:8px}
-  .add-form .row2 .txtin{flex:1;min-width:0}
-
+  .tb-btns{display:flex;gap:8px;margin-top:12px}
   .pill{display:inline-flex;align-items:center;justify-content:center;border-radius:100px;
-        min-height:64px;padding:0 30px;font-size:22px;font-weight:600;
+        min-height:56px;padding:0 24px;font-size:19px;font-weight:600;
         background:linear-gradient(135deg,var(--cyan),#0E8BDD);color:#03121A;
         transition:transform .18s var(--e);flex:1}
   .pill:active{transform:scale(.97)}
-  .pill.ghost{background:rgba(234,241,255,.06);color:var(--ice);border:1px solid var(--edge2);flex:0 0 auto;padding:0 26px}
+  .pill.ghost{background:rgba(234,241,255,.06);color:var(--ice);border:1px solid var(--edge2);flex:0 0 auto;padding:0 20px}
   .pill.stop{background:linear-gradient(135deg,#FF3D9E,#B01E75);color:#fff}
-  .tb-btns{display:flex;gap:10px;margin-top:12px}
+  .pill.fx-btn{background:linear-gradient(135deg,#B9FF45,#7EBB1D);color:#03121A}
 
-  .wavewrap{padding:0 20px 14px;flex:0 0 auto}
-  .wave{display:flex;align-items:flex-end;gap:2px;height:34px;width:100%}
+  .wavewrap{padding:0 18px 12px;flex:0 0 auto}
+  .wave{display:flex;align-items:flex-end;gap:2px;height:30px;width:100%}
   .wave i{flex:1;border-radius:3px;height:4px;background:var(--cyan);opacity:.22;
           transition:height .08s linear,opacity .4s var(--e)}
   .wave.on i{opacity:.9}
 
-  .console{padding:18px 20px;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
+  .console{padding:16px 18px;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
            overflow-y:auto;-webkit-overflow-scrolling:touch;gap:18px}
   .console::-webkit-scrollbar{width:8px}
   .console::-webkit-scrollbar-thumb{background:rgba(234,241,255,.13);border-radius:99px}
 
   .section{flex:0 0 auto}
-  .section + .section{border-top:1px solid var(--edge2);padding-top:18px}
+  .section + .section{border-top:1px solid var(--edge2);padding-top:16px}
 
   .section-title{
-    font-size:20px;letter-spacing:.14em;color:var(--cyan);font-weight:800;
-    margin:0 0 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    font-size:19px;letter-spacing:.14em;color:var(--cyan);font-weight:800;
+    margin:0 0 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 
-  .row{display:grid;grid-template-columns:100px 1fr;gap:16px;align-items:center;margin-bottom:14px}
+  .row{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;margin-bottom:12px}
   .row:last-child{margin-bottom:0}
-  .row .lbl{font-size:20px;color:var(--muted);font-weight:700;letter-spacing:.06em}
-  .row .val{font-size:20px;color:var(--ice);text-align:right;font-variant-numeric:tabular-nums;
+  .row .lbl{font-size:19px;color:var(--muted);font-weight:700;letter-spacing:.06em}
+  .row .val{font-size:19px;color:var(--ice);text-align:right;font-variant-numeric:tabular-nums;
             grid-column:2;margin-top:-4px;margin-bottom:2px}
 
-  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:40px;background:transparent;
                     margin:0;display:block;cursor:pointer}
-  input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:99px;
+  input[type=range]::-webkit-slider-runnable-track{height:7px;border-radius:99px;
     background:linear-gradient(90deg,var(--c,var(--cyan)) var(--p,50%),rgba(234,241,255,.1) var(--p,50%))}
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
-    width:30px;height:30px;border-radius:50%;margin-top:-11px;background:#fff;
+    width:28px;height:28px;border-radius:50%;margin-top:-10.5px;background:#fff;
     border:3px solid var(--c,var(--cyan));transition:transform .16s var(--e)}
   input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
   input[type=range].center::-webkit-slider-runnable-track{
@@ -106,7 +103,7 @@
 
   .knob{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:grab;touch-action:none;width:100%}
   .knob:active{cursor:grabbing}
-  .knob-dial{position:relative;width:100%;aspect-ratio:1 / 1;max-width:95px;border-radius:50%;
+  .knob-dial{position:relative;width:100%;aspect-ratio:1 / 1;max-width:90px;border-radius:50%;
     background:radial-gradient(circle at 50% 50%,var(--deep) 0%,var(--panel) 55%,var(--mod) 75%,#050810 100%);
     border:3px solid var(--k-color,var(--cyan));
     box-shadow:inset 0 0 12px rgba(0,0,0,.7),inset 0 0 0 1px rgba(255,255,255,.04);
@@ -128,23 +125,23 @@
   .knob-dial::after{content:'';position:absolute;inset:38%;border-radius:50%;
     background:radial-gradient(circle at 35% 30%,#4a5570 0%,#2a3248 55%,#1a2033 100%);
     box-shadow:inset 0 1px 3px rgba(255,255,255,.1),inset 0 -1px 4px rgba(0,0,0,.6);pointer-events:none}
-  .knob-label{font-size:17px;font-weight:700;letter-spacing:.03em;color:var(--muted);
+  .knob-label{font-size:16px;font-weight:700;letter-spacing:.03em;color:var(--muted);
               text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
               max-width:100%;text-align:center}
-  .knob-value{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;
+  .knob-value{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;
               color:var(--k-color,var(--cyan));min-height:22px;transition:color .15s var(--e);text-align:center}
   .knob.active .knob-value{color:#fff;text-shadow:0 0 10px var(--k-color,var(--cyan))}
 
-  .vu{display:grid;grid-template-columns:26px 1fr 1fr 26px;gap:8px;align-items:center;margin-top:14px}
-  .vu-lbl{font-size:18px;font-weight:800;color:var(--muted);text-align:center}
-  .vu-bar{display:flex;gap:3px;height:16px}
+  .vu{display:grid;grid-template-columns:24px 1fr 1fr 24px;gap:8px;align-items:center;margin-top:12px}
+  .vu-lbl{font-size:16px;font-weight:800;color:var(--muted);text-align:center}
+  .vu-bar{display:flex;gap:3px;height:14px}
   .vu-bar.rev{flex-direction:row-reverse}
-  .vu-bar i{flex:1;border-radius:2.5px;background:rgba(234,241,255,.07);transition:background .06s}
+  .vu-bar i{flex:1;border-radius:2px;background:rgba(234,241,255,.07);transition:background .06s}
 
-  .presets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;padding-top:16px;
+  .presets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;padding-top:14px;
            border-top:1px solid var(--edge2)}
   .presets button{
-    min-height:52px;font-size:18px;font-weight:700;letter-spacing:.03em;
+    min-height:48px;font-size:17px;font-weight:700;letter-spacing:.03em;
     color:var(--muted);background:rgba(234,241,255,.05);
     border:1px solid var(--edge);border-radius:12px;
     transition:all .18s var(--e);text-transform:uppercase}
@@ -153,59 +150,8 @@
     border-color:transparent;box-shadow:0 0 16px rgba(47,231,255,.35)}
   .presets button:active{transform:scale(.96)}
 
-  .pedal{
-    background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.15));
-    border:2px solid var(--edge);
-    border-radius:18px;
-    padding:18px 20px 20px;
-    margin-bottom:16px;
-    transition:border-color .25s var(--e),box-shadow .25s var(--e),opacity .25s var(--e);
-    position:relative;
-  }
-  .pedal:last-child{margin-bottom:0}
-  .pedal.off{opacity:.5}
-  .pedal.on{
-    border-color:var(--k-color,var(--cyan));
-    box-shadow:
-      0 0 28px color-mix(in srgb,var(--k-color,var(--cyan)) 25%,transparent),
-      inset 0 0 30px color-mix(in srgb,var(--k-color,var(--cyan)) 6%,transparent);
-  }
-
-  .pedal-head{
-    display:flex;align-items:center;justify-content:space-between;gap:14px;
-    margin-bottom:16px;
-  }
-  .pedal-name{
-    display:flex;align-items:center;gap:12px;
-    font-size:22px;font-weight:900;letter-spacing:.16em;
-    color:var(--k-color,var(--cyan));
-  }
-  .pedal-name .icon{
-    font-size:26px;
-    filter:drop-shadow(0 0 6px var(--k-color,var(--cyan)));
-  }
-  .pedal.on .pedal-name .icon{
-    animation:pedal-pulse 2s ease-in-out infinite;
-  }
-  @keyframes pedal-pulse{
-    0%,100% { filter:drop-shadow(0 0 6px var(--k-color,var(--cyan))); }
-    50% { filter:drop-shadow(0 0 14px var(--k-color,var(--cyan))); }
-  }
-
-  .toggle-btn{
-    min-width:86px;height:44px;padding:0 20px;border-radius:10px;
-    font-size:18px;font-weight:900;letter-spacing:.08em;
-    border:2px solid var(--muted);background:rgba(0,0,0,.4);color:var(--muted);
-    transition:all .18s var(--e);
-  }
-  .toggle-btn[aria-pressed="true"]{
-    color:#03121A;background:var(--k-color,var(--cyan));
-    border-color:transparent;
-    box-shadow:0 0 20px color-mix(in srgb,var(--k-color,var(--cyan)) 60%,transparent);
-  }
-  .toggle-btn:active{transform:scale(.94)}
-
-  .drawer{position:fixed;left:0;right:0;bottom:0;top:auto;height:90vh;height:90dvh;max-height:90vh;
+  /* DRAWERS */
+  .drawer{position:fixed;left:0;right:0;bottom:0;top:auto;height:92vh;height:92dvh;max-height:92vh;
     width:100%;z-index:40;background:linear-gradient(180deg,#0B1020,#06080F);
     border-top-left-radius:24px;border-top-right-radius:24px;border-top:1px solid var(--edge2);
     transform:translateY(101%);transition:transform .32s var(--e);
@@ -221,21 +167,23 @@
   .dhead button:active{transform:scale(.92)}
   .dcontent{flex:1 1 auto;display:flex;flex-direction:column;
     padding:0 22px calc(env(safe-area-inset-bottom) + 22px) 22px;min-height:0;overflow:hidden}
+
+  /* DRAWER STATIONS */
   .addtop{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;flex:0 0 auto}
   .addtop .row2{display:flex;gap:8px}
-  .addtop .txtin{min-height:60px;font-size:20px;padding:0 18px}
+  .addtop .txtin{min-height:56px;font-size:19px;padding:0 18px}
   .addtop .row2 .txtin{flex:1;min-width:0}
-  .addtop .pill{min-height:60px;font-size:20px}
+  .addtop .pill{min-height:56px;font-size:19px}
   .searchbox{margin-bottom:14px;flex:0 0 auto}
   .txtin{width:100%;font:inherit;color:var(--ice);background:rgba(234,241,255,.05);
-    border:1px solid var(--edge2);border-radius:14px;min-height:60px;padding:0 18px;font-size:20px;
+    border:1px solid var(--edge2);border-radius:14px;min-height:56px;padding:0 18px;font-size:19px;
     -webkit-appearance:none;appearance:none}
   .txtin:focus{outline:none;border-color:var(--cyan)}
   .tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 0 14px;padding-bottom:6px;flex:0 0 auto}
   .tabs::-webkit-scrollbar{display:none}
-  .tabs button{flex:none;white-space:nowrap;font-size:19px;color:var(--muted);
+  .tabs button{flex:none;white-space:nowrap;font-size:18px;color:var(--muted);
     background:rgba(234,241,255,.05);border:1px solid var(--edge);
-    border-radius:100px;min-height:52px;padding:0 22px}
+    border-radius:100px;min-height:48px;padding:0 20px}
   .tabs button.sel{background:linear-gradient(135deg,var(--cyan),#0E8BDD);color:#03121A;
     border-color:transparent;font-weight:700}
   .tabs button.fav-tab.sel{
@@ -244,45 +192,106 @@
   .listwrap{flex:1 1 auto;overflow-y:auto;min-height:0;padding-right:4px;-webkit-overflow-scrolling:touch}
   .listwrap::-webkit-scrollbar{width:8px}
   .listwrap::-webkit-scrollbar-thumb{background:rgba(234,241,255,.13);border-radius:99px}
-  .rowlist{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:20px;
+  .rowlist{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px;
     border-radius:14px;border:1px solid transparent;transition:background .15s var(--e),border-color .15s var(--e)}
   .rowlist + .rowlist{margin-top:6px}
   .rowlist:hover{background:rgba(234,241,255,.05)}
   .rowlist.play{background:linear-gradient(90deg,rgba(47,231,255,.16),rgba(47,231,255,.02));border-color:rgba(47,231,255,.45)}
-  .rowlist .dot{width:14px;height:14px;border-radius:50%;flex:none;background:rgba(234,241,255,.14)}
+  .rowlist .dot{width:12px;height:12px;border-radius:50%;flex:none;background:rgba(234,241,255,.14)}
   .rowlist.play .dot{background:var(--cyan)}
   .rowlist .info{flex:1;min-width:0}
-  .rowlist .nm{font-weight:600;font-size:26px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rowlist .nm{font-weight:600;font-size:24px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .rowlist.play .nm{color:var(--cyan)}
-  .rowlist .desc{font-size:19px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .rowlist .star{font-size:34px;color:rgba(234,241,255,.25);padding:10px 14px;flex:none;
+  .rowlist .desc{font-size:18px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rowlist .star{font-size:30px;color:rgba(234,241,255,.25);padding:10px 14px;flex:none;
     transition:all .18s var(--e);border-radius:12px;background:rgba(234,241,255,.03)}
   .rowlist .star:hover{color:var(--magenta);transform:scale(1.15);background:rgba(255,61,158,.1)}
   .rowlist .star.is{color:var(--magenta);background:rgba(255,61,158,.15);text-shadow:0 0 14px var(--magenta)}
-  .rowlist .del{font-size:28px;color:rgba(234,241,255,.2);padding:10px 12px;flex:none;
+  .rowlist .del{font-size:26px;color:rgba(234,241,255,.2);padding:10px 12px;flex:none;
     transition:all .18s var(--e);border-radius:10px}
   .rowlist .del:hover{color:#FF3D9E;background:rgba(255,61,158,.12)}
-  .msg{font-size:20px;color:var(--muted);margin-top:14px;line-height:1.5;flex:0 0 auto}
+  .msg{font-size:19px;color:var(--muted);margin-top:14px;line-height:1.5;flex:0 0 auto}
   .msg b{color:var(--ice)}
+
+  /* DRAWER EFFETS - PÉDALES */
+  .fx-content{flex:1 1 auto;overflow-y:auto;min-height:0;padding-right:4px;-webkit-overflow-scrolling:touch}
+  .fx-content::-webkit-scrollbar{width:8px}
+  .fx-content::-webkit-scrollbar-thumb{background:rgba(234,241,255,.13);border-radius:99px}
+
+  .pedal{
+    background:linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.15));
+    border:2px solid var(--edge);
+    border-radius:20px;
+    padding:20px 20px 22px;
+    margin-bottom:18px;
+    transition:border-color .25s var(--e),box-shadow .25s var(--e),opacity .25s var(--e);
+    position:relative;
+  }
+  .pedal:last-child{margin-bottom:0}
+  .pedal.off{opacity:.5}
+  .pedal.on{
+    border-color:var(--k-color,var(--cyan));
+    box-shadow:
+      0 0 32px color-mix(in srgb,var(--k-color,var(--cyan)) 25%,transparent),
+      inset 0 0 36px color-mix(in srgb,var(--k-color,var(--cyan)) 6%,transparent);
+  }
+
+  .pedal-head{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    margin-bottom:18px;
+  }
+  .pedal-name{
+    display:flex;align-items:center;gap:12px;
+    font-size:24px;font-weight:900;letter-spacing:.18em;
+    color:var(--k-color,var(--cyan));
+  }
+  .pedal-name .icon{
+    font-size:30px;
+    filter:drop-shadow(0 0 6px var(--k-color,var(--cyan)));
+  }
+  .pedal.on .pedal-name .icon{
+    animation:pedal-pulse 2s ease-in-out infinite;
+  }
+  @keyframes pedal-pulse{
+    0%,100% { filter:drop-shadow(0 0 6px var(--k-color,var(--cyan))); }
+    50% { filter:drop-shadow(0 0 16px var(--k-color,var(--cyan))); }
+  }
+
+  .toggle-btn{
+    min-width:96px;height:50px;padding:0 22px;border-radius:12px;
+    font-size:20px;font-weight:900;letter-spacing:.08em;
+    border:2px solid var(--muted);background:rgba(0,0,0,.4);color:var(--muted);
+    transition:all .18s var(--e);
+  }
+  .toggle-btn[aria-pressed="true"]{
+    color:#03121A;background:var(--k-color,var(--cyan));
+    border-color:transparent;
+    box-shadow:0 0 24px color-mix(in srgb,var(--k-color,var(--cyan)) 60%,transparent);
+  }
+  .toggle-btn:active{transform:scale(.94)}
+
   .scrim{position:fixed;inset:0;background:rgba(3,5,10,.6);z-index:39;opacity:0;pointer-events:none;transition:opacity .25s var(--e)}
   .scrim.open{opacity:1;pointer-events:auto}
 
   @media (max-width:700px){
     .app{padding:8px;gap:8px}
-    .topbar{padding:14px 16px}
-    .now{font-size:26px}
-    .sub{font-size:17px}
-    .console{padding:14px 16px;gap:14px}
-    .row{grid-template-columns:86px 1fr;gap:12px;margin-bottom:12px}
+    .topbar{padding:12px 14px}
+    .now{font-size:24px}
+    .sub{font-size:16px}
+    .console{padding:12px 14px;gap:14px}
+    .row{grid-template-columns:80px 1fr;gap:12px;margin-bottom:10px}
     .row .lbl,.row .val{font-size:17px}
     .section-title{font-size:17px}
-    .knob-dial{max-width:80px}
+    .knob-dial{max-width:76px}
     .knob-label{font-size:14px}
     .knob-value{font-size:16px}
-    .pedal{padding:16px}
-    .pedal-name{font-size:19px}
-    .toggle-btn{min-width:74px;height:40px;font-size:16px}
+    .pedal{padding:16px 16px 18px}
+    .pedal-name{font-size:20px}
+    .pedal-name .icon{font-size:26px}
+    .toggle-btn{min-width:82px;height:44px;font-size:18px}
+    .pill{min-height:50px;font-size:17px}
     .dcontent{padding:0 16px calc(env(safe-area-inset-bottom) + 16px) 16px}
+    .fx-content{padding-right:2px}
   }
   @media (max-height:600px){.wavewrap{display:none}}
 </style>
@@ -297,18 +306,9 @@
     <div class="now" id="npName">Rien en lecture</div>
     <div class="sub" id="npState">Ouvre les stations pour choisir</div>
 
-    <div class="add-form">
-      <input type="text" class="txtin" id="quickName" autocapitalize="words"
-             autocorrect="off" placeholder="Nom (facultatif)">
-      <div class="row2">
-        <input type="text" class="txtin" id="quickUrl" inputmode="url"
-               autocapitalize="off" autocorrect="off" placeholder="Coller un lien de flux…">
-        <button class="pill" id="quickAdd" style="flex:0 0 auto;padding:0 24px;font-size:28px;font-weight:700">＋</button>
-      </div>
-    </div>
-
     <div class="tb-btns">
       <button class="pill" id="power">▶ Écouter</button>
+      <button class="pill ghost" id="openFx">✦ Effets</button>
       <button class="pill ghost" id="openDrawer">☰ Stations</button>
     </div>
   </div>
@@ -321,7 +321,7 @@
 
     <!-- SECTION 1 : MASTER -->
     <div class="section">
-      <h3 class="section-title">MASTER <span style="color:var(--muted);font-weight:600;letter-spacing:0;font-size:17px" id="statusMini">En veille</span></h3>
+      <h3 class="section-title">MASTER <span style="color:var(--muted);font-weight:600;letter-spacing:0;font-size:16px" id="statusMini">En veille</span></h3>
 
       <div class="row">
         <span class="lbl">VOL</span>
@@ -348,7 +348,7 @@
 
     <!-- SECTION 2 : ÉGALISEUR -->
     <div class="section">
-      <h3 class="section-title">ÉGALISEUR <span style="color:#FF3D9E;font-weight:600;letter-spacing:0;font-size:17px">L</span> <span style="color:#2FE7FF;font-weight:600;letter-spacing:0;font-size:17px">R</span></h3>
+      <h3 class="section-title">ÉGALISEUR <span style="color:#FF3D9E;font-weight:600;letter-spacing:0;font-size:16px">L</span> <span style="color:#2FE7FF;font-weight:600;letter-spacing:0;font-size:16px">R</span></h3>
 
       <div class="knob-grid cols5">
         <div class="knob" data-key="subL" data-min="-24" data-max="24" data-value="0" style="--k-color:#FF3D9E">
@@ -404,9 +404,49 @@
       </div>
     </div>
 
-    <!-- SECTION 3 : PÉDALES D'EFFETS -->
-    <div class="section">
-      <h3 class="section-title">PÉDALES D'EFFETS</h3>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<!-- DRAWER STATIONS -->
+<aside class="drawer" id="drawer" aria-modal="true">
+  <div class="drawer-handle" id="drawerHandle"><i></i></div>
+  <div class="dhead">
+    <h2>STATIONS</h2>
+    <button id="closeDrawer" aria-label="Fermer">✕</button>
+  </div>
+  <div class="dcontent">
+    <div class="addtop">
+      <input type="text" class="txtin" id="url" inputmode="url"
+             autocapitalize="off" autocorrect="off" placeholder="Coller un lien de flux…">
+      <div class="row2">
+        <input type="text" class="txtin" id="customName" autocapitalize="words"
+               autocorrect="off" placeholder="Nom (facultatif)">
+        <button class="pill" id="addUrl" style="flex:0 0 auto;padding:0 26px">＋ Ajouter</button>
+      </div>
+    </div>
+    <div class="searchbox">
+      <input type="text" class="txtin" id="search" placeholder="Chercher une station…"
+             autocapitalize="off" autocorrect="off">
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="listwrap">
+      <div id="list"></div>
+      <div class="msg" id="listMsg"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- DRAWER EFFETS -->
+<aside class="drawer" id="fxDrawer" aria-modal="true">
+  <div class="drawer-handle" id="fxDrawerHandle"><i></i></div>
+  <div class="dhead">
+    <h2>EFFETS</h2>
+    <button id="closeFxDrawer" aria-label="Fermer">✕</button>
+  </div>
+  <div class="dcontent">
+    <div class="fx-content">
 
       <div class="pedal off" id="pedalXenodrive" style="--k-color:#FF3D9E">
         <div class="pedal-head">
@@ -483,37 +523,6 @@
         </div>
       </div>
 
-    </div>
-
-  </div>
-</div>
-
-<div class="scrim" id="scrim"></div>
-
-<aside class="drawer" id="drawer" aria-modal="true">
-  <div class="drawer-handle" id="drawerHandle"><i></i></div>
-  <div class="dhead">
-    <h2>STATIONS</h2>
-    <button id="closeDrawer" aria-label="Fermer">✕</button>
-  </div>
-  <div class="dcontent">
-    <div class="addtop">
-      <input type="text" class="txtin" id="url" inputmode="url"
-             autocapitalize="off" autocorrect="off" placeholder="Coller un lien de flux…">
-      <div class="row2">
-        <input type="text" class="txtin" id="customName" autocapitalize="words"
-               autocorrect="off" placeholder="Nom (facultatif)">
-        <button class="pill" id="addUrl" style="flex:0 0 auto;padding:0 26px">＋ Ajouter</button>
-      </div>
-    </div>
-    <div class="searchbox">
-      <input type="text" class="txtin" id="search" placeholder="Chercher une station…"
-             autocapitalize="off" autocorrect="off">
-    </div>
-    <div class="tabs" id="tabs"></div>
-    <div class="listwrap">
-      <div id="list"></div>
-      <div class="msg" id="listMsg"></div>
     </div>
   </div>
 </aside>
@@ -1308,43 +1317,58 @@ document.getElementById('addUrl').addEventListener('click', () => {
   addStream(document.getElementById('url').value, document.getElementById('customName').value,
     document.getElementById('url'), document.getElementById('customName'));
 });
-document.getElementById('quickAdd').addEventListener('click', () => {
-  addStream(document.getElementById('quickUrl').value, document.getElementById('quickName').value,
-    document.getElementById('quickUrl'), document.getElementById('quickName'));
-});
-['quickUrl','quickName'].forEach(id => {
-  document.getElementById(id).addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('quickAdd').click(); }
-  });
-});
 ['url','customName'].forEach(id => {
   document.getElementById(id).addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); document.getElementById('addUrl').click(); }
   });
 });
 
+/* =========================================================
+   DRAWER STATIONS
+   ========================================================= */
 const drawer = document.getElementById('drawer');
 const scrim = document.getElementById('scrim');
+const fxDrawer = document.getElementById('fxDrawer');
+
 function openDrawer(o) {
   drawer.classList.toggle('open', o);
   scrim.classList.toggle('open', o);
+  if (o) fxDrawer.classList.remove('open');
 }
+function openFxDrawer(o) {
+  fxDrawer.classList.toggle('open', o);
+  scrim.classList.toggle('open', o);
+  if (o) drawer.classList.remove('open');
+}
+function closeAllDrawers() {
+  drawer.classList.remove('open');
+  fxDrawer.classList.remove('open');
+  scrim.classList.remove('open');
+}
+
 document.getElementById('openDrawer').addEventListener('click', () => openDrawer(true));
 document.getElementById('closeDrawer').addEventListener('click', () => openDrawer(false));
-scrim.addEventListener('click', () => openDrawer(false));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') openDrawer(false); });
+document.getElementById('openFx').addEventListener('click', () => openFxDrawer(true));
+document.getElementById('closeFxDrawer').addEventListener('click', () => openFxDrawer(false));
+scrim.addEventListener('click', closeAllDrawers);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllDrawers(); });
 
 (function(){
-  const handle = document.getElementById('drawerHandle');
-  if (!handle) return;
-  let startY = 0, dragging = false;
-  handle.addEventListener('touchstart', e => { startY = e.touches[0].clientY; dragging = true; }, {passive:true});
-  handle.addEventListener('touchmove', e => {
-    if (!dragging) return;
-    const dy = e.touches[0].clientY - startY;
-    if (dy > 80) { dragging = false; openDrawer(false); }
-  }, {passive:true});
-  handle.addEventListener('touchend', () => { dragging = false; });
+  const handle1 = document.getElementById('drawerHandle');
+  const handle2 = document.getElementById('fxDrawerHandle');
+  function makeSwipeClose(handle) {
+    if (!handle) return;
+    let startY = 0, dragging = false;
+    handle.addEventListener('touchstart', e => { startY = e.touches[0].clientY; dragging = true; }, {passive:true});
+    handle.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 80) { dragging = false; closeAllDrawers(); }
+    }, {passive:true});
+    handle.addEventListener('touchend', () => { dragging = false; });
+  }
+  makeSwipeClose(handle1);
+  makeSwipeClose(handle2);
 })();
 
 document.getElementById('power').addEventListener('click', () => {
@@ -1600,7 +1624,7 @@ let idle = 0, lastFrame = 0;
       const step = Math.floor(_waveData.length / BARS);
       for (let k = 0; k < BARS; k++) {
         const idx = Math.min(k * step + 20, _waveData.length - 1);
-        const h = Math.max(4, Math.abs(_waveData[idx] - 128) / 128 * 42);
+        const h = Math.max(4, Math.abs(_waveData[idx] - 128) / 128 * 36);
         barEls[k].style.height = h + 'px';
       }
       if (anaL && _dataL) {
@@ -1625,7 +1649,7 @@ let idle = 0, lastFrame = 0;
     idle += 0.06;
     for (let k = 0; k < BARS; k++) {
       const h = playing
-        ? (12 + Math.sin(idle + k*0.4) * 10 + Math.sin(idle*1.7 + k) * 4)
+        ? (10 + Math.sin(idle + k*0.4) * 8 + Math.sin(idle*1.7 + k) * 4)
         : 4;
       barEls[k].style.height = h + 'px';
     }
