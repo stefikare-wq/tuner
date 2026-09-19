@@ -48,101 +48,21 @@
   .sub{font-size:18px;color:var(--muted);min-height:24px;margin-top:3px}
   .sub.live{color:var(--lime)}
 
-  .tb-btns{display:flex;gap:8px;margin-top:12px}
+  .tb-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
   .pill{display:inline-flex;align-items:center;justify-content:center;border-radius:100px;
-        min-height:56px;padding:0 24px;font-size:19px;font-weight:600;
+        min-height:56px;padding:0 20px;font-size:19px;font-weight:600;
         background:linear-gradient(135deg,var(--cyan),#0E8BDD);color:#03121A;
-        transition:transform .18s var(--e);flex:1}
+        transition:transform .18s var(--e)}
   .pill:active{transform:scale(.97)}
-  .pill.ghost{background:rgba(234,241,255,.06);color:var(--ice);border:1px solid var(--edge2);flex:0 0 auto;padding:0 20px}
+  .pill.ghost{background:rgba(234,241,255,.06);color:var(--ice);border:1px solid var(--edge2)}
   .pill.stop{background:linear-gradient(135deg,#FF3D9E,#B01E75);color:#fff}
+  .pill.fav-btn{background:linear-gradient(135deg,#FF3D9E,#B01E75);color:#fff}
 
   .wavewrap{padding:0 18px 12px;flex:0 0 auto}
   .wave{display:flex;align-items:flex-end;gap:2px;height:30px;width:100%}
   .wave i{flex:1;border-radius:3px;height:4px;background:var(--cyan);opacity:.22;
           transition:height .08s linear,opacity .4s var(--e)}
   .wave.on i{opacity:.9}
-
-  /* ⭐ FAVORIS */
-  .favs-card{padding:14px 0 14px 0;flex:0 0 auto}
-  .favs-head{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:0 18px 10px 18px;gap:10px;
-  }
-  .favs-head h3{
-    font-size:17px;letter-spacing:.14em;color:var(--magenta);font-weight:800;
-    margin:0;display:flex;align-items:center;gap:8px;
-  }
-  .favs-head .count{
-    font-size:15px;color:var(--muted);font-weight:600;letter-spacing:0;
-  }
-  .favs-empty{
-    padding:0 18px;font-size:16px;color:var(--muted);line-height:1.4;
-  }
-  .favs-empty b{color:var(--ice)}
-  .favs-strip{
-    display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;
-    padding:0 18px 4px 18px;
-    scroll-snap-type:x proximity;
-    -webkit-overflow-scrolling:touch;
-  }
-  .favs-strip::-webkit-scrollbar{display:none}
-  .fav-chip{
-    flex:none;
-    display:flex;align-items:center;gap:10px;
-    min-height:60px;
-    padding:10px 10px 10px 16px;
-    border-radius:16px;
-    background:linear-gradient(180deg,rgba(255,61,158,.1),rgba(255,61,158,.02));
-    border:1.5px solid rgba(255,61,158,.35);
-    color:var(--ice);
-    cursor:pointer;
-    transition:all .18s var(--e);
-    scroll-snap-align:start;
-    max-width:280px;
-    position:relative;
-  }
-  .fav-chip:hover{
-    border-color:var(--magenta);
-    box-shadow:0 0 20px rgba(255,61,158,.25);
-  }
-  .fav-chip:active{transform:scale(.97)}
-  .fav-chip.play{
-    background:linear-gradient(180deg,rgba(47,231,255,.15),rgba(47,231,255,.02));
-    border-color:var(--cyan);
-    box-shadow:0 0 22px rgba(47,231,255,.25);
-  }
-  .fav-chip .chip-dot{
-    width:10px;height:10px;border-radius:50%;flex:none;
-    background:var(--magenta);box-shadow:0 0 10px var(--magenta);
-  }
-  .fav-chip.play .chip-dot{
-    background:var(--cyan);box-shadow:0 0 10px var(--cyan);
-  }
-  .fav-chip .chip-text{
-    flex:1;min-width:0;text-align:left;
-  }
-  .fav-chip .chip-name{
-    font-size:18px;font-weight:700;
-    display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    max-width:180px;
-  }
-  .fav-chip.play .chip-name{color:var(--cyan)}
-  .fav-chip .chip-desc{
-    font-size:14px;color:var(--muted);
-    display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    max-width:180px;
-  }
-  .fav-chip .chip-remove{
-    flex:none;width:32px;height:32px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-size:20px;font-weight:700;color:rgba(255,255,255,.4);
-    transition:all .15s var(--e);
-  }
-  .fav-chip .chip-remove:hover{
-    color:#FF3D9E;background:rgba(255,61,158,.2);
-    transform:scale(1.1);
-  }
 
   .console{padding:16px 18px;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
            overflow-y:auto;-webkit-overflow-scrolling:touch;gap:18px}
@@ -156,24 +76,30 @@
     font-size:19px;letter-spacing:.14em;color:var(--cyan);font-weight:800;
     margin:0 0 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 
-  .row{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;margin-bottom:12px}
-  .row:last-child{margin-bottom:0}
-  .row .lbl{font-size:19px;color:var(--muted);font-weight:700;letter-spacing:.06em}
-  .row .val{font-size:19px;color:var(--ice);text-align:right;font-variant-numeric:tabular-nums;
-            grid-column:2;margin-top:-4px;margin-bottom:2px}
-
-  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:40px;background:transparent;
-                    margin:0;display:block;cursor:pointer}
-  input[type=range]::-webkit-slider-runnable-track{height:7px;border-radius:99px;
-    background:linear-gradient(90deg,var(--c,var(--cyan)) var(--p,50%),rgba(234,241,255,.1) var(--p,50%))}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
-    width:28px;height:28px;border-radius:50%;margin-top:-10.5px;background:#fff;
-    border:3px solid var(--c,var(--cyan));transition:transform .16s var(--e)}
-  input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
-  input[type=range].center::-webkit-slider-runnable-track{
-    background:linear-gradient(90deg,rgba(234,241,255,.1) 0%,rgba(234,241,255,.1) var(--lo,50%),
-      var(--c,var(--cyan)) var(--lo,50%),var(--c,var(--cyan)) var(--hi,50%),
-      rgba(234,241,255,.1) var(--hi,50%),rgba(234,241,255,.1) 100%)}
+  /* ⭐ Étiquette de canal EQ centrée au-dessus de chaque rangée */
+  .eq-channel-label{
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;font-weight:900;letter-spacing:.4em;
+    color:var(--ch-color,var(--cyan));
+    text-shadow:0 0 14px var(--ch-color,var(--cyan));
+    margin:8px 0 10px;
+    position:relative;
+    height:28px;
+    padding-left:.4em;
+  }
+  .eq-channel-label::before,
+  .eq-channel-label::after{
+    content:'';flex:1;height:1.5px;max-width:100px;
+    background:linear-gradient(90deg,transparent,var(--ch-color,var(--cyan)));
+    box-shadow:0 0 10px var(--ch-color,var(--cyan));
+    margin:0 16px;
+    border-radius:2px;
+  }
+  .eq-channel-label::after{
+    background:linear-gradient(90deg,var(--ch-color,var(--cyan)),transparent);
+  }
+  .eq-channel-label + .knob-grid{margin-top:4px}
+  .eq-channel-label + .knob-grid + .eq-channel-label{margin-top:22px}
 
   .knob-grid{display:grid;gap:14px 6px;justify-items:center}
   .knob-grid.cols5{grid-template-columns:repeat(5, 1fr)}
@@ -230,15 +156,26 @@
   .presets button:active{transform:scale(.96)}
 
   /* DRAWERS */
-  .drawer{position:fixed;left:0;right:0;bottom:0;top:auto;height:92vh;height:92dvh;max-height:92vh;
-    width:100%;z-index:40;background:linear-gradient(180deg,#0B1020,#06080F);
-    border-top-left-radius:24px;border-top-right-radius:24px;border-top:1px solid var(--edge2);
-    transform:translateY(101%);transition:transform .32s var(--e);
-    display:flex;flex-direction:column;overflow:hidden;
+  .drawer{position:fixed;z-index:40;background:linear-gradient(180deg,#0B1020,#06080F);
+    transition:transform .32s var(--e);display:flex;flex-direction:column;overflow:hidden;
     box-shadow:0 -20px 60px rgba(0,0,0,.6)}
-  .drawer.open{transform:translateY(0)}
+  .drawer-bottom{left:0;right:0;bottom:0;top:auto;height:92vh;height:92dvh;max-height:92vh;
+    border-top-left-radius:24px;border-top-right-radius:24px;border-top:1px solid var(--edge2);
+    transform:translateY(101%)}
+  .drawer-bottom.open{transform:translateY(0)}
+  .drawer-left{left:0;top:0;bottom:0;width:min(460px,92vw);
+    border-top-right-radius:24px;border-bottom-right-radius:24px;border-right:1px solid var(--edge2);
+    transform:translateX(-101%);box-shadow:20px 0 60px rgba(0,0,0,.6)}
+  .drawer-left.open{transform:translateX(0)}
+  .drawer-right{right:0;top:0;bottom:0;width:min(460px,92vw);
+    border-top-left-radius:24px;border-bottom-left-radius:24px;border-left:1px solid var(--edge2);
+    transform:translateX(101%);box-shadow:-20px 0 60px rgba(0,0,0,.6)}
+  .drawer-right.open{transform:translateX(0)}
+
   .drawer-handle{display:flex;align-items:center;justify-content:center;padding:14px 0 10px;flex:0 0 auto;cursor:grab}
   .drawer-handle i{width:64px;height:6px;border-radius:99px;background:rgba(140,190,255,.35)}
+  .drawer-left .drawer-handle i,
+  .drawer-right .drawer-handle i{width:6px;height:64px}
   .dhead{display:flex;align-items:center;justify-content:space-between;padding:4px 22px 16px;flex:0 0 auto;gap:14px}
   .dhead h2{font-size:22px;letter-spacing:.18em;margin:0;color:var(--cyan);font-weight:800}
   .dhead button{width:56px;height:56px;border-radius:50%;border:1px solid var(--edge2);
@@ -264,8 +201,7 @@
     border-radius:100px;min-height:48px;padding:0 20px}
   .tabs button.sel{background:linear-gradient(135deg,var(--cyan),#0E8BDD);color:#03121A;
     border-color:transparent;font-weight:700}
-  .tabs button.fav-tab.sel{
-    background:linear-gradient(135deg,var(--magenta),#B01E75);color:#fff;
+  .tabs button.fav-tab.sel{background:linear-gradient(135deg,var(--magenta),#B01E75);color:#fff;
     box-shadow:0 0 16px rgba(255,61,158,.4)}
   .listwrap{flex:1 1 auto;overflow-y:auto;min-height:0;padding-right:4px;-webkit-overflow-scrolling:touch}
   .listwrap::-webkit-scrollbar{width:8px}
@@ -334,6 +270,10 @@
     50% { filter:drop-shadow(0 0 16px var(--k-color,var(--cyan))); }
   }
 
+  .pedal-actions{
+    display:flex;gap:10px;align-items:center;flex:none;
+  }
+
   .toggle-btn{
     min-width:96px;height:50px;padding:0 22px;border-radius:12px;
     font-size:20px;font-weight:900;letter-spacing:.08em;
@@ -347,6 +287,27 @@
   }
   .toggle-btn:active{transform:scale(.94)}
 
+  .fx-fav-btn{
+    min-width:50px;height:50px;padding:0 12px;border-radius:12px;
+    font-size:26px;font-weight:900;line-height:1;
+    border:2px solid var(--k-color,var(--cyan));
+    background:rgba(0,0,0,.4);
+    color:var(--k-color,var(--cyan));
+    transition:all .18s var(--e);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .fx-fav-btn.has-fav{
+    background:var(--k-color,var(--cyan));
+    color:#03121A;
+    box-shadow:0 0 20px color-mix(in srgb,var(--k-color,var(--cyan)) 60%,transparent);
+  }
+  .fx-fav-btn:active{transform:scale(.92)}
+  .fx-fav-btn.saved{animation:fav-flash .6s ease-out}
+  @keyframes fav-flash{
+    0% { transform:scale(1); box-shadow:0 0 30px var(--k-color); }
+    100% { transform:scale(1); }
+  }
+
   .scrim{position:fixed;inset:0;background:rgba(3,5,10,.6);z-index:39;opacity:0;pointer-events:none;transition:opacity .25s var(--e)}
   .scrim.open{opacity:1;pointer-events:auto}
 
@@ -356,23 +317,18 @@
     .now{font-size:24px}
     .sub{font-size:16px}
     .console{padding:12px 14px;gap:14px}
-    .row{grid-template-columns:80px 1fr;gap:12px;margin-bottom:10px}
-    .row .lbl,.row .val{font-size:17px}
     .section-title{font-size:17px}
     .knob-dial{max-width:76px}
     .knob-label{font-size:14px}
     .knob-value{font-size:16px}
+    .eq-channel-label{font-size:19px}
     .pedal{padding:16px 16px 18px}
     .pedal-name{font-size:20px}
     .pedal-name .icon{font-size:26px}
     .toggle-btn{min-width:82px;height:44px;font-size:18px}
+    .fx-fav-btn{min-width:44px;height:44px;font-size:22px}
     .pill{min-height:50px;font-size:17px}
     .dcontent{padding:0 16px calc(env(safe-area-inset-bottom) + 16px) 16px}
-    .fx-content{padding-right:2px}
-    .fav-chip .chip-name,.fav-chip .chip-desc{max-width:140px}
-    .fav-chip .chip-name{font-size:16px}
-    .fav-chip .chip-desc{font-size:13px}
-    .favs-head h3{font-size:15px}
   }
   @media (max-height:600px){.wavewrap{display:none}}
 </style>
@@ -389,6 +345,7 @@
 
     <div class="tb-btns">
       <button class="pill" id="power">▶ Écouter</button>
+      <button class="pill fav-btn" id="openFavs">★ Favoris</button>
       <button class="pill ghost" id="openFx">✦ Effets</button>
       <button class="pill ghost" id="openDrawer">☰ Stations</button>
     </div>
@@ -398,38 +355,29 @@
     <div class="wave" id="wave"></div>
   </div>
 
-  <!-- ⭐ CARTE FAVORIS ⭐ -->
-  <div class="card favs-card" id="favsCard">
-    <div class="favs-head">
-      <h3>★ FAVORIS</h3>
-      <span class="count" id="favsCount"></span>
-    </div>
-    <div class="favs-strip" id="favsStrip"></div>
-    <div class="favs-empty" id="favsEmpty">
-      <b>Aucun favori.</b> Touche l'étoile ★ d'une station pour l'ajouter ici.
-    </div>
-  </div>
-
   <div class="card console" id="console">
-
     <div class="section">
       <h3 class="section-title">MASTER <span style="color:var(--muted);font-weight:600;letter-spacing:0;font-size:16px" id="statusMini">En veille</span></h3>
 
-      <div class="row">
-        <span class="lbl">VOL</span>
-        <input type="range" id="volume" min="-24" max="12" step="0.5" value="0" style="--c:#B9FF45">
-        <span class="val" id="volVal">0.0</span>
+      <div class="knob-grid cols4">
+        <div class="knob" data-key="gain" data-min="-24" data-max="12" data-step="0.5" data-value="0" style="--k-color:#B9FF45">
+          <div class="knob-dial"><div class="knob-indicator"></div></div>
+          <div class="knob-value">0</div><div class="knob-label">Volume</div>
+        </div>
+        <div class="knob" data-key="balance" data-min="-1" data-max="1" data-step="0.01" data-value="0" style="--k-color:#2FE7FF">
+          <div class="knob-dial"><div class="knob-indicator"></div></div>
+          <div class="knob-value">0.00</div><div class="knob-label">Balance</div>
+        </div>
+        <div class="knob" data-key="spatial" data-min="-5" data-max="5" data-step="0.1" data-value="0" style="--k-color:#2FE7FF">
+          <div class="knob-dial"><div class="knob-indicator"></div></div>
+          <div class="knob-value">0.0</div><div class="knob-label">Spatial</div>
+        </div>
+        <div class="knob" data-key="limit" data-min="-24" data-max="0" data-step="0.5" data-value="-1" style="--k-color:#FF3D9E">
+          <div class="knob-dial"><div class="knob-indicator"></div></div>
+          <div class="knob-value">-1.0</div><div class="knob-label">Limiter</div>
+        </div>
       </div>
-      <div class="row">
-        <span class="lbl">BAL</span>
-        <input type="range" class="center" id="balance" min="-1" max="1" step="0.01" value="0" style="--c:#2FE7FF">
-        <span class="val" id="balVal">Centre</span>
-      </div>
-      <div class="row">
-        <span class="lbl">LIMIT</span>
-        <input type="range" id="limiter" min="-24" max="0" step="0.5" value="-1" style="--c:#FF3D9E">
-        <span class="val" id="limVal">-1.0</span>
-      </div>
+
       <div class="vu">
         <span class="vu-lbl">L</span>
         <div class="vu-bar" id="vuL"></div>
@@ -439,8 +387,10 @@
     </div>
 
     <div class="section">
-      <h3 class="section-title">ÉGALISEUR <span style="color:#FF3D9E;font-weight:600;letter-spacing:0;font-size:16px">L</span> <span style="color:#2FE7FF;font-weight:600;letter-spacing:0;font-size:16px">R</span></h3>
+      <h3 class="section-title">ÉGALISEUR</h3>
 
+      <!-- ⭐ Rangée L -->
+      <div class="eq-channel-label" style="--ch-color:#FF3D9E">L</div>
       <div class="knob-grid cols5">
         <div class="knob" data-key="subL" data-min="-24" data-max="24" data-value="0" style="--k-color:#FF3D9E">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
@@ -464,7 +414,9 @@
         </div>
       </div>
 
-      <div class="knob-grid cols5" style="margin-top:14px">
+      <!-- ⭐ Rangée R -->
+      <div class="eq-channel-label" style="--ch-color:#2FE7FF">R</div>
+      <div class="knob-grid cols5">
         <div class="knob" data-key="subR" data-min="-24" data-max="24" data-value="0" style="--k-color:#2FE7FF">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Sub</div>
@@ -500,7 +452,21 @@
 
 <div class="scrim" id="scrim"></div>
 
-<aside class="drawer" id="drawer" aria-modal="true">
+<aside class="drawer drawer-left" id="favsDrawer" aria-modal="true">
+  <div class="drawer-handle" id="favsHandle"><i></i></div>
+  <div class="dhead">
+    <h2>★ FAVORIS</h2>
+    <button id="closeFavsDrawer" aria-label="Fermer">✕</button>
+  </div>
+  <div class="dcontent">
+    <div class="listwrap">
+      <div id="favsList"></div>
+      <div class="msg" id="favsMsg"></div>
+    </div>
+  </div>
+</aside>
+
+<aside class="drawer drawer-right" id="drawer" aria-modal="true">
   <div class="drawer-handle" id="drawerHandle"><i></i></div>
   <div class="dhead">
     <h2>STATIONS</h2>
@@ -528,7 +494,7 @@
   </div>
 </aside>
 
-<aside class="drawer" id="fxDrawer" aria-modal="true">
+<aside class="drawer drawer-bottom" id="fxDrawer" aria-modal="true">
   <div class="drawer-handle" id="fxDrawerHandle"><i></i></div>
   <div class="dhead">
     <h2>EFFETS</h2>
@@ -540,7 +506,10 @@
       <div class="pedal off" id="pedalXenodrive" style="--k-color:#FF3D9E">
         <div class="pedal-head">
           <span class="pedal-name"><span class="icon">▲</span>XENODRIVE</span>
-          <button class="toggle-btn" data-toggle="xenodrive" aria-pressed="false">OFF</button>
+          <div class="pedal-actions">
+            <button class="fx-fav-btn" data-fx-fav="xenodrive" title="Favori (clic court = charger/sauver, appui long = écraser)">☆</button>
+            <button class="toggle-btn" data-toggle="xenodrive" aria-pressed="false">OFF</button>
+          </div>
         </div>
         <div class="knob-grid cols4">
           <div class="knob" data-key="drvAmount" data-min="0" data-max="100" data-value="30" style="--k-color:#FF3D9E">
@@ -565,7 +534,10 @@
       <div class="pedal off" id="pedalNightverb" style="--k-color:#2FE7FF">
         <div class="pedal-head">
           <span class="pedal-name"><span class="icon">◐</span>NIGHTVERB</span>
-          <button class="toggle-btn" data-toggle="nightverb" aria-pressed="false">OFF</button>
+          <div class="pedal-actions">
+            <button class="fx-fav-btn" data-fx-fav="nightverb" title="Favori (clic court = charger/sauver, appui long = écraser)">☆</button>
+            <button class="toggle-btn" data-toggle="nightverb" aria-pressed="false">OFF</button>
+          </div>
         </div>
         <div class="knob-grid cols4">
           <div class="knob" data-key="rvbSize" data-min="0" data-max="100" data-value="50" style="--k-color:#2FE7FF">
@@ -590,7 +562,10 @@
       <div class="pedal off" id="pedalEcholocator" style="--k-color:#B9FF45">
         <div class="pedal-head">
           <span class="pedal-name"><span class="icon">◈</span>ECHOLOCATOR</span>
-          <button class="toggle-btn" data-toggle="echolocator" aria-pressed="false">OFF</button>
+          <div class="pedal-actions">
+            <button class="fx-fav-btn" data-fx-fav="echolocator" title="Favori (clic court = charger/sauver, appui long = écraser)">☆</button>
+            <button class="toggle-btn" data-toggle="echolocator" aria-pressed="false">OFF</button>
+          </div>
         </div>
         <div class="knob-grid cols4">
           <div class="knob" data-key="echTime" data-min="20" data-max="1200" data-value="350" style="--k-color:#B9FF45">
@@ -635,6 +610,7 @@ let audioCtx = null;
 let mixEl = null, player = null;
 let srcNode = null;
 let pannerNode = null;
+let spatialNode = null;
 let masterGain = null;
 let eqSplitter = null, eqMerger = null;
 let eqL = {}, eqR = {};
@@ -659,7 +635,7 @@ let nightverbOn = false;
 let echolocatorOn = false;
 
 const P = {
-  gain: 0, balance: 0, limit: -1,
+  gain: 0, balance: 0, spatial: 0, limit: -1,
   subL:0, bassL:0, midL:0, himidL:0, highL:0,
   subR:0, bassR:0, midR:0, himidR:0, highR:0,
   drvAmount: 30, drvTone: 50, drvLevel: 60, drvMix: 100,
@@ -670,6 +646,119 @@ const P = {
 const RETRY_BASE = 800;
 const RETRY_MAX = 20000;
 const GOOD_PLAYBACK_MS = 15000;
+
+/* FAVORIS D'EFFETS */
+const FX_FAV_KEY = 'core_fx_favs';
+let fxFavs = {};
+try {
+  fxFavs = JSON.parse(localStorage.getItem(FX_FAV_KEY) || '{}');
+  if (typeof fxFavs !== 'object' || Array.isArray(fxFavs)) fxFavs = {};
+} catch (e) { fxFavs = {}; }
+
+function saveFxFavs() {
+  try { localStorage.setItem(FX_FAV_KEY, JSON.stringify(fxFavs)); } catch(e) {}
+}
+
+const FX_KEYS = {
+  xenodrive:   { getOn: () => xenodriveOn,   setOn: (v) => setToggle('xenodrive', v),
+                 params: ['drvAmount','drvTone','drvLevel','drvMix'] },
+  nightverb:   { getOn: () => nightverbOn,   setOn: (v) => setToggle('nightverb', v),
+                 params: ['rvbSize','rvbDamp','rvbPredelay','rvbMix'] },
+  echolocator: { getOn: () => echolocatorOn, setOn: (v) => setToggle('echolocator', v),
+                 params: ['echTime','echFeedback','echTone','echMix'] }
+};
+
+function paintFxFavButtons() {
+  document.querySelectorAll('.fx-fav-btn').forEach(btn => {
+    const key = btn.dataset.fxFav;
+    const has = !!fxFavs[key];
+    btn.classList.toggle('has-fav', has);
+    btn.textContent = has ? '★' : '☆';
+  });
+}
+
+function saveFxFav(key) {
+  const info = FX_KEYS[key];
+  if (!info) return;
+  const snap = { on: info.getOn() };
+  info.params.forEach(p => { snap[p] = P[p]; });
+  fxFavs[key] = snap;
+  saveFxFavs();
+  paintFxFavButtons();
+  const btn = document.querySelector('.fx-fav-btn[data-fx-fav="' + key + '"]');
+  if (btn) {
+    btn.classList.remove('saved');
+    void btn.offsetWidth;
+    btn.classList.add('saved');
+  }
+  setStatus('★ Favori d\'effet sauvegardé');
+}
+
+function loadFxFav(key) {
+  const info = FX_KEYS[key];
+  const snap = fxFavs[key];
+  if (!info || !snap) return;
+
+  info.params.forEach(p => {
+    if (snap[p] !== undefined) {
+      P[p] = snap[p];
+      if (allKnobs[p]) allKnobs[p].setValue(snap[p]);
+    }
+  });
+  if (snap.on !== undefined) info.setOn(snap.on);
+
+  applyAll();
+  const btn = document.querySelector('.fx-fav-btn[data-fx-fav="' + key + '"]');
+  if (btn) {
+    btn.classList.remove('saved');
+    void btn.offsetWidth;
+    btn.classList.add('saved');
+  }
+  setStatus('★ Favori d\'effet chargé');
+}
+
+function initFxFavButtons() {
+  document.querySelectorAll('.fx-fav-btn').forEach(btn => {
+    let longPressTimer = null;
+    let wasLongPress = false;
+
+    function startPress(e) {
+      wasLongPress = false;
+      longPressTimer = setTimeout(() => {
+        longPressTimer = null;
+        wasLongPress = true;
+        saveFxFav(btn.dataset.fxFav);
+      }, 700);
+    }
+
+    function endPress(e) {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+      if (wasLongPress) return;
+      const key = btn.dataset.fxFav;
+      if (fxFavs[key]) {
+        loadFxFav(key);
+      } else {
+        saveFxFav(key);
+      }
+    }
+
+    function cancelPress() {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    }
+
+    btn.addEventListener('pointerdown', startPress);
+    btn.addEventListener('pointerup', endPress);
+    btn.addEventListener('pointercancel', cancelPress);
+    btn.addEventListener('pointerleave', cancelPress);
+    btn.addEventListener('contextmenu', e => e.preventDefault());
+  });
+}
 
 function createReverbImpulse(ctx, durationSec, decay) {
   const rate = ctx.sampleRate;
@@ -715,6 +804,23 @@ function buildGraph() {
   pannerNode = audioCtx.createStereoPanner(); pannerNode.pan.value = 0;
   masterGain = audioCtx.createGain(); masterGain.gain.value = 1;
 
+  spatialNode = audioCtx.createPanner();
+  spatialNode.panningModel = 'equalpower';
+  spatialNode.distanceModel = 'inverse';
+  spatialNode.refDistance = 1;
+  spatialNode.maxDistance = 10000;
+  spatialNode.rolloffFactor = 0.1;
+  spatialNode.coneInnerAngle = 360;
+  spatialNode.coneOuterAngle = 0;
+  spatialNode.coneOuterGain = 1;
+  if (spatialNode.positionX) {
+    spatialNode.positionX.value = 0;
+    spatialNode.positionY.value = 0;
+    spatialNode.positionZ.value = 1;
+  } else {
+    spatialNode.setPosition(0, 0, 1);
+  }
+
   eqSplitter = audioCtx.createChannelSplitter(2);
   eqMerger = audioCtx.createChannelMerger(2);
 
@@ -734,13 +840,9 @@ function buildGraph() {
   gainR = audioCtx.createGain(); gainR.gain.value = 1;
 
   driveChain = {
-    input: audioCtx.createGain(),
-    dry: audioCtx.createGain(),
-    wet: audioCtx.createGain(),
-    preGain: audioCtx.createGain(),
-    shaper: audioCtx.createWaveShaper(),
-    tone: audioCtx.createBiquadFilter(),
-    outLevel: audioCtx.createGain(),
+    input: audioCtx.createGain(), dry: audioCtx.createGain(), wet: audioCtx.createGain(),
+    preGain: audioCtx.createGain(), shaper: audioCtx.createWaveShaper(),
+    tone: audioCtx.createBiquadFilter(), outLevel: audioCtx.createGain(),
     merger: audioCtx.createGain()
   };
   driveChain.dry.gain.value = 0;
@@ -763,13 +865,9 @@ function buildGraph() {
   driveChain.wet.connect(driveChain.merger);
 
   reverbChain = {
-    input: audioCtx.createGain(),
-    dry: audioCtx.createGain(),
-    wet: audioCtx.createGain(),
-    preDelay: audioCtx.createDelay(0.2),
-    convolver: audioCtx.createConvolver(),
-    damp: audioCtx.createBiquadFilter(),
-    merger: audioCtx.createGain()
+    input: audioCtx.createGain(), dry: audioCtx.createGain(), wet: audioCtx.createGain(),
+    preDelay: audioCtx.createDelay(0.2), convolver: audioCtx.createConvolver(),
+    damp: audioCtx.createBiquadFilter(), merger: audioCtx.createGain()
   };
   reverbChain.dry.gain.value = 1;
   reverbChain.wet.gain.value = 0;
@@ -788,13 +886,9 @@ function buildGraph() {
   reverbChain.wet.connect(reverbChain.merger);
 
   echoChain = {
-    input: audioCtx.createGain(),
-    dry: audioCtx.createGain(),
-    wet: audioCtx.createGain(),
-    delay: audioCtx.createDelay(2.0),
-    feedback: audioCtx.createGain(),
-    tone: audioCtx.createBiquadFilter(),
-    merger: audioCtx.createGain()
+    input: audioCtx.createGain(), dry: audioCtx.createGain(), wet: audioCtx.createGain(),
+    delay: audioCtx.createDelay(2.0), feedback: audioCtx.createGain(),
+    tone: audioCtx.createBiquadFilter(), merger: audioCtx.createGain()
   };
   echoChain.dry.gain.value = 1;
   echoChain.wet.gain.value = 0;
@@ -829,7 +923,8 @@ function buildGraph() {
   anaR = audioCtx.createAnalyser(); anaR.fftSize = 256;
 
   srcNode.connect(pannerNode);
-  pannerNode.connect(masterGain);
+  pannerNode.connect(spatialNode);
+  spatialNode.connect(masterGain);
   masterGain.connect(eqSplitter);
 
   eqSplitter.connect(eqL.sub, 0);
@@ -888,6 +983,19 @@ function applyAll() {
 
   setParam(masterGain.gain, Math.pow(10, P.gain / 20), t);
   setParam(pannerNode.pan, P.balance, t);
+
+  if (spatialNode) {
+    if (spatialNode.positionX) {
+      try {
+        spatialNode.positionX.cancelScheduledValues(t);
+        spatialNode.positionX.setValueAtTime(spatialNode.positionX.value, t);
+        spatialNode.positionX.linearRampToValueAtTime(P.spatial, t + 0.05);
+      } catch (e) { spatialNode.positionX.value = P.spatial; }
+    } else {
+      spatialNode.setPosition(P.spatial, 0, 1);
+    }
+  }
+
   setParam(limiterNode.threshold, P.limit, t);
 
   setParam(eqL.sub.gain, P.subL, t);
@@ -1142,11 +1250,8 @@ const waveEl = document.getElementById('wave');
 const listMsg = document.getElementById('listMsg');
 const listEl = document.getElementById('list');
 const tabsEl = document.getElementById('tabs');
-
-const favsCard = document.getElementById('favsCard');
-const favsStrip = document.getElementById('favsStrip');
-const favsCount = document.getElementById('favsCount');
-const favsEmpty = document.getElementById('favsEmpty');
+const favsList = document.getElementById('favsList');
+const favsMsg = document.getElementById('favsMsg');
 
 function setStatus(msg) { npState.textContent = msg; statusMini.textContent = msg; }
 function title(t) { npName.textContent = t; }
@@ -1156,72 +1261,47 @@ function render() {
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
   if (btn) { btn.textContent = p ? '⏹ Stop' : '▶ Écouter'; btn.classList.toggle('stop', p); }
-  /* Mettre à jour l'état visuel des chips favoris */
-  document.querySelectorAll('.fav-chip').forEach(chip => {
-    const isCurrent = currentStation && chip.dataset.url === currentStation.u;
-    chip.classList.toggle('play', !!isCurrent);
-  });
 }
 
-/* =========================================================
-   ⭐ AFFICHAGE DES FAVORIS SUR LA PAGE PRINCIPALE
-   ========================================================= */
-function paintFavs() {
-  if (!favsStrip) return;
+function paintFavsList() {
+  if (!favsList) return;
 
   if (!favs.length) {
-    favsCard.style.display = '';
-    favsStrip.style.display = 'none';
-    favsEmpty.style.display = '';
-    favsCount.textContent = '';
+    favsMsg.innerHTML = '<b>Aucun favori pour l\'instant.</b><br>Ouvre les Stations et touche l\'étoile ★ d\'une radio.';
+    favsList.innerHTML = '';
     return;
   }
+  favsMsg.textContent = '';
 
-  favsCard.style.display = '';
-  favsStrip.style.display = 'flex';
-  favsEmpty.style.display = 'none';
-  favsCount.textContent = favs.length + ' station' + (favs.length > 1 ? 's' : '');
-
-  /* Tri par nombre d'écoutes */
   const sorted = favs.slice().sort((a, b) => (plays[b.u] || 0) - (plays[a.u] || 0));
 
-  favsStrip.innerHTML = '';
+  favsList.innerHTML = '';
   sorted.forEach(st => {
-    const chip = document.createElement('button');
-    chip.className = 'fav-chip';
-    chip.dataset.url = st.u;
-    if (currentStation && currentStation.u === st.u) chip.className += ' play';
+    const r = document.createElement('button');
+    r.className = 'rowlist';
+    if (currentStation && currentStation.u === st.u) r.className += ' play';
 
-    chip.innerHTML =
-      '<span class="chip-dot"></span>'
-      + '<span class="chip-text">'
-      +   '<span class="chip-name"></span>'
-      +   '<span class="chip-desc"></span>'
-      + '</span>'
-      + '<span class="chip-remove" title="Retirer">✕</span>';
+    r.innerHTML = '<i class="dot"></i>'
+      + '<span class="info"><span class="nm"></span><span class="desc"></span></span>'
+      + '<span class="star is" title="Retirer des favoris">★</span>';
 
-    chip.querySelector('.chip-name').textContent = st.n;
-
+    r.querySelector('.nm').textContent = st.n;
     const descParts = [];
     if (st.g) descParts.push(st.g);
     const n = plays[st.u] || 0;
     if (n > 0) descParts.push(n + ' écoute' + (n > 1 ? 's' : ''));
-    chip.querySelector('.chip-desc').textContent = descParts.join(' · ');
+    r.querySelector('.desc').textContent = descParts.join(' · ');
 
-    /* Clic sur la puce = jouer la station */
-    chip.addEventListener('click', (ev) => {
-      if (ev.target.closest('.chip-remove')) return;
+    r.addEventListener('click', (ev) => {
+      if (ev.target.closest('.star')) return;
       playStation(st);
+      closeAllDrawers();
     });
-
-    /* Clic sur ✕ = retirer des favoris */
-    chip.querySelector('.chip-remove').addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      ev.preventDefault();
+    r.querySelector('.star').addEventListener('click', ev => {
+      ev.stopPropagation(); ev.preventDefault();
       toggleFav(st);
     });
-
-    favsStrip.appendChild(chip);
+    favsList.appendChild(r);
   });
 }
 
@@ -1231,7 +1311,8 @@ function playStation(st) {
   render();
   plays[st.u] = (plays[st.u] || 0) + 1;
   savePlays();
-  paintFavs();   /* Mettre à jour les chips avec le nouvel état */
+  paintFavsList();
+  paintList();
 
   if (isPlaying) {
     isPlaying = false;
@@ -1348,7 +1429,7 @@ function toggleFav(st) {
   const i = favs.findIndex(x => x.u === st.u);
   if (i >= 0) favs.splice(i, 1); else favs.push(st);
   saveFavs();
-  paintFavs();
+  paintFavsList();
   paintList();
 }
 
@@ -1362,7 +1443,7 @@ function deleteCustomStation(st) {
   saveFavs();
   delete plays[st.u];
   savePlays();
-  paintFavs();
+  paintFavsList();
   paintList();
 }
 
@@ -1452,96 +1533,48 @@ document.getElementById('addUrl').addEventListener('click', () => {
 const drawer = document.getElementById('drawer');
 const scrim = document.getElementById('scrim');
 const fxDrawer = document.getElementById('fxDrawer');
+const favsDrawer = document.getElementById('favsDrawer');
 
-function openDrawer(o) {
-  drawer.classList.toggle('open', o);
-  scrim.classList.toggle('open', o);
-  if (o) fxDrawer.classList.remove('open');
-}
-function openFxDrawer(o) {
-  fxDrawer.classList.toggle('open', o);
-  scrim.classList.toggle('open', o);
-  if (o) drawer.classList.remove('open');
-}
 function closeAllDrawers() {
   drawer.classList.remove('open');
   fxDrawer.classList.remove('open');
+  favsDrawer.classList.remove('open');
   scrim.classList.remove('open');
+}
+function openDrawer(o) {
+  closeAllDrawers();
+  if (o) {
+    drawer.classList.add('open');
+    scrim.classList.add('open');
+  }
+}
+function openFxDrawer(o) {
+  closeAllDrawers();
+  if (o) {
+    fxDrawer.classList.add('open');
+    scrim.classList.add('open');
+  }
+}
+function openFavsDrawer(o) {
+  closeAllDrawers();
+  if (o) {
+    favsDrawer.classList.add('open');
+    scrim.classList.add('open');
+  }
 }
 
 document.getElementById('openDrawer').addEventListener('click', () => openDrawer(true));
 document.getElementById('closeDrawer').addEventListener('click', () => openDrawer(false));
 document.getElementById('openFx').addEventListener('click', () => openFxDrawer(true));
 document.getElementById('closeFxDrawer').addEventListener('click', () => openFxDrawer(false));
+document.getElementById('openFavs').addEventListener('click', () => openFavsDrawer(true));
+document.getElementById('closeFavsDrawer').addEventListener('click', () => openFavsDrawer(false));
 scrim.addEventListener('click', closeAllDrawers);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllDrawers(); });
-
-(function(){
-  const handle1 = document.getElementById('drawerHandle');
-  const handle2 = document.getElementById('fxDrawerHandle');
-  function makeSwipeClose(handle) {
-    if (!handle) return;
-    let startY = 0, dragging = false;
-    handle.addEventListener('touchstart', e => { startY = e.touches[0].clientY; dragging = true; }, {passive:true});
-    handle.addEventListener('touchmove', e => {
-      if (!dragging) return;
-      const dy = e.touches[0].clientY - startY;
-      if (dy > 80) { dragging = false; closeAllDrawers(); }
-    }, {passive:true});
-    handle.addEventListener('touchend', () => { dragging = false; });
-  }
-  makeSwipeClose(handle1);
-  makeSwipeClose(handle2);
-})();
 
 document.getElementById('power').addEventListener('click', () => {
   togglePlay(currentStation || CORE[0]);
 });
-
-function fillPct(slider, centered) {
-  const min = +slider.min, max = +slider.max, v = +slider.value;
-  const pct = ((v - min) / (max - min)) * 100;
-  if (centered) {
-    const c = ((0 - min) / (max - min)) * 100;
-    slider.style.setProperty('--lo', Math.min(c, pct) + '%');
-    slider.style.setProperty('--hi', Math.max(c, pct) + '%');
-  } else {
-    slider.style.setProperty('--p', pct + '%');
-  }
-}
-
-const volSlider = document.getElementById('volume');
-const balSlider = document.getElementById('balance');
-const limSlider = document.getElementById('limiter');
-
-function updateVolume() {
-  const v = +volSlider.value;
-  document.getElementById('volVal').textContent = (v > 0 ? '+' : '') + v.toFixed(1);
-  P.gain = v;
-  if (masterGain) setParam(masterGain.gain, Math.pow(10, v / 20), audioCtx.currentTime);
-  fillPct(volSlider, false);
-}
-function updateBalance() {
-  const v = +balSlider.value;
-  const txt = v === 0 ? 'Centre'
-    : (v < 0 ? 'G ' + Math.abs(v).toFixed(2) : 'D ' + v.toFixed(2));
-  document.getElementById('balVal').textContent = txt;
-  P.balance = v;
-  if (pannerNode) setParam(pannerNode.pan, v, audioCtx.currentTime);
-  fillPct(balSlider, true);
-}
-function updateLimiter() {
-  const v = +limSlider.value;
-  document.getElementById('limVal').textContent = v.toFixed(1);
-  P.limit = v;
-  if (limiterNode) setParam(limiterNode.threshold, v, audioCtx.currentTime);
-  fillPct(limSlider, false);
-}
-
-volSlider.addEventListener('input', updateVolume);
-balSlider.addEventListener('input', updateBalance);
-limSlider.addEventListener('input', updateLimiter);
-updateVolume(); updateBalance(); updateLimiter();
 
 function createKnob(knobEl, format) {
   const key = knobEl.dataset.key;
@@ -1600,18 +1633,23 @@ function createKnob(knobEl, format) {
 }
 
 const fmtDb = v => (v > 0 ? '+' : '') + v.toFixed(0);
+const fmtDb1 = v => (v > 0 ? '+' : '') + v.toFixed(1);
 const fmtPct = v => Math.round(v);
 const fmtMs = v => Math.round(v);
+const fmtBal = v => v.toFixed(2);
+const fmtSpatial = v => (v > 0 ? '+' : '') + v.toFixed(1);
 
 const allKnobs = {};
 document.querySelectorAll('.knob').forEach(k => {
   const key = k.dataset.key;
   let fmt = fmtDb;
-  if (key.indexOf('rvb') === 0 || key.indexOf('drv') === 0 ||
-      key === 'echFeedback' || key === 'echMix' || key === 'echTone') {
-    fmt = fmtPct;
-  }
-  if (key === 'echTime') fmt = fmtMs;
+  if (key === 'gain') fmt = fmtDb1;
+  else if (key === 'balance') fmt = fmtBal;
+  else if (key === 'spatial') fmt = fmtSpatial;
+  else if (key === 'limit') fmt = fmtDb1;
+  else if (key.indexOf('rvb') === 0 || key.indexOf('drv') === 0 ||
+           key === 'echFeedback' || key === 'echMix' || key === 'echTone') fmt = fmtPct;
+  else if (key === 'echTime') fmt = fmtMs;
   allKnobs[key] = createKnob(k, fmt);
 });
 
@@ -1768,8 +1806,9 @@ let idle = 0, lastFrame = 0;
   }
 })();
 
-/* INIT */
-paintFavs();
+initFxFavButtons();
+paintFxFavButtons();
+paintFavsList();
 paintList();
 render();
 setStatus('Ouvre les stations pour choisir');
