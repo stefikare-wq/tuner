@@ -37,7 +37,6 @@
                    linear-gradient(180deg,var(--panel),var(--deep));
         display:flex;flex-direction:column;overflow:hidden}
 
-  /* TOPBAR compacte */
   .topbar{padding:14px 18px;flex:0 0 auto}
   .brand-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
   .orb{width:32px;height:32px;border-radius:50%;border:3.5px solid var(--cyan);position:relative;flex:none}
@@ -57,13 +56,93 @@
   .pill:active{transform:scale(.97)}
   .pill.ghost{background:rgba(234,241,255,.06);color:var(--ice);border:1px solid var(--edge2);flex:0 0 auto;padding:0 20px}
   .pill.stop{background:linear-gradient(135deg,#FF3D9E,#B01E75);color:#fff}
-  .pill.fx-btn{background:linear-gradient(135deg,#B9FF45,#7EBB1D);color:#03121A}
 
   .wavewrap{padding:0 18px 12px;flex:0 0 auto}
   .wave{display:flex;align-items:flex-end;gap:2px;height:30px;width:100%}
   .wave i{flex:1;border-radius:3px;height:4px;background:var(--cyan);opacity:.22;
           transition:height .08s linear,opacity .4s var(--e)}
   .wave.on i{opacity:.9}
+
+  /* ⭐ FAVORIS */
+  .favs-card{padding:14px 0 14px 0;flex:0 0 auto}
+  .favs-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 18px 10px 18px;gap:10px;
+  }
+  .favs-head h3{
+    font-size:17px;letter-spacing:.14em;color:var(--magenta);font-weight:800;
+    margin:0;display:flex;align-items:center;gap:8px;
+  }
+  .favs-head .count{
+    font-size:15px;color:var(--muted);font-weight:600;letter-spacing:0;
+  }
+  .favs-empty{
+    padding:0 18px;font-size:16px;color:var(--muted);line-height:1.4;
+  }
+  .favs-empty b{color:var(--ice)}
+  .favs-strip{
+    display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;
+    padding:0 18px 4px 18px;
+    scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch;
+  }
+  .favs-strip::-webkit-scrollbar{display:none}
+  .fav-chip{
+    flex:none;
+    display:flex;align-items:center;gap:10px;
+    min-height:60px;
+    padding:10px 10px 10px 16px;
+    border-radius:16px;
+    background:linear-gradient(180deg,rgba(255,61,158,.1),rgba(255,61,158,.02));
+    border:1.5px solid rgba(255,61,158,.35);
+    color:var(--ice);
+    cursor:pointer;
+    transition:all .18s var(--e);
+    scroll-snap-align:start;
+    max-width:280px;
+    position:relative;
+  }
+  .fav-chip:hover{
+    border-color:var(--magenta);
+    box-shadow:0 0 20px rgba(255,61,158,.25);
+  }
+  .fav-chip:active{transform:scale(.97)}
+  .fav-chip.play{
+    background:linear-gradient(180deg,rgba(47,231,255,.15),rgba(47,231,255,.02));
+    border-color:var(--cyan);
+    box-shadow:0 0 22px rgba(47,231,255,.25);
+  }
+  .fav-chip .chip-dot{
+    width:10px;height:10px;border-radius:50%;flex:none;
+    background:var(--magenta);box-shadow:0 0 10px var(--magenta);
+  }
+  .fav-chip.play .chip-dot{
+    background:var(--cyan);box-shadow:0 0 10px var(--cyan);
+  }
+  .fav-chip .chip-text{
+    flex:1;min-width:0;text-align:left;
+  }
+  .fav-chip .chip-name{
+    font-size:18px;font-weight:700;
+    display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:180px;
+  }
+  .fav-chip.play .chip-name{color:var(--cyan)}
+  .fav-chip .chip-desc{
+    font-size:14px;color:var(--muted);
+    display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:180px;
+  }
+  .fav-chip .chip-remove{
+    flex:none;width:32px;height:32px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;font-weight:700;color:rgba(255,255,255,.4);
+    transition:all .15s var(--e);
+  }
+  .fav-chip .chip-remove:hover{
+    color:#FF3D9E;background:rgba(255,61,158,.2);
+    transform:scale(1.1);
+  }
 
   .console{padding:16px 18px;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
            overflow-y:auto;-webkit-overflow-scrolling:touch;gap:18px}
@@ -168,7 +247,6 @@
   .dcontent{flex:1 1 auto;display:flex;flex-direction:column;
     padding:0 22px calc(env(safe-area-inset-bottom) + 22px) 22px;min-height:0;overflow:hidden}
 
-  /* DRAWER STATIONS */
   .addtop{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;flex:0 0 auto}
   .addtop .row2{display:flex;gap:8px}
   .addtop .txtin{min-height:56px;font-size:19px;padding:0 18px}
@@ -213,7 +291,6 @@
   .msg{font-size:19px;color:var(--muted);margin-top:14px;line-height:1.5;flex:0 0 auto}
   .msg b{color:var(--ice)}
 
-  /* DRAWER EFFETS - PÉDALES */
   .fx-content{flex:1 1 auto;overflow-y:auto;min-height:0;padding-right:4px;-webkit-overflow-scrolling:touch}
   .fx-content::-webkit-scrollbar{width:8px}
   .fx-content::-webkit-scrollbar-thumb{background:rgba(234,241,255,.13);border-radius:99px}
@@ -292,6 +369,10 @@
     .pill{min-height:50px;font-size:17px}
     .dcontent{padding:0 16px calc(env(safe-area-inset-bottom) + 16px) 16px}
     .fx-content{padding-right:2px}
+    .fav-chip .chip-name,.fav-chip .chip-desc{max-width:140px}
+    .fav-chip .chip-name{font-size:16px}
+    .fav-chip .chip-desc{font-size:13px}
+    .favs-head h3{font-size:15px}
   }
   @media (max-height:600px){.wavewrap{display:none}}
 </style>
@@ -317,9 +398,20 @@
     <div class="wave" id="wave"></div>
   </div>
 
+  <!-- ⭐ CARTE FAVORIS ⭐ -->
+  <div class="card favs-card" id="favsCard">
+    <div class="favs-head">
+      <h3>★ FAVORIS</h3>
+      <span class="count" id="favsCount"></span>
+    </div>
+    <div class="favs-strip" id="favsStrip"></div>
+    <div class="favs-empty" id="favsEmpty">
+      <b>Aucun favori.</b> Touche l'étoile ★ d'une station pour l'ajouter ici.
+    </div>
+  </div>
+
   <div class="card console" id="console">
 
-    <!-- SECTION 1 : MASTER -->
     <div class="section">
       <h3 class="section-title">MASTER <span style="color:var(--muted);font-weight:600;letter-spacing:0;font-size:16px" id="statusMini">En veille</span></h3>
 
@@ -346,7 +438,6 @@
       </div>
     </div>
 
-    <!-- SECTION 2 : ÉGALISEUR -->
     <div class="section">
       <h3 class="section-title">ÉGALISEUR <span style="color:#FF3D9E;font-weight:600;letter-spacing:0;font-size:16px">L</span> <span style="color:#2FE7FF;font-weight:600;letter-spacing:0;font-size:16px">R</span></h3>
 
@@ -409,7 +500,6 @@
 
 <div class="scrim" id="scrim"></div>
 
-<!-- DRAWER STATIONS -->
 <aside class="drawer" id="drawer" aria-modal="true">
   <div class="drawer-handle" id="drawerHandle"><i></i></div>
   <div class="dhead">
@@ -438,7 +528,6 @@
   </div>
 </aside>
 
-<!-- DRAWER EFFETS -->
 <aside class="drawer" id="fxDrawer" aria-modal="true">
   <div class="drawer-handle" id="fxDrawerHandle"><i></i></div>
   <div class="dhead">
@@ -450,7 +539,7 @@
 
       <div class="pedal off" id="pedalXenodrive" style="--k-color:#FF3D9E">
         <div class="pedal-head">
-          <span class="pedal-name"><span class="icon">▲</span>DRIFTDRIVE</span>
+          <span class="pedal-name"><span class="icon">▲</span>XENODRIVE</span>
           <button class="toggle-btn" data-toggle="xenodrive" aria-pressed="false">OFF</button>
         </div>
         <div class="knob-grid cols4">
@@ -475,7 +564,7 @@
 
       <div class="pedal off" id="pedalNightverb" style="--k-color:#2FE7FF">
         <div class="pedal-head">
-          <span class="pedal-name"><span class="icon">◐</span>FIGHTVERB</span>
+          <span class="pedal-name"><span class="icon">◐</span>NIGHTVERB</span>
           <button class="toggle-btn" data-toggle="nightverb" aria-pressed="false">OFF</button>
         </div>
         <div class="knob-grid cols4">
@@ -500,7 +589,7 @@
 
       <div class="pedal off" id="pedalEcholocator" style="--k-color:#B9FF45">
         <div class="pedal-head">
-          <span class="pedal-name"><span class="icon">◈</span>ECHOVER</span>
+          <span class="pedal-name"><span class="icon">◈</span>ECHOLOCATOR</span>
           <button class="toggle-btn" data-toggle="echolocator" aria-pressed="false">OFF</button>
         </div>
         <div class="knob-grid cols4">
@@ -542,9 +631,6 @@ function proxify(u) {
   return u;
 }
 
-/* =========================================================
-   ÉTAT GLOBAL
-   ========================================================= */
 let audioCtx = null;
 let mixEl = null, player = null;
 let srcNode = null;
@@ -585,9 +671,6 @@ const RETRY_BASE = 800;
 const RETRY_MAX = 20000;
 const GOOD_PLAYBACK_MS = 15000;
 
-/* =========================================================
-   IMPULSION REVERB
-   ========================================================= */
 function createReverbImpulse(ctx, durationSec, decay) {
   const rate = ctx.sampleRate;
   const length = Math.floor(rate * durationSec);
@@ -612,9 +695,6 @@ function makeDistortionCurve(amount) {
   return curve;
 }
 
-/* =========================================================
-   GRAPHE AUDIO
-   ========================================================= */
 function buildGraph() {
   if (graphBuilt) return;
 
@@ -653,7 +733,6 @@ function buildGraph() {
   gainL = audioCtx.createGain(); gainL.gain.value = 1;
   gainR = audioCtx.createGain(); gainR.gain.value = 1;
 
-  /* XENODRIVE */
   driveChain = {
     input: audioCtx.createGain(),
     dry: audioCtx.createGain(),
@@ -683,7 +762,6 @@ function buildGraph() {
   driveChain.outLevel.connect(driveChain.wet);
   driveChain.wet.connect(driveChain.merger);
 
-  /* NIGHTVERB */
   reverbChain = {
     input: audioCtx.createGain(),
     dry: audioCtx.createGain(),
@@ -709,7 +787,6 @@ function buildGraph() {
   reverbChain.damp.connect(reverbChain.wet);
   reverbChain.wet.connect(reverbChain.merger);
 
-  /* ECHOLOCATOR */
   echoChain = {
     input: audioCtx.createGain(),
     dry: audioCtx.createGain(),
@@ -736,7 +813,6 @@ function buildGraph() {
   echoChain.tone.connect(echoChain.wet);
   echoChain.wet.connect(echoChain.merger);
 
-  /* LIMITEURS */
   limiterNode = audioCtx.createDynamicsCompressor();
   limiterNode.threshold.value = -1; limiterNode.ratio.value = 20;
   limiterNode.knee.value = 0; limiterNode.attack.value = 0.001; limiterNode.release.value = 0.08;
@@ -752,7 +828,6 @@ function buildGraph() {
   anaL = audioCtx.createAnalyser(); anaL.fftSize = 256;
   anaR = audioCtx.createAnalyser(); anaR.fftSize = 256;
 
-  /* CÂBLAGE PRINCIPAL */
   srcNode.connect(pannerNode);
   pannerNode.connect(masterGain);
   masterGain.connect(eqSplitter);
@@ -798,9 +873,6 @@ function buildGraph() {
   applyAll();
 }
 
-/* =========================================================
-   APPLICATION DES PARAMÈTRES
-   ========================================================= */
 function setParam(param, value, time) {
   if (!param) return;
   try {
@@ -829,18 +901,13 @@ function applyAll() {
   setParam(eqR.himid.gain, P.himidR, t);
   setParam(eqR.high.gain, P.highR, t);
 
-  /* XENODRIVE */
   if (xenodriveOn) {
     const preGain = 1 + (P.drvAmount / 100) * 2;
     setParam(driveChain.preGain.gain, preGain, t);
-
     driveChain.shaper.curve = makeDistortionCurve(P.drvAmount);
-
     const toneFreq = 500 * Math.pow(36, P.drvTone / 100);
     setParam(driveChain.tone.frequency, toneFreq, t);
-
     setParam(driveChain.outLevel.gain, (P.drvLevel / 100) * 1.5, t);
-
     const mix = P.drvMix / 100;
     setParam(driveChain.dry.gain, 1 - mix, t);
     setParam(driveChain.wet.gain, mix * 1.4, t);
@@ -849,17 +916,13 @@ function applyAll() {
     setParam(driveChain.wet.gain, 0, t);
   }
 
-  /* NIGHTVERB */
   if (nightverbOn) {
     setParam(reverbChain.preDelay.delayTime, (P.rvbPredelay / 100) * 0.15, t);
-
     const dampFreq = 500 * Math.pow(36, P.rvbDamp / 100);
     setParam(reverbChain.damp.frequency, dampFreq, t);
-
     const mix = P.rvbMix / 100;
     setParam(reverbChain.dry.gain, 1 - mix * 0.5, t);
     setParam(reverbChain.wet.gain, mix * 2.0, t);
-
     const size = P.rvbSize;
     if (!reverbChain._lastSize || Math.abs(reverbChain._lastSize - size) > 8) {
       reverbChain._lastSize = size;
@@ -874,14 +937,11 @@ function applyAll() {
     setParam(reverbChain.wet.gain, 0, t);
   }
 
-  /* ECHOLOCATOR */
   if (echolocatorOn) {
     setParam(echoChain.delay.delayTime, P.echTime / 1000, t);
     setParam(echoChain.feedback.gain, P.echFeedback / 100, t);
-
     const toneFreq = 500 * Math.pow(36, P.echTone / 100);
     setParam(echoChain.tone.frequency, toneFreq, t);
-
     const mix = P.echMix / 100;
     setParam(echoChain.dry.gain, 1 - mix * 0.3, t);
     setParam(echoChain.wet.gain, mix * 1.6, t);
@@ -891,9 +951,6 @@ function applyAll() {
   }
 }
 
-/* =========================================================
-   LECTURE
-   ========================================================= */
 function tryPlay(url, useMix, mySession) {
   return new Promise((resolve) => {
     const el = useMix ? mixEl : player;
@@ -1020,9 +1077,6 @@ async function togglePlay(station) {
   }
 }
 
-/* =========================================================
-   STATIONS
-   ========================================================= */
 function soma(id,n,c,g,q){ q=q||128;
   const m = (h,b) => 'https://'+h+'.somafm.com/'+id+'-'+b+'-mp3';
   return {n, g, c, q:q+' kbps', u:m('ice5',q), alts:[m('ice2',q), m('ice5',128), m('ice2',128)]};
@@ -1081,9 +1135,6 @@ function saveCustomStations(){
   try{ localStorage.setItem('core_custom_stations', JSON.stringify(customStations)); }catch(e){}
 }
 
-/* =========================================================
-   UI
-   ========================================================= */
 const npName = document.getElementById('npName');
 const npState = document.getElementById('npState');
 const statusMini = document.getElementById('statusMini');
@@ -1091,6 +1142,11 @@ const waveEl = document.getElementById('wave');
 const listMsg = document.getElementById('listMsg');
 const listEl = document.getElementById('list');
 const tabsEl = document.getElementById('tabs');
+
+const favsCard = document.getElementById('favsCard');
+const favsStrip = document.getElementById('favsStrip');
+const favsCount = document.getElementById('favsCount');
+const favsEmpty = document.getElementById('favsEmpty');
 
 function setStatus(msg) { npState.textContent = msg; statusMini.textContent = msg; }
 function title(t) { npName.textContent = t; }
@@ -1100,6 +1156,73 @@ function render() {
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
   if (btn) { btn.textContent = p ? '⏹ Stop' : '▶ Écouter'; btn.classList.toggle('stop', p); }
+  /* Mettre à jour l'état visuel des chips favoris */
+  document.querySelectorAll('.fav-chip').forEach(chip => {
+    const isCurrent = currentStation && chip.dataset.url === currentStation.u;
+    chip.classList.toggle('play', !!isCurrent);
+  });
+}
+
+/* =========================================================
+   ⭐ AFFICHAGE DES FAVORIS SUR LA PAGE PRINCIPALE
+   ========================================================= */
+function paintFavs() {
+  if (!favsStrip) return;
+
+  if (!favs.length) {
+    favsCard.style.display = '';
+    favsStrip.style.display = 'none';
+    favsEmpty.style.display = '';
+    favsCount.textContent = '';
+    return;
+  }
+
+  favsCard.style.display = '';
+  favsStrip.style.display = 'flex';
+  favsEmpty.style.display = 'none';
+  favsCount.textContent = favs.length + ' station' + (favs.length > 1 ? 's' : '');
+
+  /* Tri par nombre d'écoutes */
+  const sorted = favs.slice().sort((a, b) => (plays[b.u] || 0) - (plays[a.u] || 0));
+
+  favsStrip.innerHTML = '';
+  sorted.forEach(st => {
+    const chip = document.createElement('button');
+    chip.className = 'fav-chip';
+    chip.dataset.url = st.u;
+    if (currentStation && currentStation.u === st.u) chip.className += ' play';
+
+    chip.innerHTML =
+      '<span class="chip-dot"></span>'
+      + '<span class="chip-text">'
+      +   '<span class="chip-name"></span>'
+      +   '<span class="chip-desc"></span>'
+      + '</span>'
+      + '<span class="chip-remove" title="Retirer">✕</span>';
+
+    chip.querySelector('.chip-name').textContent = st.n;
+
+    const descParts = [];
+    if (st.g) descParts.push(st.g);
+    const n = plays[st.u] || 0;
+    if (n > 0) descParts.push(n + ' écoute' + (n > 1 ? 's' : ''));
+    chip.querySelector('.chip-desc').textContent = descParts.join(' · ');
+
+    /* Clic sur la puce = jouer la station */
+    chip.addEventListener('click', (ev) => {
+      if (ev.target.closest('.chip-remove')) return;
+      playStation(st);
+    });
+
+    /* Clic sur ✕ = retirer des favoris */
+    chip.querySelector('.chip-remove').addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      toggleFav(st);
+    });
+
+    favsStrip.appendChild(chip);
+  });
 }
 
 function playStation(st) {
@@ -1108,6 +1231,7 @@ function playStation(st) {
   render();
   plays[st.u] = (plays[st.u] || 0) + 1;
   savePlays();
+  paintFavs();   /* Mettre à jour les chips avec le nouvel état */
 
   if (isPlaying) {
     isPlaying = false;
@@ -1224,6 +1348,7 @@ function toggleFav(st) {
   const i = favs.findIndex(x => x.u === st.u);
   if (i >= 0) favs.splice(i, 1); else favs.push(st);
   saveFavs();
+  paintFavs();
   paintList();
 }
 
@@ -1237,6 +1362,7 @@ function deleteCustomStation(st) {
   saveFavs();
   delete plays[st.u];
   savePlays();
+  paintFavs();
   paintList();
 }
 
@@ -1323,9 +1449,6 @@ document.getElementById('addUrl').addEventListener('click', () => {
   });
 });
 
-/* =========================================================
-   DRAWER STATIONS
-   ========================================================= */
 const drawer = document.getElementById('drawer');
 const scrim = document.getElementById('scrim');
 const fxDrawer = document.getElementById('fxDrawer');
@@ -1375,9 +1498,6 @@ document.getElementById('power').addEventListener('click', () => {
   togglePlay(currentStation || CORE[0]);
 });
 
-/* =========================================================
-   SLIDERS MASTER
-   ========================================================= */
 function fillPct(slider, centered) {
   const min = +slider.min, max = +slider.max, v = +slider.value;
   const pct = ((v - min) / (max - min)) * 100;
@@ -1423,9 +1543,6 @@ balSlider.addEventListener('input', updateBalance);
 limSlider.addEventListener('input', updateLimiter);
 updateVolume(); updateBalance(); updateLimiter();
 
-/* =========================================================
-   KNOBS
-   ========================================================= */
 function createKnob(knobEl, format) {
   const key = knobEl.dataset.key;
   const dial = knobEl.querySelector('.knob-dial');
@@ -1498,9 +1615,6 @@ document.querySelectorAll('.knob').forEach(k => {
   allKnobs[key] = createKnob(k, fmt);
 });
 
-/* =========================================================
-   TOGGLES PÉDALES
-   ========================================================= */
 function setToggle(name, on) {
   const btn = document.querySelector('.toggle-btn[data-toggle="' + name + '"]');
   if (!btn) return;
@@ -1528,9 +1642,6 @@ document.querySelectorAll('.toggle-btn').forEach(btn => {
   });
 });
 
-/* =========================================================
-   PRESETS
-   ========================================================= */
 const PRESETS = {
   plat:  {subL:0,bassL:0,midL:0,himidL:0,highL:0,subR:0,bassR:0,midR:0,himidR:0,highR:0,
           drvAmount:30,drvTone:50,drvLevel:60,drvMix:100,
@@ -1580,9 +1691,6 @@ document.querySelectorAll('#presets button').forEach(b => {
   b.addEventListener('click', () => applyPreset(b.dataset.preset));
 });
 
-/* =========================================================
-   WAVE + VU
-   ========================================================= */
 const BARS = 28;
 const barEls = [];
 for (let i = 0; i < BARS; i++) {
@@ -1660,9 +1768,8 @@ let idle = 0, lastFrame = 0;
   }
 })();
 
-/* =========================================================
-   INIT
-   ========================================================= */
+/* INIT */
+paintFavs();
 paintList();
 render();
 setStatus('Ouvre les stations pour choisir');
