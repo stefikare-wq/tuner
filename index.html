@@ -1083,7 +1083,7 @@ function tryPlay(url, useMix, mySession) {
       started = true;
       if (startupTimer) { clearTimeout(startupTimer); startupTimer = null; }
       usingMix = useMix;
-      setStatus(useMix ? '▶ En direct · EQ + pédales' : '▶ En direct · sans EQ');
+      setStatus(useMix ? '▶ En direct · EQ + Effets' : '▶ En direct · sans EQ');
       render();
     };
     el.onerror = () => finish(false);
