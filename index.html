@@ -159,9 +159,10 @@
   .drawer{position:fixed;z-index:40;background:linear-gradient(180deg,#0B1020,#06080F);
     transition:transform .32s var(--e);display:flex;flex-direction:column;overflow:hidden;
     box-shadow:0 -20px 60px rgba(0,0,0,.6)}
-  .drawer-bottom{left:0;right:0;bottom:0;top:auto;height:92vh;height:92dvh;max-height:92vh;
-    border-top-left-radius:24px;border-top-right-radius:24px;border-top:1px solid var(--edge2);
-    transform:translateY(101%)}
+  .drawer-bottom{left:0;right:0;bottom:0;top:0;height:100vh;height:100dvh;max-height:100dvh;
+    border-top-left-radius:0;border-top-right-radius:0;border-top:1px solid var(--edge2);
+    transform:translateY(101%);
+    padding-top:env(safe-area-inset-top)}
   .drawer-bottom.open{transform:translateY(0)}
   .drawer-left{left:0;top:0;bottom:0;width:min(460px,92vw);
     border-top-right-radius:24px;border-bottom-right-radius:24px;border-right:1px solid var(--edge2);
@@ -172,59 +173,71 @@
     transform:translateX(101%);box-shadow:-20px 0 60px rgba(0,0,0,.6)}
   .drawer-right.open{transform:translateX(0)}
 
-  .drawer-handle{display:flex;align-items:center;justify-content:center;padding:14px 0 10px;flex:0 0 auto;cursor:grab}
+  .drawer-handle{display:flex;align-items:center;justify-content:center;padding:8px 0 4px;flex:0 0 auto;cursor:grab}
   .drawer-handle i{width:64px;height:6px;border-radius:99px;background:rgba(140,190,255,.35)}
   .drawer-left .drawer-handle i,
   .drawer-right .drawer-handle i{width:6px;height:64px}
-  .dhead{display:flex;align-items:center;justify-content:space-between;padding:4px 22px 16px;flex:0 0 auto;gap:14px}
-  .dhead h2{font-size:22px;letter-spacing:.18em;margin:0;color:var(--cyan);font-weight:800}
-  .dhead button{width:56px;height:56px;border-radius:50%;border:1px solid var(--edge2);
-    background:rgba(234,241,255,.06);font-size:26px;line-height:1;display:flex;align-items:center;justify-content:center}
-  .dhead button:active{transform:scale(.92)}
-  .dcontent{flex:1 1 auto;display:flex;flex-direction:column;
-    padding:0 22px calc(env(safe-area-inset-bottom) + 22px) 22px;min-height:0;overflow:hidden}
 
-  .addtop{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;flex:0 0 auto}
+  .dhead{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;flex:0 0 auto;gap:10px}
+  .dhead h2{font-size:18px;letter-spacing:.18em;margin:0;color:var(--cyan);font-weight:800}
+  .dhead button{width:44px;height:44px;border-radius:50%;border:1px solid var(--edge2);
+    background:rgba(234,241,255,.06);font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center}
+  .dhead button:active{transform:scale(.92)}
+
+  .dcontent{flex:1 1 auto;display:flex;flex-direction:column;
+    padding:0 12px calc(env(safe-area-inset-bottom) + 10px) 12px;min-height:0;overflow:hidden}
+
+  .addtoggle{flex:0 0 auto;width:100%;min-height:42px;margin-bottom:8px;border-radius:12px;
+    border:1px dashed var(--edge2);background:rgba(234,241,255,.04);color:var(--muted);
+    font-size:15px;font-weight:700;letter-spacing:.06em}
+  .addtoggle:active{transform:scale(.98)}
+  .addtop[hidden]{display:none}
+
+  .addtop{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;flex:0 0 auto}
   .addtop .row2{display:flex;gap:8px}
-  .addtop .txtin{min-height:56px;font-size:19px;padding:0 18px}
+  .addtop .txtin{min-height:46px;font-size:16px}
   .addtop .row2 .txtin{flex:1;min-width:0}
-  .addtop .pill{min-height:56px;font-size:19px}
-  .searchbox{margin-bottom:14px;flex:0 0 auto}
+  .addtop .pill{min-height:46px;font-size:16px}
+
+  .searchbox{margin-bottom:8px;flex:0 0 auto}
   .txtin{width:100%;font:inherit;color:var(--ice);background:rgba(234,241,255,.05);
-    border:1px solid var(--edge2);border-radius:14px;min-height:56px;padding:0 18px;font-size:19px;
+    border:1px solid var(--edge2);border-radius:12px;min-height:46px;padding:0 14px;font-size:16px;
     -webkit-appearance:none;appearance:none}
   .txtin:focus{outline:none;border-color:var(--cyan)}
-  .tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 0 14px;padding-bottom:6px;flex:0 0 auto}
+
+  .tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 8px;padding-bottom:4px;flex:0 0 auto}
   .tabs::-webkit-scrollbar{display:none}
-  .tabs button{flex:none;white-space:nowrap;font-size:18px;color:var(--muted);
+  .tabs button{flex:none;white-space:nowrap;font-size:15px;color:var(--muted);
     background:rgba(234,241,255,.05);border:1px solid var(--edge);
-    border-radius:100px;min-height:48px;padding:0 20px}
+    border-radius:100px;min-height:40px;padding:0 15px}
   .tabs button.sel{background:linear-gradient(135deg,var(--cyan),#0E8BDD);color:#03121A;
     border-color:transparent;font-weight:700}
   .tabs button.fav-tab.sel{background:linear-gradient(135deg,var(--magenta),#B01E75);color:#fff;
     box-shadow:0 0 16px rgba(255,61,158,.4)}
+
   .listwrap{flex:1 1 auto;overflow-y:auto;min-height:0;padding-right:4px;-webkit-overflow-scrolling:touch}
   .listwrap::-webkit-scrollbar{width:8px}
   .listwrap::-webkit-scrollbar-thumb{background:rgba(234,241,255,.13);border-radius:99px}
-  .rowlist{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px;
-    border-radius:14px;border:1px solid transparent;transition:background .15s var(--e),border-color .15s var(--e)}
-  .rowlist + .rowlist{margin-top:6px}
+
+  .rowlist{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 12px;
+    border-radius:12px;border:1px solid transparent;transition:background .15s var(--e),border-color .15s var(--e)}
+  .rowlist + .rowlist{margin-top:4px}
   .rowlist:hover{background:rgba(234,241,255,.05)}
   .rowlist.play{background:linear-gradient(90deg,rgba(47,231,255,.16),rgba(47,231,255,.02));border-color:rgba(47,231,255,.45)}
-  .rowlist .dot{width:12px;height:12px;border-radius:50%;flex:none;background:rgba(234,241,255,.14)}
+  .rowlist .dot{width:9px;height:9px;border-radius:50%;flex:none;background:rgba(234,241,255,.14)}
   .rowlist.play .dot{background:var(--cyan)}
   .rowlist .info{flex:1;min-width:0}
-  .rowlist .nm{font-weight:600;font-size:24px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rowlist .nm{font-weight:600;font-size:19px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .rowlist.play .nm{color:var(--cyan)}
-  .rowlist .desc{font-size:18px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .rowlist .star{font-size:30px;color:rgba(234,241,255,.25);padding:10px 14px;flex:none;
-    transition:all .18s var(--e);border-radius:12px;background:rgba(234,241,255,.03)}
+  .rowlist .desc{font-size:14px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rowlist .star{font-size:22px;color:rgba(234,241,255,.25);padding:6px 10px;flex:none;
+    transition:all .18s var(--e);border-radius:10px;background:rgba(234,241,255,.03)}
   .rowlist .star:hover{color:var(--magenta);transform:scale(1.15);background:rgba(255,61,158,.1)}
   .rowlist .star.is{color:var(--magenta);background:rgba(255,61,158,.15);text-shadow:0 0 14px var(--magenta)}
-  .rowlist .del{font-size:26px;color:rgba(234,241,255,.2);padding:10px 12px;flex:none;
+  .rowlist .del{font-size:19px;color:rgba(234,241,255,.2);padding:6px 8px;flex:none;
     transition:all .18s var(--e);border-radius:10px}
   .rowlist .del:hover{color:#FF3D9E;background:rgba(255,61,158,.12)}
-  .msg{font-size:19px;color:var(--muted);margin-top:14px;line-height:1.5;flex:0 0 auto}
+  .msg{font-size:15px;color:var(--muted);margin-top:10px;line-height:1.45;flex:0 0 auto}
   .msg b{color:var(--ice)}
 
   .fx-content{flex:1 1 auto;overflow-y:auto;min-height:0;padding-right:4px;-webkit-overflow-scrolling:touch}
@@ -328,7 +341,9 @@
     .toggle-btn{min-width:82px;height:44px;font-size:18px}
     .fx-fav-btn{min-width:44px;height:44px;font-size:22px}
     .pill{min-height:50px;font-size:17px}
-    .dcontent{padding:0 16px calc(env(safe-area-inset-bottom) + 16px) 16px}
+    .dcontent{padding:0 10px calc(env(safe-area-inset-bottom) + 8px) 10px}
+    .rowlist .nm{font-size:18px}
+    .rowlist .desc{font-size:13px}
   }
   @media (max-height:600px){.wavewrap{display:none}}
 </style>
@@ -440,10 +455,10 @@
       </div>
 
       <div class="presets" id="presets">
-        <button data-preset="Flat" class="sel">Plat</button>
-        <button data-preset="Club">Club</button>
-        <button data-preset="Basse">Basses</button>
-        <button data-preset="Dub">Dub</button>
+        <button data-preset="plat" class="sel">Plat</button>
+        <button data-preset="club">Club</button>
+        <button data-preset="basse">Basses</button>
+        <button data-preset="dub">Dub</button>
       </div>
     </div>
 
@@ -473,13 +488,14 @@
     <button id="closeDrawer" aria-label="Fermer">✕</button>
   </div>
   <div class="dcontent">
-    <div class="addtop">
+    <button class="addtoggle" id="toggleAdd">＋ Ajouter une radio</button>
+    <div class="addtop" id="addTop" hidden>
       <input type="text" class="txtin" id="url" inputmode="url"
              autocapitalize="off" autocorrect="off" placeholder="Coller un lien de flux…">
       <div class="row2">
         <input type="text" class="txtin" id="customName" autocapitalize="words"
                autocorrect="off" placeholder="Nom (facultatif)">
-        <button class="pill" id="addUrl" style="flex:0 0 auto;padding:0 26px">＋ Ajouter</button>
+        <button class="pill" id="addUrl" style="flex:0 0 auto;padding:0 20px">OK</button>
       </div>
     </div>
     <div class="searchbox">
@@ -505,7 +521,7 @@
 
       <div class="pedal off" id="pedalXenodrive" style="--k-color:#FF3D9E">
         <div class="pedal-head">
-          <span class="pedal-name"><span class="icon">▲</span>HYPERDRIVE</span>
+          <span class="pedal-name"><span class="icon">▲</span>XENODRIVE</span>
           <div class="pedal-actions">
             <button class="fx-fav-btn" data-fx-fav="xenodrive" title="Favori (clic court = charger/sauver, appui long = écraser)">☆</button>
             <button class="toggle-btn" data-toggle="xenodrive" aria-pressed="false">OFF</button>
@@ -533,7 +549,7 @@
 
       <div class="pedal off" id="pedalNightverb" style="--k-color:#2FE7FF">
         <div class="pedal-head">
-          <span class="pedal-name"><span class="icon">◐</span>FLIGHTVERB</span>
+          <span class="pedal-name"><span class="icon">◐</span>NIGHTVERB</span>
           <div class="pedal-actions">
             <button class="fx-fav-btn" data-fx-fav="nightverb" title="Favori (clic court = charger/sauver, appui long = écraser)">☆</button>
             <button class="toggle-btn" data-toggle="nightverb" aria-pressed="false">OFF</button>
@@ -561,7 +577,7 @@
 
       <div class="pedal off" id="pedalEcholocator" style="--k-color:#B9FF45">
         <div class="pedal-head">
-          <span class="pedal-name"><span class="icon">◈</span>ECHOMINATOR</span>
+          <span class="pedal-name"><span class="icon">◈</span>ECHOLOCATOR</span>
           <div class="pedal-actions">
             <button class="fx-fav-btn" data-fx-fav="echolocator" title="Favori (clic court = charger/sauver, appui long = écraser)">☆</button>
             <button class="toggle-btn" data-toggle="echolocator" aria-pressed="false">OFF</button>
@@ -1083,7 +1099,7 @@ function tryPlay(url, useMix, mySession) {
       started = true;
       if (startupTimer) { clearTimeout(startupTimer); startupTimer = null; }
       usingMix = useMix;
-      setStatus(useMix ? '▶ En direct · EQ + Effets' : '▶ En direct · sans EQ');
+      setStatus(useMix ? '▶ En direct · EQ + pédales' : '▶ En direct · sans EQ');
       render();
     };
     el.onerror = () => finish(false);
@@ -1518,7 +1534,14 @@ function addStream(urlValue, nameValue, urlBox, nameBox) {
   });
   paintList();
   playStation(st);
+  document.getElementById('addTop').hidden = true;
 }
+
+document.getElementById('toggleAdd').addEventListener('click', () => {
+  const a = document.getElementById('addTop');
+  a.hidden = !a.hidden;
+  if (!a.hidden) document.getElementById('url').focus();
+});
 
 document.getElementById('addUrl').addEventListener('click', () => {
   addStream(document.getElementById('url').value, document.getElementById('customName').value,
