@@ -181,7 +181,6 @@
     border-color:transparent;box-shadow:0 0 16px rgba(47,231,255,.35)}
   .presets button:active{transform:scale(.96)}
 
-  /* DRAWERS */
   .drawer{position:fixed;z-index:40;background:linear-gradient(180deg,#0B1020,#06080F);
     transition:transform .32s var(--e);display:flex;flex-direction:column;overflow:hidden;
     box-shadow:0 -20px 60px rgba(0,0,0,.6)}
@@ -359,7 +358,6 @@
   @media (max-height:600px){.wavewrap{display:none}}
   @media (max-width:700px){.wave{height:48px;gap:2px}}
 
-  /* ===== Mémoire d'équilibre des égaliseurs (appui 3 s) ===== */
   .knob-dial::after{transition:background .35s var(--e),box-shadow .35s var(--e)}
   .knob.memo .knob-dial::after{
     background:radial-gradient(circle at 35% 30%,#fff 0%,var(--k-color) 38%,color-mix(in srgb,var(--k-color) 55%,#000) 100%);
@@ -374,7 +372,6 @@
   @keyframes recBlink{50%{box-shadow:inset 0 0 12px rgba(0,0,0,.7),0 0 8px rgba(255,45,63,.3)}}
   .knob.looping .knob-dial{box-shadow:inset 0 0 12px rgba(0,0,0,.7),0 0 16px rgba(255,45,63,.35)}
   .knob.rec-armed .knob-value,.knob.recording .knob-value{color:#FF2D3F}
-  /* ===== 11 graduations : 1 centrale plus grosse + 5 de chaque côté ===== */
   .knob-dial::before{display:none}
   .knob-tick{position:absolute;inset:0;pointer-events:none}
   .knob-tick::before{content:'';position:absolute;left:50%;top:-15%;width:3px;height:9%;transform:translateX(-50%);
@@ -383,7 +380,6 @@
   .knob-tick.lit::before{background:var(--k-color,var(--cyan));box-shadow:0 0 6px var(--k-color,var(--cyan))}
   .knob-tick.here::before{background:#fff;box-shadow:0 0 6px #fff,0 0 12px var(--k-color,var(--cyan))}
   .knob.on-tick .knob-indicator::before{background:#fff;box-shadow:0 0 10px #fff,0 0 20px var(--k-color,var(--cyan))}
-  /* ===== Dimension : gros bouton central ===== */
   .knob-grid.master5{grid-template-columns:1fr 1fr 1.7fr 1fr 1fr;align-items:center}
   .dimbox{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
   .dim-stack{position:relative;width:100%;max-width:160px;aspect-ratio:1 / 1;margin-top:4%}
@@ -642,7 +638,6 @@
   .pedal.bypass{opacity:.45}
   @media (max-width:700px){.fxquick button{font-size:12px;letter-spacing:.02em;min-height:50px}}
 
-  /* ===== Pédale CHORUS ===== */
   .chor-display{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
     min-height:74px;padding:8px 12px;border-radius:12px;margin:0 0 12px;gap:3px;
     background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.3));border:1px solid var(--edge2);transition:all .2s var(--e)}
@@ -1527,7 +1522,7 @@ function applyAll() {
   setParam(eqR.high.gain, P.highR, t);
 
   if (xenodriveOn && fxMasterOn) {
-    const da = P.drvAmount / 100, dk = da * da * 10;
+    const da = P.drvAmount / 100;
     setParam(driveChain.preGain.gain, 1 + da * 0.5, t);
     if (driveChain._lastAmt !== P.drvAmount) { driveChain._lastAmt = P.drvAmount; driveChain.shaper.curve = makeDistortionCurve(P.drvAmount); }
     const toneFreq = 500 * Math.pow(36, P.drvTone / 100);
@@ -2000,7 +1995,7 @@ function searchLibrary(q) {
         q: (r.bitrate ? r.bitrate + ' kbps' : ''),
         u: u, alts: []
       });
-    });
+    }));
     online = out;
     listMsg.innerHTML = out.length
       ? '<b>' + out.length + ' stations trouvées.</b>'
@@ -2427,7 +2422,7 @@ function createKnob(knobEl, format) {
         L.rateLoop = { pts: pts.map(q => [Math.round(q[0]), q[1]]), dur: Math.max(150, Math.round(t)) }; L.rph = 0;
         if (savedLoops[key]) savedLoops[key].rateLoop = L.rateLoop;
         rateEl.classList.add('rloop'); paintAutoMarks();
-        showMemoToast('↻ ' + lbl + ' : temps en boucle (' + (t / 1000).toFixed(1) + ' s) · touche la pastille pour l'arrêter', '#FF2D3F', true);
+        showMemoToast('↻ ' + lbl + ' : temps en boucle (' + (t / 1000).toFixed(1) + ' s) · touche la pastille pour l\'arrêter', '#FF2D3F', true);
       }
       saveLoops();
     } else if (rateDrag && !rateDrag.moved && L && L.rateLoop) stopRateLoop(L, true);
@@ -2473,7 +2468,7 @@ function createKnob(knobEl, format) {
     if (t < 150 || r.hi === r.lo) { drawRec(null); showMemoToast('○ Mouvement trop court', '#FF2D3F', true); return; }
     let pts = r.pts; if (pts.length > 400) { const k = pts.length / 400; pts = pts.filter((_, i) => i % Math.ceil(k) === 0).concat([r.pts[r.pts.length - 1]]); }
     startLoop(pts.map(p => [Math.round(p[0]), p[1]]), Math.max(150, t));
-    showMemoToast('↻ ' + lbl + ' : boucle de ' + (t / 1000).toFixed(1) + ' s · touche le bouton pour l'arrêter', '#FF2D3F', true);
+    showMemoToast('↻ ' + lbl + ' : boucle de ' + (t / 1000).toFixed(1) + ' s · touche le bouton pour l\'arrêter', '#FF2D3F', true);
   }
 
   dial.addEventListener('pointerdown', (e) => {
@@ -2680,7 +2675,7 @@ function blockName(box) {
 }
 function addAutoMark(box, head, before, global) {
   const el = document.createElement('span'); el.className = 'auto-mark';
-  el.innerHTML = '<b title="Boutons qui ont une boucle d'automatisation">↻ 0</b>'
+  el.innerHTML = '<b title="Boutons qui ont une boucle d\'automatisation">↻ 0</b>'
                + '<button type="button" title="Choisir le reset">⟲ ' + (global ? 'TOUT RESET' : 'RESET') + ' ▾</button>';
   const m = { box, el, count: el.querySelector('b'), btn: el.querySelector('button') };
   m.btn.addEventListener('pointerdown', e => e.stopPropagation());
@@ -3549,7 +3544,7 @@ document.getElementById('agPopYes').onclick = () => {
   if (mode === 'agent' && agLast) {
     document.getElementById('agYes').click();
     agSaveAuto(agLast.pl.genre + ' · ' + agLast.pl.sub + ' · ' + agLast.pl.bpm + ' BPM');
-    showMemoToast('✔ Enregistré dans les presets de l'agent, et appris 👍', '#B9FF45', true);
+    showMemoToast('✔ Enregistré dans les presets de l\'agent, et appris 👍', '#B9FF45', true);
   } else if (mode === 'manual') {
     const g = agLast ? agLast.pl.genre : (document.getElementById('agGenre').value !== 'auto' ? document.getElementById('agGenre').value : null);
     const now = agSnapshot().v;
@@ -3571,7 +3566,7 @@ document.getElementById('agPopX').onclick = agPopClose;
 const agApplyOrig = agApply;
 agApply = function (pl) {
   agApplyOrig(pl); agManualDirty = false; agPopClose(); clearTimeout(agPopTimer);
-  agPopTimer = setTimeout(() => { if (isPlaying) agAsk('agent', 'Preset ' + pl.genre + ' · ' + pl.sub + '. Oui = je l'enregistre et je retiens. Non = je te propose une autre version.'); }, 15000);
+  agPopTimer = setTimeout(() => { if (isPlaying) agAsk('agent', 'Preset ' + pl.genre + ' · ' + pl.sub + '. Oui = je l\'enregistre et je retiens. Non = je te propose une autre version.'); }, 15000);
 };
 document.addEventListener('pointerup', e => {
   if (e.target.closest && e.target.closest('.knob') && !e.target.closest('.dim-stack .loop-rate')) { agManualDirty = true; agManualAt = Date.now(); }
@@ -3580,7 +3575,7 @@ setInterval(() => {
   if (!agManualDirty || !isPlaying || agBusy) return;
   if (Date.now() - agManualAt < 25000 || Date.now() - agLastAsk < 120000) return;
   agManualDirty = false;
-  agAsk('manual', 'Tu viens de régler les boutons. Oui = j'enregistre ce réglage et j'apprends tes goûts.');
+  agAsk('manual', 'Tu viens de régler les boutons. Oui = j\'enregistre ce réglage et j\'apprends tes goûts.');
 }, 5000);
 
 let recorder = null, recChunks = [], recT0 = 0, recTick = null;
@@ -3624,7 +3619,7 @@ function recStart() {
   recorder.start(1000);
   recT0 = performance.now(); recPaint(); recTick = setInterval(recPaint, 500);
   recWrap.classList.add('on');
-  document.getElementById('recBtn').title = 'Arrêter l'enregistrement et l'écrire sur le disque dur';
+  document.getElementById('recBtn').title = 'Arrêter l\'enregistrement et l\'écrire sur le disque dur';
   showMemoToast('● Enregistrement… appuie sur ⏸ pour arrêter et sauvegarder', '#FF2D3F', true);
 }
 function recStop() {
