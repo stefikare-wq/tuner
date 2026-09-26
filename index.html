@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#05060C">
-<title>Radio The Core · Full</title>
+<title>Radio The Core · ESSAI</title>
 <style>
   :root{
     --void:#05060C; --deep:#080B14; --panel:#0C1020; --mod:#0A0E1A;
@@ -59,8 +59,9 @@
   .pill.fav-btn{background:linear-gradient(135deg,#FF3D9E,#B01E75);color:#fff}
 
   .wavewrap{padding:0 18px 12px;flex:0 0 auto}
-  .wave{display:flex;align-items:flex-end;gap:2px;height:30px;width:100%}
-  .wave i{flex:1;border-radius:3px;height:4px;background:var(--cyan);opacity:.22;
+  .wave{display:flex;align-items:flex-end;gap:3px;height:64px;width:100%;padding-top:10px}
+  .wave i{flex:1;border-radius:3px 3px 1px 1px;height:4px;opacity:.22;
+          background:linear-gradient(to top,#2FE7FF 0%,#8F9BFF 55%,#FF3D9E 100%);
           transition:height .08s linear,opacity .4s var(--e)}
   .wave.on i{opacity:.9}
 
@@ -105,6 +106,19 @@
   .knob-grid.cols5{grid-template-columns:repeat(5, 1fr)}
   .knob-grid.cols4{grid-template-columns:repeat(4, 1fr)}
   .knob-grid.cols3{grid-template-columns:repeat(3, 1fr)}
+  .knob-grid.cols6{grid-template-columns:repeat(6, 1fr)}
+  .knob-grid.cols6 .knob-dial{max-width:78px}
+  .knob-grid.cols7{grid-template-columns:repeat(7, 1fr)}
+  .knob-grid.cols7 .knob-dial{max-width:70px}
+  .knob[data-key="chorWave"] .knob-value{font-size:12px;letter-spacing:.04em;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1}
+  .wave-ic{width:40px;height:20px;overflow:visible}
+  .knob[data-key="chorWave"] .knob-tick{display:none}
+  .wave-pos{position:absolute;width:40%;height:20%;transform:translate(-50%,-50%);pointer-events:none;overflow:visible;
+    color:var(--k-color);opacity:.3;transition:opacity .15s,filter .15s}
+  .wave-pos path{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .wave-pos.on{opacity:1;filter:drop-shadow(0 0 3px var(--k-color)) drop-shadow(0 0 6px var(--k-color))}
+  .wave-ic path{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+    filter:drop-shadow(0 0 3px currentColor)}
 
   .knob{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:grab;touch-action:none;width:100%}
   .knob:active{cursor:grabbing}
@@ -113,7 +127,7 @@
     border:3px solid var(--k-color,var(--cyan));
     box-shadow:inset 0 0 12px rgba(0,0,0,.7),inset 0 0 0 1px rgba(255,255,255,.04);
     display:flex;align-items:center;justify-content:center;
-    transition:box-shadow .2s var(--e);overflow:hidden}
+    transition:box-shadow .2s var(--e);overflow:visible;margin-top:12%}
   .knob.active .knob-dial{
     box-shadow:inset 0 0 12px rgba(0,0,0,.7),inset 0 0 0 1px rgba(255,255,255,.08),
       0 0 24px color-mix(in srgb,var(--k-color,var(--cyan)) 40%,transparent)}
@@ -124,7 +138,7 @@
     pointer-events:none;opacity:.5}
   .knob-indicator{position:absolute;inset:0;pointer-events:none;transform-origin:50% 50%;
                   transition:transform .05s linear}
-  .knob-indicator::before{content:'';position:absolute;left:50%;top:5%;width:5px;height:24%;
+  .knob-indicator::before{content:'';position:absolute;left:50%;top:6%;width:5px;height:24%;
     border-radius:3px;background:var(--k-color,var(--cyan));transform:translateX(-50%);
     box-shadow:0 0 8px var(--k-color,var(--cyan))}
   .knob-dial::after{content:'';position:absolute;inset:38%;border-radius:50%;
@@ -159,10 +173,9 @@
   .drawer{position:fixed;z-index:40;background:linear-gradient(180deg,#0B1020,#06080F);
     transition:transform .32s var(--e);display:flex;flex-direction:column;overflow:hidden;
     box-shadow:0 -20px 60px rgba(0,0,0,.6)}
-  .drawer-bottom{left:0;right:0;bottom:0;top:0;height:100vh;height:100dvh;max-height:100dvh;
-    border-top-left-radius:0;border-top-right-radius:0;border-top:1px solid var(--edge2);
-    transform:translateY(101%);
-    padding-top:env(safe-area-inset-top)}
+  .drawer-bottom{left:0;right:0;bottom:0;top:auto;height:92vh;height:92dvh;max-height:92vh;
+    border-top-left-radius:24px;border-top-right-radius:24px;border-top:1px solid var(--edge2);
+    transform:translateY(101%)}
   .drawer-bottom.open{transform:translateY(0)}
   .drawer-left{left:0;top:0;bottom:0;width:min(460px,92vw);
     border-top-right-radius:24px;border-bottom-right-radius:24px;border-right:1px solid var(--edge2);
@@ -173,71 +186,59 @@
     transform:translateX(101%);box-shadow:-20px 0 60px rgba(0,0,0,.6)}
   .drawer-right.open{transform:translateX(0)}
 
-  .drawer-handle{display:flex;align-items:center;justify-content:center;padding:8px 0 4px;flex:0 0 auto;cursor:grab}
+  .drawer-handle{display:flex;align-items:center;justify-content:center;padding:14px 0 10px;flex:0 0 auto;cursor:grab}
   .drawer-handle i{width:64px;height:6px;border-radius:99px;background:rgba(140,190,255,.35)}
   .drawer-left .drawer-handle i,
   .drawer-right .drawer-handle i{width:6px;height:64px}
-
-  .dhead{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;flex:0 0 auto;gap:10px}
-  .dhead h2{font-size:18px;letter-spacing:.18em;margin:0;color:var(--cyan);font-weight:800}
-  .dhead button{width:44px;height:44px;border-radius:50%;border:1px solid var(--edge2);
-    background:rgba(234,241,255,.06);font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center}
+  .dhead{display:flex;align-items:center;justify-content:space-between;padding:4px 22px 16px;flex:0 0 auto;gap:14px}
+  .dhead h2{font-size:22px;letter-spacing:.18em;margin:0;color:var(--cyan);font-weight:800}
+  .dhead button{width:56px;height:56px;border-radius:50%;border:1px solid var(--edge2);
+    background:rgba(234,241,255,.06);font-size:26px;line-height:1;display:flex;align-items:center;justify-content:center}
   .dhead button:active{transform:scale(.92)}
-
   .dcontent{flex:1 1 auto;display:flex;flex-direction:column;
-    padding:0 12px calc(env(safe-area-inset-bottom) + 10px) 12px;min-height:0;overflow:hidden}
+    padding:0 22px calc(env(safe-area-inset-bottom) + 22px) 22px;min-height:0;overflow:hidden}
 
-  .addtoggle{flex:0 0 auto;width:100%;min-height:42px;margin-bottom:8px;border-radius:12px;
-    border:1px dashed var(--edge2);background:rgba(234,241,255,.04);color:var(--muted);
-    font-size:15px;font-weight:700;letter-spacing:.06em}
-  .addtoggle:active{transform:scale(.98)}
-  .addtop[hidden]{display:none}
-
-  .addtop{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;flex:0 0 auto}
+  .addtop{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;flex:0 0 auto}
   .addtop .row2{display:flex;gap:8px}
-  .addtop .txtin{min-height:46px;font-size:16px}
+  .addtop .txtin{min-height:56px;font-size:19px;padding:0 18px}
   .addtop .row2 .txtin{flex:1;min-width:0}
-  .addtop .pill{min-height:46px;font-size:16px}
-
-  .searchbox{margin-bottom:8px;flex:0 0 auto}
+  .addtop .pill{min-height:56px;font-size:19px}
+  .searchbox{margin-bottom:14px;flex:0 0 auto}
   .txtin{width:100%;font:inherit;color:var(--ice);background:rgba(234,241,255,.05);
-    border:1px solid var(--edge2);border-radius:12px;min-height:46px;padding:0 14px;font-size:16px;
+    border:1px solid var(--edge2);border-radius:14px;min-height:56px;padding:0 18px;font-size:19px;
     -webkit-appearance:none;appearance:none}
   .txtin:focus{outline:none;border-color:var(--cyan)}
-
-  .tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 8px;padding-bottom:4px;flex:0 0 auto}
+  .tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 0 14px;padding-bottom:6px;flex:0 0 auto}
   .tabs::-webkit-scrollbar{display:none}
-  .tabs button{flex:none;white-space:nowrap;font-size:15px;color:var(--muted);
+  .tabs button{flex:none;white-space:nowrap;font-size:18px;color:var(--muted);
     background:rgba(234,241,255,.05);border:1px solid var(--edge);
-    border-radius:100px;min-height:40px;padding:0 15px}
+    border-radius:100px;min-height:48px;padding:0 20px}
   .tabs button.sel{background:linear-gradient(135deg,var(--cyan),#0E8BDD);color:#03121A;
     border-color:transparent;font-weight:700}
   .tabs button.fav-tab.sel{background:linear-gradient(135deg,var(--magenta),#B01E75);color:#fff;
     box-shadow:0 0 16px rgba(255,61,158,.4)}
-
   .listwrap{flex:1 1 auto;overflow-y:auto;min-height:0;padding-right:4px;-webkit-overflow-scrolling:touch}
   .listwrap::-webkit-scrollbar{width:8px}
   .listwrap::-webkit-scrollbar-thumb{background:rgba(234,241,255,.13);border-radius:99px}
-
-  .rowlist{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 12px;
-    border-radius:12px;border:1px solid transparent;transition:background .15s var(--e),border-color .15s var(--e)}
-  .rowlist + .rowlist{margin-top:4px}
+  .rowlist{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px;
+    border-radius:14px;border:1px solid transparent;transition:background .15s var(--e),border-color .15s var(--e)}
+  .rowlist + .rowlist{margin-top:6px}
   .rowlist:hover{background:rgba(234,241,255,.05)}
   .rowlist.play{background:linear-gradient(90deg,rgba(47,231,255,.16),rgba(47,231,255,.02));border-color:rgba(47,231,255,.45)}
-  .rowlist .dot{width:9px;height:9px;border-radius:50%;flex:none;background:rgba(234,241,255,.14)}
+  .rowlist .dot{width:12px;height:12px;border-radius:50%;flex:none;background:rgba(234,241,255,.14)}
   .rowlist.play .dot{background:var(--cyan)}
   .rowlist .info{flex:1;min-width:0}
-  .rowlist .nm{font-weight:600;font-size:19px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rowlist .nm{font-weight:600;font-size:24px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .rowlist.play .nm{color:var(--cyan)}
-  .rowlist .desc{font-size:14px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .rowlist .star{font-size:22px;color:rgba(234,241,255,.25);padding:6px 10px;flex:none;
-    transition:all .18s var(--e);border-radius:10px;background:rgba(234,241,255,.03)}
+  .rowlist .desc{font-size:18px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rowlist .star{font-size:30px;color:rgba(234,241,255,.25);padding:10px 14px;flex:none;
+    transition:all .18s var(--e);border-radius:12px;background:rgba(234,241,255,.03)}
   .rowlist .star:hover{color:var(--magenta);transform:scale(1.15);background:rgba(255,61,158,.1)}
   .rowlist .star.is{color:var(--magenta);background:rgba(255,61,158,.15);text-shadow:0 0 14px var(--magenta)}
-  .rowlist .del{font-size:19px;color:rgba(234,241,255,.2);padding:6px 8px;flex:none;
+  .rowlist .del{font-size:26px;color:rgba(234,241,255,.2);padding:10px 12px;flex:none;
     transition:all .18s var(--e);border-radius:10px}
   .rowlist .del:hover{color:#FF3D9E;background:rgba(255,61,158,.12)}
-  .msg{font-size:15px;color:var(--muted);margin-top:10px;line-height:1.45;flex:0 0 auto}
+  .msg{font-size:19px;color:var(--muted);margin-top:14px;line-height:1.5;flex:0 0 auto}
   .msg b{color:var(--ice)}
 
   .fx-content{flex:1 1 auto;overflow-y:auto;min-height:0;padding-right:4px;-webkit-overflow-scrolling:touch}
@@ -341,27 +342,433 @@
     .toggle-btn{min-width:82px;height:44px;font-size:18px}
     .fx-fav-btn{min-width:44px;height:44px;font-size:22px}
     .pill{min-height:50px;font-size:17px}
-    .dcontent{padding:0 10px calc(env(safe-area-inset-bottom) + 8px) 10px}
-    .rowlist .nm{font-size:18px}
-    .rowlist .desc{font-size:13px}
+    .dcontent{padding:0 16px calc(env(safe-area-inset-bottom) + 16px) 16px}
   }
   @media (max-height:600px){.wavewrap{display:none}}
+  @media (max-width:700px){.wave{height:48px;gap:2px}}
+
+  /* ===== Mémoire d'équilibre des égaliseurs (appui 3 s) ===== */
+  .knob-dial::after{transition:background .35s var(--e),box-shadow .35s var(--e)}
+  .knob.memo .knob-dial::after{
+    background:radial-gradient(circle at 35% 30%,#fff 0%,var(--k-color) 38%,color-mix(in srgb,var(--k-color) 55%,#000) 100%);
+    box-shadow:0 0 10px var(--k-color),inset 0 1px 3px rgba(255,255,255,.4);opacity:.55}
+  .knob.memo.at-memo .knob-dial::after{opacity:1;box-shadow:0 0 14px var(--k-color),0 0 30px var(--k-color),inset 0 1px 3px rgba(255,255,255,.5)}
+  .knob.holding .knob-dial{animation:recCharge 1s linear forwards}
+  @keyframes recCharge{from{border-color:var(--k-color)}to{border-color:#FF2D3F;box-shadow:0 0 18px rgba(255,45,63,.55)}}
+  .knob.rec-armed .knob-dial,.knob.recording .knob-dial{border-color:#FF2D3F!important;
+    box-shadow:inset 0 0 12px rgba(0,0,0,.7),0 0 26px rgba(255,45,63,.65)!important}
+  .knob.rec-armed .knob-indicator::before,.knob.recording .knob-indicator::before{background:#FF2D3F;box-shadow:0 0 10px #FF2D3F}
+  .knob.recording .knob-dial{animation:recBlink .8s ease-in-out infinite}
+  @keyframes recBlink{50%{box-shadow:inset 0 0 12px rgba(0,0,0,.7),0 0 8px rgba(255,45,63,.3)}}
+  .knob.looping .knob-dial{box-shadow:inset 0 0 12px rgba(0,0,0,.7),0 0 16px rgba(255,45,63,.35)}
+  .knob.rec-armed .knob-value,.knob.recording .knob-value{color:#FF2D3F}
+  /* ===== 11 graduations : 1 centrale plus grosse + 5 de chaque côté ===== */
+  .knob-dial::before{display:none}
+  .knob-tick{position:absolute;inset:0;pointer-events:none}
+  /* graduations = bulles creuses ; --tc couleur, --tf remplissage (0 → 1 quand l'aiguille s'approche) */
+  .knob-tick::before{content:'';position:absolute;left:50%;top:-15%;width:3px;height:9%;transform:translateX(-50%);
+    border-radius:2px;background:rgba(234,241,255,.22);transition:background .12s,box-shadow .12s}
+  .knob-tick.major::before{width:5px;height:12%;top:-18%;background:rgba(234,241,255,.4)}
+  .knob-tick.lit::before{background:var(--k-color,var(--cyan));box-shadow:0 0 6px var(--k-color,var(--cyan))}
+  .knob-tick.here::before{background:#fff;box-shadow:0 0 6px #fff,0 0 12px var(--k-color,var(--cyan))}
+  .knob.on-tick .knob-indicator::before{background:#fff;box-shadow:0 0 10px #fff,0 0 20px var(--k-color,var(--cyan))}
+  /* ===== Dimension : gros bouton central ===== */
+  .knob-grid.master5{grid-template-columns:1fr 1fr 1.7fr 1fr 1fr;align-items:center}   /* noms alignés sur la même ligne */
+  /* double bouton : rond central = % de Dimension, anneau externe = vitesse des boucles */
+  .dimbox{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+  .dim-stack{position:relative;width:100%;max-width:160px;aspect-ratio:1 / 1;margin-top:4%}
+  .dim-stack .knob{position:absolute;gap:0}
+  .dim-stack .knob-dimspeed{inset:0}
+  .dim-stack .knob-dim{inset:23%;width:auto;z-index:2}
+  .dim-stack .knob-dial{margin-top:0;max-width:none}
+  .knob-dimspeed .knob-dial{border-width:3px;
+    background:radial-gradient(circle,#050810 0 58%,var(--panel) 72%,var(--mod) 88%,#050810 100%)}
+  .knob-dimspeed .knob-dial::after{display:none}
+  .knob-dimspeed .knob-indicator::before{top:1%;height:12%;width:5px}
+  .knob-dim .knob-dial{border-width:4px}
+  .knob-dim .knob-indicator::before{top:7%;height:26%;width:7px}
+  .dim-vals{display:flex;gap:12px;justify-content:center;align-items:baseline}
+  .dim-vals .knob-value{font-size:24px}
+  .dimbox > .knob-label{font-size:18px;letter-spacing:.12em;color:#FF6B78}
+  /* interrupteur Dimension : OFF = écoute sans les boucles (rien n'est effacé) */
+  .dim-onoff{min-width:44px;height:24px;padding:0 8px;border-radius:12px;font-size:12px;font-weight:900;letter-spacing:.06em;
+    border:2px solid #FF2D3F;background:#FF2D3F;color:#fff;box-shadow:0 0 12px rgba(255,45,63,.55);cursor:pointer}
+  .dim-onoff[aria-pressed="false"]{background:rgba(0,0,0,.4);color:var(--muted);border-color:var(--muted);box-shadow:none}
+  .dimbox.dim-off .dim-stack{opacity:.45;filter:saturate(.4)}
+  /* temps de la boucle de chaque bouton : −10 (très lent) · 0 (normal) · +10 (très rapide) */
+  .loop-rate{position:absolute;left:50%;top:84%;transform:translateX(-50%);z-index:3;display:none;
+    min-width:30px;height:20px;padding:0 5px;border-radius:10px;box-sizing:border-box;
+    font-size:12px;font-weight:900;line-height:16px;text-align:center;font-variant-numeric:tabular-nums;
+    background:#050810;border:2px solid #FF2D3F;color:#fff;cursor:ns-resize;touch-action:none;user-select:none}
+  .knob.looping .loop-rate{display:block}
+  /* petites boules : au-dessus = +10, en dessous = −10 */
+  .lr-b{position:absolute;left:50%;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;cursor:pointer;
+    background:#050810;border:2px solid currentColor;box-sizing:border-box;box-shadow:0 0 6px currentColor}
+  .lr-b::after{content:'';position:absolute;inset:-7px}              /* zone de clic plus large au doigt */
+  .lr-b.up{top:-17px} .lr-b.dn{bottom:-17px}
+  .lr-b:hover{background:currentColor}
+  .lr-b:active{transform:scale(.8)}
+  .loop-rate.slow{border-color:#2FE7FF;color:#2FE7FF}
+  .loop-rate.fast{border-color:#FFC23D;color:#FFC23D}
+  /* barre BRUT ↔ EFFETS (mélange global de toute la chaîne) */
+  .xfade-wrap{padding:2px 0 30px;margin-bottom:14px;border-bottom:1px solid rgba(234,241,255,.08)}
+  .knob.hbar{gap:20px;align-items:stretch;cursor:ew-resize}
+  .xf-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .xf-head .knob-label{flex:1;text-align:center;color:var(--muted)}
+  .xf-end{font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--muted);min-width:64px}
+  .xf-end.r{text-align:right;color:var(--k-color)}
+  .hbar .knob-value{min-width:56px;text-align:center}
+  .hbar .knob-dial{aspect-ratio:auto;height:34px;max-width:none;width:100%;margin-top:0;border-radius:17px;border-width:3px;
+    background:linear-gradient(90deg,#2a3248,#050810 50%,color-mix(in srgb,var(--k-color) 30%,#050810))}
+  .hbar .knob-dial::after{display:none}
+  .xf-fill{position:absolute;left:0;top:0;bottom:0;border-radius:14px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--k-color) 55%,transparent));opacity:.8}
+  .hbar .knob-indicator{inset:auto;top:-18px;bottom:-18px;width:0;transform:none!important;transition:left .05s linear;z-index:2}
+  .hbar .knob-indicator::before{top:0;height:100%;width:12px;border-radius:6px;border:2px solid #fff;box-sizing:border-box}
+  .xf-cut{position:absolute;top:22%;bottom:22%;width:2px;margin-left:-1px;background:rgba(234,241,255,.22);pointer-events:none}
+  .xf-cut.mid{top:10%;bottom:10%;width:3px;background:rgba(234,241,255,.4)}
+  .xf-rec{position:absolute;top:-3px;bottom:-3px;border-radius:6px;background:rgba(255,45,63,.28);border:2px solid rgba(255,45,63,.7);
+    pointer-events:none;display:none;box-sizing:border-box}
+  .xf-rec i{position:absolute;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#FF2D3F;box-shadow:0 0 6px #FF2D3F}
+  .hbar .knob-memo{inset:auto;top:-9px;bottom:auto;height:0;transform:none!important}
+  .hbar .knob-memo::before{top:0}
+  .hbar .loop-rate{left:50%;top:50%;transform:translate(-50%,-50%)}
+  /* repère d'automatisation + remise à zéro du temps, sur chaque conteneur */
+  .auto-mark{display:inline-flex;align-items:center;gap:6px;margin-right:auto;flex:none;
+    font:800 13px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.02em;color:var(--muted)}
+  .auto-mark b{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:13px;
+    border:1.5px solid rgba(234,241,255,.18);opacity:.55;font-variant-numeric:tabular-nums}
+  .auto-mark.on b{opacity:1;color:#fff;border-color:#FF2D3F;background:rgba(255,45,63,.18);box-shadow:0 0 10px rgba(255,45,63,.35)}
+  .auto-mark.timed b{border-color:#FFC23D;box-shadow:0 0 10px rgba(255,194,61,.35)}
+  .auto-mark button{height:26px;padding:0 10px;border-radius:13px;border:1.5px solid rgba(234,241,255,.25);background:#07101f;
+    color:var(--ink,#EAF1FF);font:800 12px/1 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
+  .auto-mark button:disabled{opacity:.3;cursor:default}
+  .auto-mark button:not(:disabled):active{transform:scale(.92)}
+  .pedal-actions .auto-mark{margin-right:8px}
+  .xf-head .auto-mark{margin-right:0}
+  /* menu de choix du reset + barre « tout reset » */
+  .auto-all{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-4px 0 14px;padding-bottom:12px;
+    border-bottom:1px solid rgba(234,241,255,.08);font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--muted)}
+  .auto-all .auto-mark{margin-right:0}
+  .auto-all > span{margin-right:auto}
+  .site-reset{height:26px;padding:0 12px;border-radius:13px;border:1.5px dashed #FF2D3F;background:none;color:#FF6B78;
+    font:800 12px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.04em;cursor:pointer}
+  .site-reset:hover{background:rgba(255,45,63,.15);color:#fff}
+  .site-reset .s{display:none}
+  .auto-all .auto-mark button{border-color:#FF2D3F;color:#fff;background:rgba(255,45,63,.22)}
+  .reset-menu{position:fixed;z-index:80;min-width:250px;padding:8px;border-radius:16px;display:none;flex-direction:column;gap:4px;
+    background:#0b1222;border:1px solid rgba(234,241,255,.16);box-shadow:0 12px 40px rgba(0,0,0,.6)}
+  .reset-menu.open{display:flex}
+  .reset-menu h4{margin:4px 8px 6px;font-size:12px;letter-spacing:.14em;color:var(--muted);font-weight:900}
+  .reset-menu button{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border:0;border-radius:10px;
+    background:none;color:var(--ink,#EAF1FF);font:700 14px/1.2 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
+  .reset-menu button:hover,.reset-menu button:focus-visible{background:rgba(234,241,255,.08)}
+  .reset-menu button i{font-style:normal;width:22px;text-align:center;font-size:16px}
+  .reset-menu button small{display:block;color:var(--muted);font-weight:600;font-size:12px;margin-top:2px}
+  .reset-menu button.danger{color:#ffb3bc}
+  /* 5 favoris d'automatisation : une étoile = un jeu de boucles */
+  .loop-stars{display:flex;gap:4px;justify-content:center}
+  .lstar{width:28px;height:28px;padding:0;border:0;background:none;cursor:pointer;font-size:22px;line-height:28px;
+    color:var(--s-color);opacity:.45;transition:transform .15s,opacity .15s,text-shadow .15s}
+  .lstar.full{opacity:.7}
+  .lstar.on{opacity:1;transform:scale(1.25);text-shadow:0 0 8px var(--s-color),0 0 16px var(--s-color)}
+  .lstar:active{transform:scale(.9)}
+  /* graduations collées (segments contigus) */
+  .knob-seg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+  .knob-seg path{fill:none;stroke-linecap:butt}
+  .knob-seg .sg-bg{stroke:color-mix(in srgb,var(--k-color) 22%,#1a2033)}
+  .knob-seg .sg-on{stroke:var(--k-color);filter:drop-shadow(0 0 3px var(--k-color))}
+  .knob-seg .sg-cut{stroke:#050810;stroke-width:1.6}
+  .knob.on-tick .knob-seg .sg-on{stroke:color-mix(in srgb,var(--k-color) 55%,#fff)}
+  @media (max-width:700px){
+    .knob-grid.cols5 .knob-dial{max-width:50px}
+    .knob-grid.cols4 .knob-dial{max-width:60px}
+    .knob-grid.cols6{gap:10px 2px} .knob-grid.cols6 .knob-dial{max-width:40px}
+    .knob-grid.cols6 .knob-label{font-size:11px;letter-spacing:0} .knob-grid.cols6 .knob-value{font-size:13px}
+    .knob-grid.cols7{grid-template-columns:repeat(4, 1fr);gap:14px 4px} .knob-grid.cols7 .knob-dial{max-width:50px}
+    .knob-grid.cols7 .knob-label{font-size:12px;letter-spacing:0} .knob-grid.cols7 .knob-value{font-size:13px}
+    .pedal-head{flex-wrap:wrap;row-gap:8px} .pedal-name{flex:1 0 auto}
+    .knob[data-key="chorWave"] .knob-value{font-size:10px;letter-spacing:0} .wave-ic{width:32px;height:16px}
+    .wave-pos{width:46%;height:23%}
+    .knob-grid.master5{grid-template-columns:1fr 1fr 1.45fr 1fr 1fr;gap:10px 3px}
+    .knob-grid.master5 .knob-dial{max-width:48px}
+    .knob-grid.master5 .knob-label{font-size:11px;letter-spacing:0}
+    .knob-grid.master5 .knob-value{font-size:13px}
+    .dim-stack{max-width:84px}
+    .knob-grid.master5 .dim-stack .knob-dial{max-width:none}
+    .dim-onoff{min-width:34px;height:20px;padding:0 5px;font-size:10px}
+    .xf-end{font-size:11px;min-width:46px;letter-spacing:.06em} .hbar .knob-dial{height:30px}
+    .hbar .knob-indicator{top:-14px;bottom:-14px} .knob.hbar{gap:16px}
+    .auto-mark{gap:4px;font-size:11px} .auto-mark b,.auto-mark button{height:22px;padding:0 6px;font-size:11px}
+    .auto-all > span{display:none} .site-reset{height:22px;padding:0 8px;font-size:11px}
+    .site-reset .l{display:none} .site-reset .s{display:inline}
+    .loop-stars{gap:1px} .lstar{width:17px;height:20px;font-size:15px;line-height:20px}
+    .dim-vals{gap:4px} .knob-grid.master5 .dim-vals .knob-value{font-size:14px}
+    .knob-grid.master5 .dimbox > .knob-label{font-size:12px;letter-spacing:.06em}
+    #statusMini{display:none}
+  }
+  .knob-rec{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none;overflow:visible}
+  .knob-rec path{fill:none;stroke:#FF2D3F;stroke-width:5;stroke-linecap:round;opacity:.55}
+  .knob-rec circle{fill:#FF2D3F;filter:drop-shadow(0 0 3px #FF2D3F)}
+  @keyframes memoCharge{
+    0%{box-shadow:0 0 0 0 var(--k-color);background:radial-gradient(circle at 35% 30%,#4a5570 0%,#2a3248 55%,#1a2033 100%)}
+    95%{box-shadow:0 0 0 7px color-mix(in srgb,var(--k-color) 45%,transparent);
+        background:radial-gradient(circle at 35% 30%,#fff 0%,var(--k-color) 50%,#1a2033 100%)}
+    100%{box-shadow:0 0 20px var(--k-color),0 0 40px var(--k-color);background:var(--k-color)}}
+  .knob.memo-flash .knob-dial{animation:memoFlash .6s ease-out}
+  @keyframes memoFlash{0%{box-shadow:0 0 0 0 var(--k-color)}40%{box-shadow:0 0 0 10px color-mix(in srgb,var(--k-color) 40%,transparent),0 0 30px var(--k-color)}100%{box-shadow:inset 0 0 12px rgba(0,0,0,.7)}}
+  /* repère de la position mémorisée sur la couronne */
+  .knob-memo{position:absolute;inset:0;pointer-events:none;display:none}
+  .knob.memo .knob-memo{display:block}
+  .knob-memo::before{content:'';position:absolute;left:50%;top:1px;width:7px;height:7px;border-radius:50%;
+    transform:translateX(-50%);background:#fff;box-shadow:0 0 8px var(--k-color),0 0 3px #fff}
+
+  #fxDrawer.solo{height:auto;max-height:92vh;max-height:92dvh}
+  #fxDrawer.solo .pedal:not(.solo-show){display:none}
+  #fxDrawer.solo .pedal.solo-show{margin-bottom:0}
+  .dhead .fx-all{width:auto;height:44px;padding:0 16px;border-radius:99px;font-size:15px;font-weight:700;
+    border:1px solid var(--edge2);background:rgba(234,241,255,.06)}
+  .dhead .fx-all{white-space:nowrap}
+  .eq-hint .short{display:none}
+  @media (max-width:700px){ .eq-hint .long{display:none} .eq-hint .short{display:inline} .dhead .fx-all{height:40px;padding:0 12px;font-size:13px} }
+  .memo-toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);z-index:60;pointer-events:none;
+    transform:translate(-50%,16px);opacity:0;transition:opacity .2s var(--e),transform .2s var(--e);
+    padding:11px 20px;border-radius:99px;background:rgba(6,10,22,.94);border:2px solid var(--t-color,#2FE7FF);
+    color:#fff;font-size:17px;font-weight:800;white-space:nowrap;
+    box-shadow:0 0 22px color-mix(in srgb,var(--t-color,#2FE7FF) 45%,transparent),0 10px 30px rgba(0,0,0,.5)}
+  .memo-toast.show{opacity:1;transform:translate(-50%,0)}
+  .eq-hint{font-size:14px;font-weight:600;letter-spacing:0;color:var(--muted);text-align:right}
+  .eq-hint.live{color:#fff}
+  @media (max-width:700px){.eq-hint{font-size:11.5px;max-width:60%}}
+
+  /* ===== Interrupteur général des effets (bouton Effets) ===== */
+  #openFx{gap:10px}
+  .fx-master{display:inline-flex;align-items:center;justify-content:center;min-width:52px;height:30px;padding:0 10px;
+    border-radius:99px;font-size:13px;font-weight:900;letter-spacing:.08em;line-height:1;
+    border:2px solid rgba(234,241,255,.3);color:var(--muted);background:rgba(0,0,0,.35);transition:all .18s var(--e)}
+  .fx-master.on{color:#03121A;background:var(--lime);border-color:transparent;box-shadow:0 0 14px rgba(185,255,69,.55)}
+  .fx-master:active{transform:scale(.92)}
+
+  /* ===== Les 4 effets en accès rapide (à la place des presets) ===== */
+  .fxquick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--edge2)}
+  .fxquick button{position:relative;min-height:54px;padding:6px 8px;border-radius:12px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    font-size:15px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+    background:rgba(234,241,255,.05);border:1px solid var(--edge);transition:all .18s var(--e)}
+  .fxquick button{padding:6px 6px 8px}
+  .fxquick .fxsw{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:24px;margin-top:3px;
+    border-radius:99px;border:1.5px solid currentColor;background:rgba(0,0,0,.25)}
+  .fxquick .fxsw small{font-size:11px;font-weight:900;letter-spacing:.1em;opacity:1}
+  .fxquick button.on .fxsw{background:rgba(3,18,26,.85);color:var(--k-color);border-color:transparent}
+  .fxquick .fxsw:active{transform:scale(.9)}
+  .fxquick button.on{color:#03121A;background:var(--k-color);border-color:transparent;
+    box-shadow:0 0 18px color-mix(in srgb,var(--k-color) 55%,transparent)}
+  .fxquick button:active{transform:scale(.96)}
+  .fxquick.bypass button.on{opacity:.4;box-shadow:none}
+  .pedal.bypass{opacity:.45}
+  @media (max-width:700px){.fxquick button{font-size:12px;letter-spacing:.02em;min-height:50px}}
+/* ===== ON AIR — module YouTube (style éditorial radio) ===== */
+.onair{--red:#FF2D3F;--ink:#EAF1FF;--dim:rgba(234,241,255,.46);--line:rgba(234,241,255,.12);
+  position:relative;overflow:hidden;padding:26px 28px 22px!important}
+.onair:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:radial-gradient(80% 120% at 100% 0%,rgba(255,45,63,.07),transparent 55%)}
+.onair>*{position:relative}
+.oa-mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.oa-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.oa-top>div:first-child{min-width:0}
+.oa-kicker{display:flex;gap:14px;align-items:center;white-space:nowrap}
+.oa-kicker b{color:var(--ink);font-weight:600}
+.oa-title{white-space:nowrap;margin:10px 0 0;font-weight:900;font-size:clamp(40px,6.2vw,84px);line-height:.86;
+  letter-spacing:-.045em;color:var(--ink)}
+.oa-title em{font-family:"Instrument Serif",Georgia,"Times New Roman",serif;font-style:italic;
+  font-weight:400;letter-spacing:-.02em;color:transparent;-webkit-text-stroke:1px rgba(234,241,255,.55);
+  transition:color .5s,-webkit-text-stroke-color .5s}
+.onair.is-live .oa-title em{color:var(--red);-webkit-text-stroke-color:var(--red);
+  text-shadow:0 0 38px rgba(255,45,63,.35)}
+/* voyant ON AIR */
+.oa-lamp{flex:none;display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border-radius:6px;
+  border:1px solid rgba(255,45,63,.35);color:rgba(255,45,63,.5);background:rgba(255,45,63,.04);
+  font:800 12px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.22em;transition:all .35s}
+.oa-lamp i{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.6}
+.oa-lamp.live{color:#fff;background:var(--red);border-color:var(--red);
+  box-shadow:0 0 0 4px rgba(255,45,63,.12),0 0 34px rgba(255,45,63,.55)}
+.oa-lamp.live i{opacity:1;animation:oaBlink 1.2s steps(2) infinite}
+@keyframes oaBlink{50%{opacity:.25}}
+.oa-lamp #ytOutputState{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+/* champ + bouton */
+.oa-input{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:end;margin-top:26px}
+.oa-field{position:relative;display:block}
+.oa-field .oa-mono{display:block;margin-bottom:8px}
+.oa-field input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);
+  color:var(--ink);font:500 20px/1.2 -apple-system,"Segoe UI",sans-serif;padding:6px 0 12px;outline:none;
+  letter-spacing:-.01em;border-radius:0}
+.oa-field input::placeholder{color:rgba(234,241,255,.25)}
+.oa-field:after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--ink);
+  transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.32,.72,0,1)}
+.oa-field:focus-within:after{transform:scaleX(1)}
+.oa-go{display:inline-flex;align-items:center;gap:14px;border:0;cursor:pointer;border-radius:999px;
+  padding:8px 8px 8px 24px;background:var(--ink);color:#07101f;font:800 14px/1 -apple-system,"Segoe UI",sans-serif;
+  letter-spacing:-.01em;transition:transform .2s,background .3s,color .3s;white-space:nowrap}
+.oa-go .ic{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#07101f;color:var(--ink);
+  font-size:13px;transition:transform .45s cubic-bezier(.32,.72,0,1)}
+.oa-go:hover .ic{transform:rotate(-45deg)}
+.oa-go:active{transform:scale(.97)}
+.oa-go.active{background:var(--red);color:#fff}
+.oa-go.active .ic{background:#fff;color:var(--red);transform:none}
+.oa-go:disabled{opacity:.7;cursor:wait}
+.oa-go:disabled .ic{animation:oaSpin 1s linear infinite}
+@keyframes oaSpin{to{transform:rotate(360deg)}}
+/* cadran de fréquence = progression */
+.oa-dial{position:relative;margin-top:30px;height:74px;--needle:12.5%}
+.oa-scale{position:absolute;left:0;right:0;top:0;height:22px;
+  background:
+    repeating-linear-gradient(90deg,rgba(234,241,255,.16) 0 1px,transparent 1px 2.5%);
+  background-size:100% 55%;background-repeat:no-repeat;
+  border-top:1px solid var(--line)}
+.oa-needle{position:absolute;top:-6px;left:var(--needle);width:2px;height:36px;background:var(--red);
+  box-shadow:0 0 14px var(--red);transform:translateX(-1px);transition:left .9s cubic-bezier(.32,.72,0,1)}
+.oa-needle:after{content:"";position:absolute;top:-4px;left:-3px;width:8px;height:8px;border-radius:50%;background:var(--red)}
+.onair.is-wait .oa-needle{animation:oaHunt 1.6s ease-in-out infinite}
+@keyframes oaHunt{50%{transform:translateX(-7px)}}
+.oa-stations{position:absolute;left:0;right:0;top:36px;display:grid;grid-template-columns:repeat(4,1fr)}
+.oa-stations .yt-step{position:relative;text-align:center;padding:0 6px;color:rgba(234,241,255,.3);transition:color .4s}
+.oa-stations .yt-step:before{content:"";position:absolute;left:50%;top:-36px;width:1px;height:22px;background:rgba(234,241,255,.38)}
+.oa-stations .yt-step.done:before,.oa-stations .yt-step.active:before{background:rgba(234,241,255,.8)}
+.oa-stations .yt-step b{display:block;font:800 13px/1.2 -apple-system,"Segoe UI",sans-serif;letter-spacing:-.01em;color:inherit}
+.oa-stations .yt-step .oa-mono{display:block;margin-bottom:3px;color:inherit;font-size:9.5px}
+.oa-stations .yt-step.done{color:rgba(234,241,255,.62)}
+.oa-stations .yt-step.active{color:var(--ink)}
+.oa-stations .yt-step.active .oa-mono{color:var(--red)}
+/* ligne d'état + VU */
+.oa-foot{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,300px);gap:24px;align-items:end;
+  margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+/* plusieurs onglets partagés en même temps */
+.yt-tabs{display:none;flex-direction:column;gap:8px;margin-top:14px}
+.onair.is-live .yt-tabs{display:flex}
+.yt-tab{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.25)}
+.yt-tab i{width:8px;height:8px;border-radius:50%;background:#B9FF45;box-shadow:0 0 8px #B9FF45;flex:none}
+.yt-tab.muted i{background:rgba(234,241,255,.3);box-shadow:none}
+.yt-tab span{flex:1;font-weight:700;color:var(--ink);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yt-tab.muted span{color:var(--dim);text-decoration:line-through}
+.yt-tab button{height:34px;min-width:34px;padding:0 12px;border-radius:17px;border:1px solid var(--line);background:#07101f;color:var(--ink);font:800 13px/1 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
+.yt-tab button.x{color:#ffb3bc}
+.yt-add{align-self:flex-start;height:40px;padding:0 18px;border-radius:20px;border:1px dashed rgba(234,241,255,.45);
+  background:none;color:var(--ink);font-weight:800;font-size:14px;cursor:pointer}
+.yt-add:hover{border-color:#B9FF45;color:#B9FF45}
+.yt-status{font-size:13px;line-height:1.5;color:var(--dim);padding-left:16px;position:relative;min-height:20px}
+.yt-status:before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:rgba(234,241,255,.35)}
+.yt-status strong{color:var(--ink);font-weight:700}
+.yt-status b{color:var(--ink);font-weight:600}
+.yt-status code{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink)}
+.yt-status.live:before{background:#B9FF45;box-shadow:0 0 10px #B9FF45}
+.yt-status.bad{color:#ffb3bc}.yt-status.bad:before{background:var(--red);box-shadow:0 0 10px var(--red)}
+.oa-vu-head{display:flex;justify-content:space-between;margin-bottom:8px}
+.oa-vu-head strong{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink);font-weight:500}
+.oa-vu{height:12px;position:relative;background:rgba(234,241,255,.06);
+  -webkit-mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px);
+          mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px)}
+.oa-vu .yt-meter-fill{height:100%;width:0;background:linear-gradient(90deg,#B9FF45 0 62%,#FFC24B 62% 84%,#FF2D3F 84%);
+  background-size:300px 100%;transition:width .09s linear}
+.oa-chain{margin-top:14px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.oa-chain span:not(:last-child):after{content:"/";margin-left:10px;color:rgba(234,241,255,.2)}
+@media(max-width:760px){
+  .onair{padding:20px 16px 18px!important}
+  .oa-kicker span:first-child{display:none}.oa-title{font-size:clamp(34px,11vw,48px)}
+  .oa-top{display:block;position:relative}.oa-top>div:first-child{min-width:0}
+  .oa-lamp{position:absolute;top:-4px;right:0;padding:6px 9px;font-size:10px;letter-spacing:.16em}
+  .oa-input{grid-template-columns:1fr}.oa-go{justify-content:space-between}
+  .oa-foot{grid-template-columns:1fr}
+  .oa-stations .yt-step b{font-size:11px}.oa-stations .yt-step .oa-mono{letter-spacing:.1em}
+}
+
+  /* ===== Bouton YouTube dans la barre du haut ===== */
+  .tb-btns{grid-template-columns:repeat(6,1fr)!important}
+  .tb-btns .pill{grid-column:span 2}
+  .tb-btns #power,.tb-btns #openYT{grid-column:span 3}
+  .pill.yt-btn{background:linear-gradient(135deg,#FF2D3F,#A3122A);color:#fff}
+  .pill.yt-btn.live{box-shadow:0 0 0 3px rgba(255,45,63,.25),0 0 26px rgba(255,45,63,.6)}
+  @media (min-width:900px){ .tb-btns{grid-template-columns:repeat(5,1fr)!important} .tb-btns .pill,.tb-btns #power,.tb-btns #openYT{grid-column:auto} }
+  @media (max-width:700px){ .tb-btns .pill{font-size:15px;padding:0 8px;white-space:nowrap;min-height:48px} .tb-btns #power,.tb-btns #openYT{font-size:17px} }
+
+  /* ===== Tiroir YouTube (depuis le haut) ===== */
+  .drawer-top{left:0;right:0;top:0;max-height:94vh;max-height:94dvh;overflow-y:auto;
+    border-bottom-left-radius:24px;border-bottom-right-radius:24px;border-bottom:1px solid var(--edge2);
+    transform:translateY(-101%);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .drawer-top.open{transform:translateY(0)}
+  .drawer-top .onair{border:0;border-radius:0;background:transparent;display:block}
+  .drawer-top .yt-status{font-size:17px}
+  .drawer-top .oa-lamp{margin-right:60px}
+  .yt-close{position:absolute;top:16px;right:18px;z-index:3;width:48px;height:48px;border-radius:50%;
+    border:1px solid var(--edge2);background:rgba(234,241,255,.06);font-size:22px;display:flex;align-items:center;justify-content:center}
+
+  /* ===== Pédale CHORUS ===== */
+  .chor-display{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    min-height:74px;padding:8px 12px;border-radius:12px;margin:0 0 12px;gap:3px;
+    background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.3));border:1px solid var(--edge2);transition:all .2s var(--e)}
+  .chor-note{font-size:28px;font-weight:900;line-height:1;color:var(--cyan);text-shadow:0 0 14px currentColor;
+    font-variant-numeric:tabular-nums;min-height:28px;transition:color .15s}
+  .chor-note.idle{width:52px;min-height:0;height:7px;border-radius:2px;background:var(--cyan);box-shadow:0 0 12px var(--cyan);font-size:0}
+  .chor-hz,.chor-cents{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--muted);font-variant-numeric:tabular-nums}
+  .chor-meter{width:100%;height:6px;position:relative;margin:2px 0}
+  .chor-meter i{position:absolute;top:0;left:50%;width:10px;height:6px;border-radius:3px;background:var(--cyan);
+    box-shadow:0 0 10px var(--cyan);transform:translateX(-50%);transition:left .1s linear}
+  .chor-display.locked{border-color:var(--lime);box-shadow:0 0 20px rgba(185,255,69,.2) inset}
+  .chor-display.locked .chor-note,.chor-display.locked .chor-cents{color:var(--lime)}
+  .chor-display.locked .chor-meter i{background:var(--lime);box-shadow:0 0 10px var(--lime)}
+  .chor-ref{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;margin:0 0 30px}
+  .chor-ref.bar{display:block}
+  .bar-hint{margin-top:22px;font-size:12.5px;font-weight:600;color:var(--muted);text-align:center;line-height:1.4}
+  .bar-hint b{color:#FF6B78}
+  .chor-ref .hbar .knob-dial{height:28px}
+  .chor-ref .hbar .knob-value{min-width:92px;font-size:16px}
+  .chor-ref .lbl{font-size:14px;color:var(--muted);line-height:1.2}
+  .chor-ref .val{font-size:16px;font-weight:800;color:var(--cyan);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .chor-ref .val small{display:block;font-size:12px;color:var(--muted);font-weight:700}
+  .chor-ref input{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;outline:none;cursor:pointer;
+    background:linear-gradient(90deg,#2FE7FF,#9aa6ff 50%,#FF3D9E)}
+  .chor-ref input::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;
+    box-shadow:0 0 0 4px rgba(47,231,255,.18),0 2px 8px rgba(0,0,0,.5)}
+  .chor-ref input::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff}
+  #pedalChorus .knob-label{font-size:13px}
+  /* ===== V25 : corrections d'alignement ===== */
+  .brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .brand-row{min-width:0}
+  .pedal-head{min-width:0}
+  .pedal-name{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .pedal-actions{flex:none}
+  .toggle-btn{min-width:96px}
+  .fxquick{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .fxquick .nm{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  @media (max-width:700px){
+    .brand{font-size:17px;letter-spacing:.1em}
+    .brand small{font-size:10px;margin-left:3px}
+    .tb-btns #openFx{gap:6px;padding:0 8px}
+    .fx-master{min-width:40px;height:26px;padding:0 7px;font-size:11px}
+    .fxquick{gap:5px}
+    .fxquick button{font-size:10.5px;letter-spacing:0;padding:6px 3px 7px}
+    .fxquick .fxsw{min-width:40px;height:22px}
+    .pedal-name{font-size:18px;letter-spacing:.12em}
+    .toggle-btn{min-width:78px}
+  }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="app">
   <div class="card topbar">
     <div class="brand-row">
       <span class="orb"></span>
-      <span class="brand">RADIO THE CORE <small>• FULL</small></span>
+      <span class="brand">RADIO THE CORE <small>• ESSAI · V41</small></span>
     </div>
     <div class="now" id="npName">Rien en lecture</div>
     <div class="sub" id="npState">Ouvre les stations pour choisir</div>
 
     <div class="tb-btns">
       <button class="pill" id="power">▶ Écouter</button>
+      <button class="pill yt-btn" id="openYT">▶ YouTube</button>
       <button class="pill fav-btn" id="openFavs">★ Favoris</button>
-      <button class="pill ghost" id="openFx">✦ Effets</button>
+      <button class="pill ghost" id="openFx">✦ Effets <span class="fx-master on" id="fxMaster" role="switch" aria-checked="true" title="Activer / couper tous les effets">ON</span></button>
       <button class="pill ghost" id="openDrawer">☰ Stations</button>
     </div>
   </div>
@@ -371,10 +778,18 @@
   </div>
 
   <div class="card console" id="console">
+    <div class="auto-all" id="autoAll"><span>AUTOMATISATION · TOUS LES BLOCS</span>
+      <button class="site-reset" id="siteReset" type="button" title="Remet TOUT le site comme au premier lancement"><span class="l">⟲ RESET TOUT LE SITE</span><span class="s">⟲ SITE</span></button></div>
+    <div class="xfade-wrap">
+      <div class="knob hbar" data-key="fxMix" data-min="0" data-max="100" data-step="1" data-value="100" style="--k-color:#B06CFF">
+        <div class="xf-head"><span class="xf-end">◀ BRUT</span><div class="knob-label">Brut ↔ Effets</div><div class="knob-value">100%</div><span class="xf-end r">EFFETS ▶</span></div>
+        <div class="knob-dial"><div class="xf-fill"></div><div class="knob-indicator"></div></div>
+      </div>
+    </div>
     <div class="section">
       <h3 class="section-title">MASTER <span style="color:var(--muted);font-weight:600;letter-spacing:0;font-size:16px" id="statusMini">En veille</span></h3>
 
-      <div class="knob-grid cols4">
+      <div class="knob-grid cols5 master5">
         <div class="knob" data-key="gain" data-min="-24" data-max="12" data-step="0.5" data-value="0" style="--k-color:#B9FF45">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Volume</div>
@@ -382,6 +797,31 @@
         <div class="knob" data-key="balance" data-min="-1" data-max="1" data-step="0.01" data-value="0" style="--k-color:#2FE7FF">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0.00</div><div class="knob-label">Balance</div>
+        </div>
+        <div class="dimbox">
+          <div class="dim-stack">
+            <!-- anneau externe : vitesse de toutes les boucles (0 à x2) -->
+            <div class="knob knob-dimspeed seg-ticks" data-key="dimSpeed" data-label="Vitesse Dimension" data-seg-r="41" data-seg-w="8" data-min="0" data-max="200" data-step="5" data-value="100" style="--k-color:#FFC23D">
+              <div class="knob-dial"><div class="knob-indicator"></div></div>
+            </div>
+            <!-- rond central : pourcentage de Dimension (amplitude des boucles) -->
+            <div class="knob knob-dim seg-ticks" data-key="dimension" data-seg-r="60" data-seg-w="9" data-min="0" data-max="100" data-step="1" data-value="100" style="--k-color:#FF2D3F">
+              <div class="knob-dial"><div class="knob-indicator"></div></div>
+            </div>
+          </div>
+          <div class="dim-vals">
+            <span class="knob-value" data-for="dimension" style="--k-color:#FF2D3F">100%</span>
+            <button class="dim-onoff" id="dimOnOff" aria-pressed="true" title="OFF : écouter sans les boucles de mouvement (elles sont gardées) · ON : les remettre">ON</button>
+            <span class="knob-value" data-for="dimSpeed" style="--k-color:#FFC23D">×1</span>
+          </div>
+          <div class="knob-label" data-for="dimension">Dimension</div>
+          <div class="loop-stars" id="loopStars" title="5 favoris d'automatisation : chaque étoile garde ses propres boucles">
+            <button class="lstar" data-slot="0" style="--s-color:#2FE7FF">★</button>
+            <button class="lstar" data-slot="1" style="--s-color:#B9FF45">★</button>
+            <button class="lstar" data-slot="2" style="--s-color:#FFC23D">★</button>
+            <button class="lstar" data-slot="3" style="--s-color:#B06CFF">★</button>
+            <button class="lstar" data-slot="4" style="--s-color:#FF2D3F">★</button>
+          </div>
         </div>
         <div class="knob" data-key="spatial" data-min="-5" data-max="5" data-step="0.1" data-value="0" style="--k-color:#2FE7FF">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
@@ -402,7 +842,7 @@
     </div>
 
     <div class="section">
-      <h3 class="section-title">ÉGALISEUR</h3>
+      <h3 class="section-title">ÉGALISEUR <span class="eq-hint" id="eqHint"><span class="long">● Appui 1 s sur un bouton → cercle rouge : bouge = boucle enregistrée · lâche sans bouger = mémoriser</span><span class="short">● Appui 1 s = REC / mémoire</span></span></h3>
 
       <!-- ⭐ Rangée L -->
       <div class="eq-channel-label" style="--ch-color:#FF3D9E">L</div>
@@ -454,11 +894,11 @@
         </div>
       </div>
 
-      <div class="presets" id="presets">
-        <button data-preset="plat" class="sel">Plat</button>
-        <button data-preset="club">Club</button>
-        <button data-preset="basse">Basses</button>
-        <button data-preset="dub">Dub</button>
+      <div class="fxquick" id="fxQuick">
+        <button data-fx="xenodrive" style="--k-color:#FF3D9E"><span class="nm">Hyperdrive</span><span class="fxsw" role="switch" title="Allumer / éteindre"><small>OFF</small></span></button>
+        <button data-fx="nightverb" style="--k-color:#2FE7FF"><span class="nm">Flightverb</span><span class="fxsw" role="switch" title="Allumer / éteindre"><small>OFF</small></span></button>
+        <button data-fx="echolocator" style="--k-color:#B9FF45"><span class="nm">Echominator</span><span class="fxsw" role="switch" title="Allumer / éteindre"><small>OFF</small></span></button>
+        <button data-fx="chorus" style="--k-color:#B9FF45"><span class="nm">Chichorus</span><span class="fxsw" role="switch" title="Allumer / éteindre"><small>OFF</small></span></button>
       </div>
     </div>
 
@@ -488,14 +928,13 @@
     <button id="closeDrawer" aria-label="Fermer">✕</button>
   </div>
   <div class="dcontent">
-    <button class="addtoggle" id="toggleAdd">＋ Ajouter une radio</button>
-    <div class="addtop" id="addTop" hidden>
+    <div class="addtop">
       <input type="text" class="txtin" id="url" inputmode="url"
              autocapitalize="off" autocorrect="off" placeholder="Coller un lien de flux…">
       <div class="row2">
         <input type="text" class="txtin" id="customName" autocapitalize="words"
                autocorrect="off" placeholder="Nom (facultatif)">
-        <button class="pill" id="addUrl" style="flex:0 0 auto;padding:0 20px">OK</button>
+        <button class="pill" id="addUrl" style="flex:0 0 auto;padding:0 26px">＋ Ajouter</button>
       </div>
     </div>
     <div class="searchbox">
@@ -513,8 +952,11 @@
 <aside class="drawer drawer-bottom" id="fxDrawer" aria-modal="true">
   <div class="drawer-handle" id="fxDrawerHandle"><i></i></div>
   <div class="dhead">
-    <h2>EFFETS</h2>
-    <button id="closeFxDrawer" aria-label="Fermer">✕</button>
+    <h2 id="fxTitle">EFFETS</h2>
+    <span style="display:flex;gap:10px;align-items:center">
+      <button id="fxAll" class="fx-all" hidden>Tous les effets</button>
+      <button id="closeFxDrawer" aria-label="Fermer">✕</button>
+    </span>
   </div>
   <div class="dcontent">
     <div class="fx-content">
@@ -523,7 +965,6 @@
         <div class="pedal-head">
           <span class="pedal-name"><span class="icon">▲</span>HYPERDRIVE</span>
           <div class="pedal-actions">
-            <button class="fx-fav-btn" data-fx-fav="xenodrive" title="Favori (clic court = charger/sauver, appui long = écraser)">☆</button>
             <button class="toggle-btn" data-toggle="xenodrive" aria-pressed="false">OFF</button>
           </div>
         </div>
@@ -540,9 +981,9 @@
             <div class="knob-dial"><div class="knob-indicator"></div></div>
             <div class="knob-value">60</div><div class="knob-label">Level</div>
           </div>
-          <div class="knob" data-key="drvMix" data-min="0" data-max="100" data-value="100" style="--k-color:#FF3D9E">
+          <div class="knob" data-key="drvMix" data-min="0" data-max="100" data-value="0" style="--k-color:#FF3D9E">
             <div class="knob-dial"><div class="knob-indicator"></div></div>
-            <div class="knob-value">100</div><div class="knob-label">Mix</div>
+            <div class="knob-value">0</div><div class="knob-label">Mix</div>
           </div>
         </div>
       </div>
@@ -551,7 +992,6 @@
         <div class="pedal-head">
           <span class="pedal-name"><span class="icon">◐</span>FLIGHTVERB</span>
           <div class="pedal-actions">
-            <button class="fx-fav-btn" data-fx-fav="nightverb" title="Favori (clic court = charger/sauver, appui long = écraser)">☆</button>
             <button class="toggle-btn" data-toggle="nightverb" aria-pressed="false">OFF</button>
           </div>
         </div>
@@ -568,9 +1008,9 @@
             <div class="knob-dial"><div class="knob-indicator"></div></div>
             <div class="knob-value">20</div><div class="knob-label">Pre-Dly</div>
           </div>
-          <div class="knob" data-key="rvbMix" data-min="0" data-max="100" data-value="40" style="--k-color:#2FE7FF">
+          <div class="knob" data-key="rvbMix" data-min="0" data-max="100" data-value="0" style="--k-color:#2FE7FF">
             <div class="knob-dial"><div class="knob-indicator"></div></div>
-            <div class="knob-value">40</div><div class="knob-label">Mix</div>
+            <div class="knob-value">0</div><div class="knob-label">Mix</div>
           </div>
         </div>
       </div>
@@ -579,7 +1019,6 @@
         <div class="pedal-head">
           <span class="pedal-name"><span class="icon">◈</span>ECHOMINATOR</span>
           <div class="pedal-actions">
-            <button class="fx-fav-btn" data-fx-fav="echolocator" title="Favori (clic court = charger/sauver, appui long = écraser)">☆</button>
             <button class="toggle-btn" data-toggle="echolocator" aria-pressed="false">OFF</button>
           </div>
         </div>
@@ -596,15 +1035,107 @@
             <div class="knob-dial"><div class="knob-indicator"></div></div>
             <div class="knob-value">50</div><div class="knob-label">Tone</div>
           </div>
-          <div class="knob" data-key="echMix" data-min="0" data-max="100" data-value="35" style="--k-color:#B9FF45">
+          <div class="knob" data-key="echMix" data-min="0" data-max="100" data-value="0" style="--k-color:#B9FF45">
             <div class="knob-dial"><div class="knob-indicator"></div></div>
-            <div class="knob-value">35</div><div class="knob-label">Mix</div>
+            <div class="knob-value">0</div><div class="knob-label">Mix</div>
           </div>
         </div>
       </div>
 
+
+      <div class="pedal off" id="pedalChorus" style="--k-color:#B9FF45">
+        <div class="pedal-head">
+          <span class="pedal-name"><span class="icon">♫</span>CHICHORUS</span>
+          <div class="pedal-actions">
+            <button class="toggle-btn" data-toggle="chorus" aria-pressed="false">OFF</button>
+          </div>
+        </div>
+        <div class="chor-display" id="chorDisplay">
+          <div class="chor-note idle" id="chorNote">—</div>
+          <div class="chor-hz" id="chorHz">0.0 Hz</div>
+          <div class="chor-meter"><i id="chorNeedle"></i></div>
+          <div class="chor-cents" id="chorCents">0 cents</div>
+        </div>
+        <div class="chor-ref bar">
+          <div class="knob hbar" data-key="chorPitch" data-min="-1200" data-max="1200" data-step="5" data-value="0" style="--k-color:#2FE7FF">
+            <div class="xf-head"><span class="xf-end">−12</span><div class="knob-label">Tonalité</div><div class="knob-value">0.00 ½ton</div><span class="xf-end r">+12</span></div>
+            <div class="knob-dial"><div class="xf-fill"></div><div class="knob-indicator"></div></div>
+          </div>
+          <div class="bar-hint">● Appui 1 s sur la barre : <b>bouge</b> = enregistrer la tonalité en boucle · <b>lâche sans bouger</b> = mémoriser la tonalité · double-clic = y revenir</div>
+        </div>
+        <div class="knob-grid cols7">
+          <div class="knob" data-key="chorSustain" data-min="0" data-max="100" data-value="50" style="--k-color:#2FE7FF">
+            <div class="knob-dial"><div class="knob-indicator"></div></div>
+            <div class="knob-value">50</div><div class="knob-label">Sustain</div>
+          </div>
+          <div class="knob" data-key="chorRelease" data-min="0" data-max="100" data-value="60" style="--k-color:#2FE7FF">
+            <div class="knob-dial"><div class="knob-indicator"></div></div>
+            <div class="knob-value">60</div><div class="knob-label">Release</div>
+          </div>
+          <div class="knob" data-key="chorSpeed" data-min="0" data-max="100" data-value="30" style="--k-color:#2FE7FF">
+            <div class="knob-dial"><div class="knob-indicator"></div></div>
+            <div class="knob-value">30</div><div class="knob-label">Vitesse</div>
+          </div>
+          <div class="knob" data-key="chorWave" data-min="0" data-max="4" data-step="1" data-value="0" style="--k-color:#2FE7FF"
+               title="Signal : forme de l'ondulation (Vitesse) — Sinus, Triangle, Carré, Impulsion, S&amp;H (Sample &amp; Hold)">
+            <div class="knob-dial"><div class="knob-indicator"></div></div>
+            <div class="knob-value">SINUS</div><div class="knob-label">Signal</div>
+          </div>
+          <div class="knob" data-key="chorPulse" data-min="1" data-max="6" data-step="1" data-value="1" style="--k-color:#2FE7FF"
+               title="Temps : impulsion du signal — 1 à 6 fois par cycle de Vitesse">
+            <div class="knob-dial"><div class="knob-indicator"></div></div>
+            <div class="knob-value">×1</div><div class="knob-label">Temps</div>
+          </div>
+          <div class="knob" data-key="chorTone" data-min="0" data-max="100" data-value="50" style="--k-color:#2FE7FF">
+            <div class="knob-dial"><div class="knob-indicator"></div></div>
+            <div class="knob-value">50</div><div class="knob-label">Tone</div>
+          </div>
+          <div class="knob" data-key="chorMix" data-min="0" data-max="100" data-value="0" style="--k-color:#2FE7FF">
+            <div class="knob-dial"><div class="knob-indicator"></div></div>
+            <div class="knob-value">0</div><div class="knob-label">Mix</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+</aside>
+
+<aside class="drawer drawer-top" id="ytDrawer" aria-modal="true" aria-label="YouTube vers les effets">
+  <button class="yt-close" id="closeYT" aria-label="Fermer">✕</button>
+  <section class="onair" id="ytCard">
+    <div class="oa-top">
+      <div>
+        <div class="oa-kicker oa-mono"><span>Entrée 02</span><b>YouTube</b><span id="ytFlowState">Prêt</span></div>
+        <h2 class="oa-title">YouTube <em>on air</em></h2>
+      </div>
+      <div class="oa-lamp" id="ytOutputBadge"><i></i>ON AIR<span id="ytOutputState">OFF</span></div>
+    </div>
+    <div class="oa-input">
+      <label class="oa-field"><span class="oa-mono">Lien de la vidéo</span>
+        <input id="ytUrl" type="text" inputmode="url" autocomplete="off" placeholder="youtube.com/watch?v=…"></label>
+      <button class="oa-go" id="ytMainButton" type="button"><span class="lb">Passer à l’antenne</span><span class="ic">↗</span></button>
+    </div>
+    <div class="oa-dial" id="ytDial">
+      <div class="oa-scale"></div>
+      <div class="oa-needle"></div>
+      <div class="oa-stations">
+        <div class="yt-step" data-step="1"><span class="oa-mono">01</span><b>Lien</b></div>
+        <div class="yt-step" data-step="2"><span class="oa-mono">02</span><b>Onglet</b></div>
+        <div class="yt-step" data-step="3"><span class="oa-mono">03</span><b>Partage audio</b></div>
+        <div class="yt-step" data-step="4"><span class="oa-mono">04</span><b>À l’antenne</b></div>
+      </div>
+    </div>
+    <div class="oa-foot">
+      <div>
+        <div id="ytStatus" class="yt-status">Colle un lien, puis <b>Passer à l’antenne</b>. Choisis l’onglet YouTube et coche <b>Partager l’audio</b>.</div>
+        <div class="yt-tabs"><div id="ytTabList" style="display:contents"></div>
+          <button class="yt-add" id="ytAddTab" type="button" title="Colle un autre lien (ou laisse le même) puis choisis un autre onglet : tous les onglets jouent ensemble, au même volume">＋ Ajouter un onglet</button></div>
+      </div>
+      <div><div class="oa-vu-head oa-mono"><span>Signal</span><strong id="ytMeterDb">−∞ dB</strong></div>
+        <div class="oa-vu"><div id="ytMeterFill" class="yt-meter-fill"></div></div></div>
+    </div>
+    <div class="oa-chain oa-mono"><span>Balance</span><span>Spatial</span><span>EQ L/R</span><span>Drive</span><span>Reverb</span><span>Écho</span><span>Chichorus</span><span>Limiter</span></div>
+  </section>
 </aside>
 
 <script>
@@ -628,6 +1159,7 @@ let srcNode = null;
 let pannerNode = null;
 let spatialNode = null;
 let masterGain = null;
+let inBus = null, fxDry = null, fxWet = null;   // barre Brut ↔ Effets
 let eqSplitter = null, eqMerger = null;
 let eqL = {}, eqR = {};
 let gainL = null, gainR = null;
@@ -639,6 +1171,9 @@ let _waveData = null, _dataL = null, _dataR = null;
 let driveChain = null;
 let reverbChain = null;
 let echoChain = null;
+let chorusChain = null, chorusOn = false;
+let fxMasterOn = true;   // interrupteur général du bouton Effets
+let ytCaptureActive = false, lastRadio = null;
 
 let graphBuilt = false;
 let isPlaying = false;
@@ -651,12 +1186,13 @@ let nightverbOn = false;
 let echolocatorOn = false;
 
 const P = {
-  gain: 0, balance: 0, spatial: 0, limit: -1,
+  gain: 0, balance: 0, spatial: 0, limit: -1, dimension: 100, dimSpeed: 100, fxMix: 100,
   subL:0, bassL:0, midL:0, himidL:0, highL:0,
   subR:0, bassR:0, midR:0, himidR:0, highR:0,
-  drvAmount: 30, drvTone: 50, drvLevel: 60, drvMix: 100,
-  rvbSize: 50, rvbDamp: 40, rvbPredelay: 20, rvbMix: 40,
-  echTime: 350, echFeedback: 35, echTone: 50, echMix: 35
+  drvAmount: 30, drvTone: 50, drvLevel: 60, drvMix: 0,
+  rvbSize: 50, rvbDamp: 40, rvbPredelay: 20, rvbMix: 0,
+  echTime: 350, echFeedback: 35, echTone: 50, echMix: 0,
+  chorSustain: 50, chorRelease: 60, chorSpeed: 30, chorTone: 50, chorMix: 0, chorRef: 440, chorPitch: 0, chorWave: 0, chorPulse: 1
 };
 
 const RETRY_BASE = 800;
@@ -681,7 +1217,9 @@ const FX_KEYS = {
   nightverb:   { getOn: () => nightverbOn,   setOn: (v) => setToggle('nightverb', v),
                  params: ['rvbSize','rvbDamp','rvbPredelay','rvbMix'] },
   echolocator: { getOn: () => echolocatorOn, setOn: (v) => setToggle('echolocator', v),
-                 params: ['echTime','echFeedback','echTone','echMix'] }
+                 params: ['echTime','echFeedback','echTone','echMix'] },
+  chorus:      { getOn: () => chorusOn, setOn: (v) => setToggle('chorus', v),
+                 params: ['chorSustain','chorRelease','chorSpeed','chorWave','chorPulse','chorTone','chorMix','chorRef'] }
 };
 
 function paintFxFavButtons() {
@@ -719,6 +1257,7 @@ function loadFxFav(key) {
     if (snap[p] !== undefined) {
       P[p] = snap[p];
       if (allKnobs[p]) allKnobs[p].setValue(snap[p]);
+      if (p === 'chorRef') setChorRef(snap[p]);
     }
   });
   if (snap.on !== undefined) info.setOn(snap.on);
@@ -792,7 +1331,8 @@ function createReverbImpulse(ctx, durationSec, decay) {
 function makeDistortionCurve(amount) {
   const n = 4096;
   const curve = new Float32Array(n);
-  const k = (amount / 100) * 15;
+  const a = amount / 100;
+  const k = a * a * 10;                     // progressif : doux au début, fort seulement tout en haut
   for (let i = 0; i < n; i++) {
     const x = (i * 2) / n - 1;
     curve[i] = (1 + k) * x / (1 + k * Math.abs(x));
@@ -805,7 +1345,7 @@ function buildGraph() {
 
   const AC = window.AudioContext || window.webkitAudioContext;
   try {
-    audioCtx = new AC({ latencyHint: 'playback', sampleRate: 44100 });
+    audioCtx = new AC({ latencyHint: 'playback' });
   } catch (e) {
     try { audioCtx = new AC({ latencyHint: 'playback' }); }
     catch (e2) { audioCtx = new AC(); }
@@ -865,7 +1405,7 @@ function buildGraph() {
   driveChain.wet.gain.value = 1;
   driveChain.preGain.gain.value = 1;
   driveChain.shaper.curve = makeDistortionCurve(30);
-  driveChain.shaper.oversample = '2x';
+  driveChain.shaper.oversample = '4x';     // moins de grésillement
   driveChain.tone.type = 'lowpass';
   driveChain.tone.frequency.value = 8000;
   driveChain.tone.Q.value = 0.7;
@@ -923,6 +1463,8 @@ function buildGraph() {
   echoChain.tone.connect(echoChain.wet);
   echoChain.wet.connect(echoChain.merger);
 
+  chorusChain = buildChorus(audioCtx);
+
   limiterNode = audioCtx.createDynamicsCompressor();
   limiterNode.threshold.value = -1; limiterNode.ratio.value = 20;
   limiterNode.knee.value = 0; limiterNode.attack.value = 0.001; limiterNode.release.value = 0.08;
@@ -932,13 +1474,18 @@ function buildGraph() {
   softLimiter.ratio.value = 12; softLimiter.attack.value = 0.003; softLimiter.release.value = 0.15;
 
   analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 512; analyser.smoothingTimeConstant = 0.4;
+  analyser.fftSize = 2048; analyser.smoothingTimeConstant = 0.55;
 
   splitterVU = audioCtx.createChannelSplitter(2);
   anaL = audioCtx.createAnalyser(); anaL.fftSize = 256;
   anaR = audioCtx.createAnalyser(); anaR.fftSize = 256;
 
-  srcNode.connect(pannerNode);
+  // entrée commune (radio + onglets) : une voie traitée par toute la chaîne, une voie brute
+  inBus = audioCtx.createGain(); fxDry = audioCtx.createGain(); fxWet = audioCtx.createGain();
+  fxDry.gain.value = 0; fxWet.gain.value = 1;
+  srcNode.connect(inBus);
+  inBus.connect(pannerNode);
+  inBus.connect(fxDry); fxDry.connect(limiterNode);
   pannerNode.connect(spatialNode);
   spatialNode.connect(masterGain);
   masterGain.connect(eqSplitter);
@@ -962,7 +1509,8 @@ function buildGraph() {
   eqMerger.connect(driveChain.input);
   driveChain.merger.connect(reverbChain.input);
   reverbChain.merger.connect(echoChain.input);
-  echoChain.merger.connect(limiterNode);
+  echoChain.merger.connect(chorusChain.input);
+  chorusChain.merger.connect(fxWet); fxWet.connect(limiterNode);
 
   limiterNode.connect(softLimiter);
   softLimiter.connect(analyser);
@@ -973,6 +1521,7 @@ function buildGraph() {
   splitterVU.connect(anaR, 1);
 
   _waveData = new Uint8Array(analyser.fftSize);
+  _specData = new Uint8Array(analyser.frequencyBinCount);
   _dataL = new Uint8Array(anaL.fftSize);
   _dataR = new Uint8Array(anaR.fftSize);
 
@@ -994,10 +1543,15 @@ function setParam(param, value, time) {
 }
 
 function applyAll() {
+  if (P.chorPitch !== undefined) P.chorRef = 440 * Math.pow(2, P.chorPitch / 1200);   // barre Tonalité (automatisable)
   if (!audioCtx || !graphBuilt) return;
   const t = audioCtx.currentTime;
 
   setParam(masterGain.gain, Math.pow(10, P.gain / 20), t);
+  // Brut ↔ Effets : fondu à puissance constante ; la voie brute garde le Volume
+  const xf = Math.max(0, Math.min(1, (P.fxMix !== undefined ? P.fxMix : 100) / 100));
+  setParam(fxWet.gain, Math.sin(xf * Math.PI / 2), t);
+  setParam(fxDry.gain, Math.cos(xf * Math.PI / 2) * Math.pow(10, P.gain / 20), t);
   setParam(pannerNode.pan, P.balance, t);
 
   if (spatialNode) {
@@ -1025,22 +1579,23 @@ function applyAll() {
   setParam(eqR.himid.gain, P.himidR, t);
   setParam(eqR.high.gain, P.highR, t);
 
-  if (xenodriveOn) {
-    const preGain = 1 + (P.drvAmount / 100) * 2;
-    setParam(driveChain.preGain.gain, preGain, t);
-    driveChain.shaper.curve = makeDistortionCurve(P.drvAmount);
+  if (xenodriveOn && fxMasterOn) {
+    const da = P.drvAmount / 100, dk = da * da * 10;
+    setParam(driveChain.preGain.gain, 1 + da * 0.5, t);
+    if (driveChain._lastAmt !== P.drvAmount) { driveChain._lastAmt = P.drvAmount; driveChain.shaper.curve = makeDistortionCurve(P.drvAmount); }
     const toneFreq = 500 * Math.pow(36, P.drvTone / 100);
     setParam(driveChain.tone.frequency, toneFreq, t);
-    setParam(driveChain.outLevel.gain, (P.drvLevel / 100) * 1.5, t);
+    // compense la montée de volume due à la saturation
+    setParam(driveChain.outLevel.gain, (P.drvLevel / 60) / (1 + 1.8 * Math.pow(da, 0.8)), t);   // volume stable quel que soit le Drive
     const mix = P.drvMix / 100;
     setParam(driveChain.dry.gain, 1 - mix, t);
-    setParam(driveChain.wet.gain, mix * 1.4, t);
+    setParam(driveChain.wet.gain, mix, t);
   } else {
     setParam(driveChain.dry.gain, 1, t);
     setParam(driveChain.wet.gain, 0, t);
   }
 
-  if (nightverbOn) {
+  if (nightverbOn && fxMasterOn) {
     setParam(reverbChain.preDelay.delayTime, (P.rvbPredelay / 100) * 0.15, t);
     const dampFreq = 500 * Math.pow(36, P.rvbDamp / 100);
     setParam(reverbChain.damp.frequency, dampFreq, t);
@@ -1048,7 +1603,8 @@ function applyAll() {
     setParam(reverbChain.dry.gain, 1 - mix * 0.5, t);
     setParam(reverbChain.wet.gain, mix * 2.0, t);
     const size = P.rvbSize;
-    if (!reverbChain._lastSize || Math.abs(reverbChain._lastSize - size) > 8) {
+    if ((!reverbChain._lastSize || Math.abs(reverbChain._lastSize - size) > 8) && !(performance.now() - (reverbChain._lastRegen || 0) < 800)) {
+      reverbChain._lastRegen = performance.now();
       reverbChain._lastSize = size;
       const dur = 0.3 + (size / 100) * 5.7;
       const decay = 4 - (size / 100) * 3;
@@ -1061,7 +1617,9 @@ function applyAll() {
     setParam(reverbChain.wet.gain, 0, t);
   }
 
-  if (echolocatorOn) {
+  applyChorus(t);
+
+  if (echolocatorOn && fxMasterOn) {
     setParam(echoChain.delay.delayTime, P.echTime / 1000, t);
     setParam(echoChain.feedback.gain, P.echFeedback / 100, t);
     const toneFreq = 500 * Math.pow(36, P.echTone / 100);
@@ -1169,6 +1727,7 @@ async function streamSession(station, mySession) {
 }
 
 async function togglePlay(station) {
+  if (ytCaptureActive) { await stopYT(true); return; }
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
@@ -1180,7 +1739,7 @@ async function togglePlay(station) {
     setStatus('⏹️ Arrêté.');
     return;
   }
-  if (!station) { setStatus('⚠️ Aucune station.'); return; }
+  if (!station || /^capture:/.test(station.u)) { setStatus('⚠️ Aucune station.'); return; }
 
   currentStation = station;
   isPlaying = true;
@@ -1273,6 +1832,8 @@ function setStatus(msg) { npState.textContent = msg; statusMini.textContent = ms
 function title(t) { npName.textContent = t; }
 function render() {
   const p = isPlaying;
+  const yb = document.getElementById('openYT');
+  if (yb) { yb.classList.toggle('live', ytCaptureActive); yb.textContent = ytCaptureActive ? '● On air' : '▶ YouTube'; }
   waveEl.classList.toggle('on', p);
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
@@ -1322,6 +1883,8 @@ function paintFavsList() {
 }
 
 function playStation(st) {
+  if (ytCaptureActive) { stopYT(false).then(() => playStation(st)); return; }
+  lastRadio = st;
   currentStation = st;
   title(st.n);
   render();
@@ -1442,6 +2005,7 @@ function paintList() {
 }
 
 function toggleFav(st) {
+  if (!st || /^capture:/.test(st.u)) return;
   const i = favs.findIndex(x => x.u === st.u);
   if (i >= 0) favs.splice(i, 1); else favs.push(st);
   saveFavs();
@@ -1534,14 +2098,7 @@ function addStream(urlValue, nameValue, urlBox, nameBox) {
   });
   paintList();
   playStation(st);
-  document.getElementById('addTop').hidden = true;
 }
-
-document.getElementById('toggleAdd').addEventListener('click', () => {
-  const a = document.getElementById('addTop');
-  a.hidden = !a.hidden;
-  if (!a.hidden) document.getElementById('url').focus();
-});
 
 document.getElementById('addUrl').addEventListener('click', () => {
   addStream(document.getElementById('url').value, document.getElementById('customName').value,
@@ -1558,7 +2115,9 @@ const scrim = document.getElementById('scrim');
 const fxDrawer = document.getElementById('fxDrawer');
 const favsDrawer = document.getElementById('favsDrawer');
 
+const ytDrawer = document.getElementById('ytDrawer');
 function closeAllDrawers() {
+  ytDrawer.classList.remove('open');
   drawer.classList.remove('open');
   fxDrawer.classList.remove('open');
   favsDrawer.classList.remove('open');
@@ -1571,11 +2130,21 @@ function openDrawer(o) {
     scrim.classList.add('open');
   }
 }
-function openFxDrawer(o) {
+const FX_TITLES = { xenodrive: 'HYPERDRIVE', nightverb: 'FLIGHTVERB', echolocator: 'ECHOMINATOR', chorus: 'CHICHORUS' };
+function openFxDrawer(o, only) {
   closeAllDrawers();
+  const solo = !!(only && FX_TITLES[only]);
+  fxDrawer.classList.toggle('solo', solo);
+  document.querySelectorAll('#fxDrawer .pedal').forEach(pd => {
+    const t = pd.querySelector('.toggle-btn');
+    pd.classList.toggle('solo-show', solo && t && t.dataset.toggle === only);
+  });
+  document.getElementById('fxTitle').textContent = solo ? '✦ EFFET' : 'EFFETS';
+  document.getElementById('fxAll').hidden = !solo;
   if (o) {
     fxDrawer.classList.add('open');
     scrim.classList.add('open');
+    const c = fxDrawer.querySelector('.fx-content'); if (c) c.scrollTop = 0;
   }
 }
 function openFavsDrawer(o) {
@@ -1589,29 +2158,229 @@ function openFavsDrawer(o) {
 document.getElementById('openDrawer').addEventListener('click', () => openDrawer(true));
 document.getElementById('closeDrawer').addEventListener('click', () => openDrawer(false));
 document.getElementById('openFx').addEventListener('click', () => openFxDrawer(true));
+document.getElementById('fxAll').addEventListener('click', () => openFxDrawer(true));
 document.getElementById('closeFxDrawer').addEventListener('click', () => openFxDrawer(false));
 document.getElementById('openFavs').addEventListener('click', () => openFavsDrawer(true));
 document.getElementById('closeFavsDrawer').addEventListener('click', () => openFavsDrawer(false));
+function openYTDrawer(o) {
+  closeAllDrawers();
+  if (o) { ytDrawer.classList.add('open'); scrim.classList.add('open');
+    setTimeout(() => { const i = document.getElementById('ytUrl'); if (i && !ytCaptureActive) i.focus(); }, 350); }
+}
+document.getElementById('openYT').addEventListener('click', () => openYTDrawer(true));
+document.getElementById('closeYT').addEventListener('click', () => openYTDrawer(false));
 scrim.addEventListener('click', closeAllDrawers);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllDrawers(); });
 
 document.getElementById('power').addEventListener('click', () => {
-  togglePlay(currentStation || CORE[0]);
+  if (ytCaptureActive || isPlaying) { togglePlay(); return; }
+  const st = (currentStation && !/^capture:/.test(currentStation.u)) ? currentStation : (lastRadio || CORE[0]);
+  togglePlay(st);
 });
 
+/* Mémoire d'équilibre : positions retenues pour les boutons de l'égaliseur */
+const EQ_MEMO_KEY = 'core_eq_memo';
+let eqMemo = {};
+try { eqMemo = JSON.parse(localStorage.getItem(EQ_MEMO_KEY) || '{}') || {}; } catch (e) { eqMemo = {}; }
+function saveEqMemo() { try { localStorage.setItem(EQ_MEMO_KEY, JSON.stringify(eqMemo)); } catch (e) {} }
+const isEqKey = k => /^(sub|bass|mid|himid|high)[LR]$/.test(k);
+const memoToast = document.createElement('div');
+memoToast.className = 'memo-toast'; document.body.appendChild(memoToast);
+let memoToastTimer = null;
+function showMemoToast(txt, color, autoHide) {
+  clearTimeout(memoToastTimer);
+  memoToast.textContent = txt; memoToast.style.setProperty('--t-color', color);
+  memoToast.classList.add('show');
+  if (autoHide) memoToastTimer = setTimeout(() => memoToast.classList.remove('show'), 1600);
+}
+function hideMemoToast() { if (memoToast.textContent.includes('maintiens')) memoToast.classList.remove('show'); }
+
+/* ===== Boucles d'automation : mouvements enregistrés et rejoués en boucle ===== */
+const LOOP_KEY = 'core_knob_loops';          // ancien stockage (une seule série de boucles)
+const SLOT_KEY = 'core_loop_slots';           // 5 favoris d'automatisation (étoiles)
+let loopSlots = null;
+try { loopSlots = JSON.parse(localStorage.getItem(SLOT_KEY) || 'null'); } catch (e) { loopSlots = null; }
+if (!loopSlots || !Array.isArray(loopSlots.slots) || loopSlots.slots.length !== 5) {
+  let old = {};
+  try { old = JSON.parse(localStorage.getItem(LOOP_KEY) || '{}') || {}; } catch (e) { old = {}; }
+  loopSlots = { active: 0, slots: [0, 1, 2, 3, 4].map(i => ({ loops: i === 0 ? old : {} })) };   // les boucles d'avant vont dans l'étoile 1
+}
+// temps des boucles : l'ancienne échelle −10…+10 devient −100…+100 (même vitesse : ancien +10 = nouveau +50)
+try {
+  if (localStorage.getItem('core_rate_x100') !== '1') {
+    loopSlots.slots.forEach(sl => Object.values(sl.loops).forEach(L => { if (L && L.rate) L.rate = Math.round(L.rate * 5); }));
+    localStorage.setItem('core_rate_x100', '1');
+  }
+} catch (e) {}
+let savedLoops = loopSlots.slots[loopSlots.active].loops;     // boucles de l'étoile allumée
+function saveLoops() { try { localStorage.setItem(SLOT_KEY, JSON.stringify(loopSlots)); } catch (e) {} }
+const KnobLoops = new Map();      // clé → { pts:[[t,v]], dur, t0, api }
+const autoMarks = [];             // repères d'automatisation des blocs (remplis plus bas)
+let loopTimer = null;
+function sampleLoop(pts, tt) {
+  if (tt <= pts[0][0]) return pts[0][1];
+  for (let i = 1; i < pts.length; i++) {
+    if (pts[i][0] >= tt) {
+      const [ta, va] = pts[i - 1], [tb, vb] = pts[i];
+      return tb === ta ? vb : va + (vb - va) * (tt - ta) / (tb - ta);
+    }
+  }
+  return pts[pts.length - 1][1];
+}
+let loopLast = 0;
+let dimOn = true;   // interrupteur Dimension : OFF = boucles en pause, boutons à leur point de départ
+function loopTick() {
+  if (!KnobLoops.size) { clearInterval(loopTimer); loopTimer = null; loopLast = 0; return; }
+  const now = performance.now(); let changed = false;
+  const dt = loopLast ? Math.min(200, now - loopLast) : 0; loopLast = now;
+  const dim = (P.dimension !== undefined ? P.dimension : 100) / 100;   // rond central : amplitude
+  const spd = (P.dimSpeed !== undefined ? P.dimSpeed : 100) / 100;     // anneau externe : vitesse
+  KnobLoops.forEach(L => {
+    if (!dimOn) { if (L.api.setLoopValue(L.base, 0)) changed = true; return; }
+    const own = Math.pow(2, (L.rate || 0) / 25);                           // −100 = ÷16, −50 = ÷4, 0 = normal, +50 = ×4, +100 = ×16
+    // Dimension réduit le trajet ET la durée : même allure, donc 10 % de Dimension = boucle 10 fois plus rapide
+    const scaled = L.key !== 'dimension' && L.key !== 'dimSpeed';
+    const byDim = scaled ? 1 / Math.max(0.02, dim) : 1;
+    L.ph = ((L.ph || 0) + dt * own * byDim * (L.key === 'dimSpeed' ? 1 : spd)) % L.dur;
+    const s = sampleLoop(L.pts, L.ph);
+    const raw = (L.key === 'dimension' || L.key === 'dimSpeed') ? s : L.base + (s - L.base) * dim;
+    if (L.api.setLoopValue(raw, (L.key === 'dimension' || L.key === 'dimSpeed') ? 1 : dim)) changed = true;
+  });
+  if (changed) applyAll();
+}
+// un minuteur (et non l'affichage) : les boucles continuent même si tu es sur l'onglet YouTube
+function ensureLoopTimer() { if (!loopTimer) loopTimer = setInterval(loopTick, 30); }
+
+/* couleur « chaleur » : 0 = vert, 0,45 = jaune, 0,75 = orange, 1 = rouge */
+function heatColor(t) {
+  const stops = [[0, [185, 255, 69]], [0.45, [255, 214, 72]], [0.75, [255, 130, 47]], [1, [255, 45, 63]]];
+  t = Math.max(0, Math.min(1, t));
+  for (let i = 1; i < stops.length; i++) {
+    if (t <= stops[i][0]) {
+      const [ta, ca] = stops[i - 1], [tb, cb] = stops[i], f = (t - ta) / (tb - ta);
+      return 'rgb(' + ca.map((c, j) => Math.round(c + (cb[j] - c) * f)).join(',') + ')';
+    }
+  }
+  return 'rgb(255,45,63)';
+}
+function defValue0(el) { return parseFloat(el.dataset.value) || 0; }
 function createKnob(knobEl, format) {
   const key = knobEl.dataset.key;
   const dial = knobEl.querySelector('.knob-dial');
   const indicator = knobEl.querySelector('.knob-indicator');
-  const valueEl = knobEl.querySelector('.knob-value');
+  const valueEl = knobEl.querySelector('.knob-value') || document.querySelector('.knob-value[data-for="' + key + '"]');
+  const labelEl = knobEl.querySelector('.knob-label') || document.querySelector('.knob-label[data-for="' + key + '"]');
+  const seg = knobEl.classList.contains('seg-ticks');   // graduations collées (Dimension)
+  const hbar = knobEl.classList.contains('hbar');       // barre horizontale (Brut ↔ Effets)
 
   const min = parseFloat(knobEl.dataset.min);
   const max = parseFloat(knobEl.dataset.max);
   const step = parseFloat(knobEl.dataset.step) || 1;
   const range = max - min;
+  const angleOf = v => -135 + ((v - min) / range) * 270;
+
+  const memoEl = document.createElement('div'); memoEl.className = 'knob-memo'; dial.appendChild(memoEl);
+  // graduations : la grosse est sur le ZÉRO de l'aiguille, les autres tous les 27° autour
+  const tickRef = (min < 0 && max > 0) ? 0 : min;   // bipolaire : depuis 0 ; sinon depuis le minimum
+  const refAngle = angleOf(tickRef);
+  const ticks = [];
+  const nT = range / step <= 10 ? Math.round(range / step) : 10;   // bouton à crans (Signal) : 1 graduation par position
+  for (let i = 0; i <= nT && !seg && !hbar; i++) {
+    const ang = -135 + i * 270 / nT;
+    const tk = document.createElement('i'); tk.className = 'knob-tick' + (i * 2 === nT ? ' major' : '');
+    tk.style.transform = 'rotate(' + ang + 'deg)';
+    tk._v = min + range * i / nT; tk._ang = ang;
+    dial.insertBefore(tk, dial.firstChild); ticks.push(tk);
+  }
+  let segOn = null;
+  const segBounds = [];
+  const pctOf = v => ((v - min) / range) * 100;
+  const xfFill = hbar ? knobEl.querySelector('.xf-fill') : null;
+  if (hbar) for (let i = 1; i < 10; i++) {            // 9 repères, celui du milieu plus marqué
+    const c = document.createElement('i'); c.className = 'xf-cut' + (i === 5 ? ' mid' : ''); c.style.left = i * 10 + '%';
+    dial.insertBefore(c, dial.firstChild);
+  }
+  function paintTicks(v) {
+    if (hbar) {
+      const z = pctOf(Math.max(min, Math.min(max, 0))), x = pctOf(v);
+      xfFill.style.left = Math.min(z, x) + '%'; xfFill.style.width = Math.abs(x - z) + '%';
+      return;
+    }
+    if (seg) {
+      if (!segOn) return;
+      const a = angleOf(v);
+      segOn.setAttribute('d', arcD(Math.min(refAngle, a), Math.max(refAngle, a), SEG_R));
+      knobEl.classList.toggle('on-tick', segBounds.some(b => Math.abs(b - a) < 2.5));
+      return;
+    }
+    const eps = range * 0.004, lo = Math.min(tickRef, v) - eps, hi = Math.max(tickRef, v) + eps;
+    let onTick = false;
+    ticks.forEach(tk => {
+      const tv = tk._v;
+      const here = Math.abs(tv - v) <= range * 0.02;
+      tk.classList.toggle('lit', tv >= lo && tv <= hi && !(tv === tickRef && v === tickRef && false));
+      tk.classList.toggle('here', here);
+      if (here) onTick = true;
+    });
+    knobEl.classList.toggle('on-tick', onTick);
+  }
+
+  // tracé rouge de la boucle (de où à où) + point rouge qui suit la lecture
+  const NS = 'http://www.w3.org/2000/svg';
+  const recSvg = document.createElementNS(NS, 'svg'); recSvg.setAttribute('viewBox', '0 0 100 100'); recSvg.setAttribute('class', 'knob-rec');
+  const arcP = document.createElementNS(NS, 'path'); const dotC = document.createElementNS(NS, 'circle'); dotC.setAttribute('r', '5');
+  recSvg.appendChild(arcP); recSvg.appendChild(dotC); dial.appendChild(recSvg);
+  const polar = (deg, r) => { const a = deg * Math.PI / 180; return [50 + r * Math.sin(a), 50 - r * Math.cos(a)]; };
+  const xfRec = document.createElement('div'); xfRec.className = 'xf-rec'; xfRec.appendChild(document.createElement('i'));
+  if (hbar) dial.appendChild(xfRec);
+  function drawRec(vMin, vMax, vNow) {
+    if (hbar) {                                       // zone parcourue = bande rouge, point = lecture
+      if (vMin === null) { xfRec.style.display = 'none'; return; }
+      const a = pctOf(vMin), b = pctOf(vMax);
+      xfRec.style.display = 'block'; xfRec.style.left = a + '%'; xfRec.style.width = Math.max(0, b - a) + '%';
+      xfRec.firstChild.style.left = (b > a ? (pctOf(vNow) - a) / (b - a) * 100 : 0) + '%';
+      return;
+    }
+    if (vMin === null) { recSvg.style.display = 'none'; return; }
+    recSvg.style.display = 'block';
+    const R = 42, a0 = angleOf(vMin), a1 = angleOf(vMax), p0 = polar(a0, R), p1 = polar(a1 + (a1 === a0 ? 0.01 : 0), R);
+    arcP.setAttribute('d', 'M ' + p0[0] + ' ' + p0[1] + ' A ' + R + ' ' + R + ' 0 ' + ((a1 - a0) > 180 ? 1 : 0) + ' 1 ' + p1[0] + ' ' + p1[1]);
+    const d = polar(angleOf(vNow), R); dotC.setAttribute('cx', d[0]); dotC.setAttribute('cy', d[1]);
+  }
+  drawRec(null);
+  // graduations collées : 10 segments contigus sur 270°, séparés par un fin trait
+  const SEG_R = parseFloat(knobEl.dataset.segR) || 58, SEG_W = parseFloat(knobEl.dataset.segW) || 8;
+  function arcD(a0, a1, R) {
+    if (a1 - a0 < 0.2) return 'M 0 0';
+    const p0 = polar(a0, R), p1 = polar(a1, R);
+    return 'M ' + p0[0] + ' ' + p0[1] + ' A ' + R + ' ' + R + ' 0 ' + ((a1 - a0) > 180 ? 1 : 0) + ' 1 ' + p1[0] + ' ' + p1[1];
+  }
+  if (seg) {
+    const segSvg = document.createElementNS(NS, 'svg'); segSvg.setAttribute('viewBox', '0 0 100 100'); segSvg.setAttribute('class', 'knob-seg');
+    const mk = (cls, d, w) => { const p = document.createElementNS(NS, 'path'); p.setAttribute('class', cls); p.setAttribute('d', d); if (w) p.setAttribute('stroke-width', w); segSvg.appendChild(p); return p; };
+    mk('sg-bg', arcD(-135, 135, SEG_R), SEG_W);
+    segOn = mk('sg-on', 'M 0 0', SEG_W);
+    for (let i = 0; i <= 10; i++) {
+      const b = -135 + i * 27; segBounds.push(b);
+      const pa = polar(b, SEG_R - SEG_W / 2 - 0.5), pb = polar(b, SEG_R + SEG_W / 2 + 0.5);
+      mk('sg-cut', 'M ' + pa[0] + ' ' + pa[1] + ' L ' + pb[0] + ' ' + pb[1]);
+    }
+    dial.insertBefore(segSvg, dial.firstChild);
+  }
 
   let value = parseFloat(knobEl.dataset.value) || 0;
-  let dragging = false, startY = 0, startValue = 0;
+  const defValue = value;
+  let dragging = false, moved = false, startY = 0, startValue = 0, holdTimer = null, armed = false;
+  let rec = null;            // enregistrement en cours : { t0, pts, lo, hi }
+  const DEAD = 6;            // px : en dessous, un doigt immobile ne bouge pas le réglage
+  const HOLD_MS = 1000;      // appui 1 s = cercle rouge
+
+  function paintMemo() {
+    const has = eqMemo[key] !== undefined;
+    knobEl.classList.toggle('memo', has);
+    knobEl.classList.toggle('at-memo', has && eqMemo[key] === value);
+    if (has) { if (hbar) memoEl.style.left = pctOf(eqMemo[key]) + '%'; else memoEl.style.transform = 'rotate(' + angleOf(eqMemo[key]) + 'deg)'; }
+  }
 
   function update(v, notify) {
     v = Math.round(v / step) * step;
@@ -1619,39 +2388,194 @@ function createKnob(knobEl, format) {
     value = v;
     P[key] = v;
     knobEl.dataset.value = v;
-    const angle = -135 + ((v - min) / range) * 270;
-    indicator.style.transform = 'rotate(' + angle + 'deg)';
-    valueEl.textContent = format ? format(v) : v;
+    if (hbar) indicator.style.left = pctOf(v) + '%';
+    else indicator.style.transform = 'rotate(' + angleOf(v) + 'deg)';
+    if (format && format.html) valueEl.innerHTML = format(v); else valueEl.textContent = format ? format(v) : v;
+    paintMemo();
+    paintTicks(v);
     if (notify) applyAll();
   }
 
+  const color = getComputedStyle(knobEl).getPropertyValue('--k-color').trim() || '#2FE7FF';
+  const lbl = (knobEl.dataset.label || (labelEl ? labelEl.textContent : key)) + (isEqKey(key) ? ' ' + key.slice(-1) : '');
+  knobEl.title = 'Appui 1 s : le cercle devient rouge → bouge pour enregistrer une boucle, ou lâche sans bouger pour mémoriser la position';
+
+  function startHold() {
+    cancelHold();
+    knobEl.classList.add('holding');
+    showMemoToast('● ' + lbl + ' : maintiens…', '#FF2D3F', false);
+    holdTimer = setTimeout(() => {
+      holdTimer = null; armed = true;
+      knobEl.classList.remove('holding'); knobEl.classList.add('rec-armed');
+      showMemoToast('● REC ' + lbl + ' : bouge pour enregistrer · lâche sans bouger = mémoriser', '#FF2D3F', false);
+      if (navigator.vibrate) try { navigator.vibrate(30); } catch (e) {}
+    }, HOLD_MS);
+  }
+  function cancelHold() {
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    knobEl.classList.remove('holding');
+    hideMemoToast();
+  }
+  function disarm() { armed = false; knobEl.classList.remove('rec-armed'); }
+  function memorize() {
+    if (eqMemo[key] === value) {                 // même position déjà retenue → on l'efface
+      delete eqMemo[key];
+      showMemoToast('○ ' + lbl + ' : mémoire effacée', color, true);
+    } else {
+      eqMemo[key] = value;
+      showMemoToast('● ' + lbl + ' mémorisé : ' + (format ? format(value) : value), color, true);
+    }
+    saveEqMemo(); paintMemo();
+    knobEl.classList.remove('memo-flash'); void knobEl.offsetWidth; knobEl.classList.add('memo-flash');
+  }
+
+  // ---- temps de la boucle (pastille sous le bouton) ----
+  const rateEl = document.createElement('div'); rateEl.className = 'loop-rate';
+  rateEl.title = 'Temps de la boucle (−100 à +100) : boule du haut = +10, boule du bas = −10 · glisse vers le haut / le bas = réglage fin · molette = ±5 · double-clic = 0';
+  const rateV = document.createElement('span'); rateEl.appendChild(rateV);
+  [['up', 10], ['dn', -10]].forEach(([c, n]) => {           // boule au-dessus = +10, en dessous = −10
+    const b = document.createElement('i'); b.className = 'lr-b ' + c; b.title = (n > 0 ? '+' : '−') + '10';
+    b.addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); });
+    b.addEventListener('pointerup', e => e.stopPropagation());
+    b.addEventListener('dblclick', e => e.stopPropagation());
+    b.addEventListener('click', e => { e.stopPropagation(); const L = KnobLoops.get(key); if (L) setRate((L.rate || 0) + n); });
+    rateEl.appendChild(b);
+  });
+  if (!knobEl.closest('.dim-stack')) dial.appendChild(rateEl);
+  function paintRate(r) {
+    rateV.textContent = r > 0 ? '+' + r : r < 0 ? '−' + (-r) : '0';
+    rateEl.classList.toggle('slow', r < 0); rateEl.classList.toggle('fast', r > 0);
+  }
+  function setRate(r) {
+    r = Math.max(-100, Math.min(100, Math.round(r)));
+    const L = KnobLoops.get(key); if (!L || L.rate === r) return;
+    L.rate = r; if (savedLoops[key]) savedLoops[key].rate = r; saveLoops(); paintRate(r); paintAutoMarks();
+    showMemoToast('⏱ ' + lbl + ' : temps ' + rateV.textContent + (r ? (r < 0 ? ' (plus lent)' : ' (plus rapide)') : ' (normal)'), color, true);
+  }
+  let rateDrag = null;
+  rateEl.addEventListener('pointerdown', e => {
+    e.stopPropagation(); e.preventDefault();
+    const L = KnobLoops.get(key); if (!L) return;
+    rateDrag = { y: e.clientY, r: L.rate || 0 };
+    try { rateEl.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  rateEl.addEventListener('pointermove', e => {
+    if (!rateDrag) return;
+    setRate(rateDrag.r + (rateDrag.y - e.clientY) / 3);    // 3 px = 1 cran
+    e.preventDefault();
+  });
+  ['pointerup', 'pointercancel'].forEach(ev => rateEl.addEventListener(ev, e => { e.stopPropagation(); rateDrag = null; }));
+  rateEl.addEventListener('dblclick', e => { e.stopPropagation(); setRate(0); });
+  rateEl.addEventListener('wheel', e => { e.preventDefault(); e.stopPropagation(); const L = KnobLoops.get(key); if (L) setRate((L.rate || 0) + (e.deltaY < 0 ? 5 : -5)); }, { passive: false });
+
+  // ---- boucle ----
+  function stopLoop(silent) {
+    if (!KnobLoops.has(key)) return;
+    KnobLoops.delete(key); delete savedLoops[key]; saveLoops();
+    knobEl.classList.remove('looping'); drawRec(null); paintAutoMarks();
+    if (!silent) showMemoToast('■ ' + lbl + ' : boucle arrêtée', color, true);
+  }
+  function startLoop(pts, dur) {
+    let lo = Infinity, hi = -Infinity; pts.forEach(p => { lo = Math.min(lo, p[1]); hi = Math.max(hi, p[1]); });
+    const rate = (savedLoops[key] && savedLoops[key].rate) || 0;          // temps propre gardé avec la boucle
+    const L = { pts, dur, t0: performance.now(), ph: 0, lo, hi, api: null, key, base: pts[0][1], rate };
+    L.api = {
+      setLoopValue(v, d) {
+        v = Math.max(min, Math.min(max, Math.round(v / step) * step));
+        if (d === undefined) d = 1;
+        drawRec(L.base + (L.lo - L.base) * d, L.base + (L.hi - L.base) * d, v);   // l'arc rouge suit la Dimension
+        if (v === value) return false;
+        update(v, false); return true;
+      }
+    };
+    KnobLoops.set(key, L); savedLoops[key] = { pts, dur, rate }; saveLoops();
+    knobEl.classList.add('looping'); drawRec(lo, hi, value); paintRate(rate); paintAutoMarks();
+    ensureLoopTimer();
+  }
+  function finishRecording() {
+    const r = rec; rec = null; knobEl.classList.remove('recording');
+    const t = performance.now() - r.t0;
+    r.pts.push([t, value]);
+    if (t < 150 || r.hi === r.lo) { drawRec(null); showMemoToast('○ Mouvement trop court', '#FF2D3F', true); return; }
+    // allège la boucle (max ~400 points)
+    let pts = r.pts; if (pts.length > 400) { const k = pts.length / 400; pts = pts.filter((_, i) => i % Math.ceil(k) === 0).concat([r.pts[r.pts.length - 1]]); }
+    startLoop(pts.map(p => [Math.round(p[0]), p[1]]), Math.max(150, t));
+    showMemoToast('↻ ' + lbl + ' : boucle de ' + (t / 1000).toFixed(1) + ' s · touche le bouton pour l’arrêter', '#FF2D3F', true);
+  }
+
   dial.addEventListener('pointerdown', (e) => {
-    dragging = true; startY = e.clientY; startValue = value;
+    stopLoop(true);                               // toucher un bouton en boucle l'arrête
+    dragging = true; moved = false; startY = hbar ? e.clientX : e.clientY; startValue = value;
     knobEl.classList.add('active');
     try { dial.setPointerCapture(e.pointerId); } catch(err) {}
+    disarm(); startHold();
     e.preventDefault();
+  });
+  // l'appui long marche aussi sur le chiffre et le nom sous le bouton (mémoriser)
+  [valueEl, labelEl].filter(Boolean).forEach(el => {
+    el.addEventListener('pointerdown', e => { disarm(); startHold(); e.preventDefault(); });
+    el.addEventListener('pointerup', () => { cancelHold(); if (armed) { disarm(); memorize(); } });
+    ['pointercancel', 'pointerleave'].forEach(ev => el.addEventListener(ev, () => { cancelHold(); disarm(); }));
+    el.addEventListener('contextmenu', e => e.preventDefault());
   });
   dial.addEventListener('pointermove', (e) => {
     if (!dragging) return;
-    const dy = startY - e.clientY;
-    const delta = (dy / 180) * range;
-    update(startValue + delta, true);
+    let dy = hbar ? e.clientX - startY : startY - e.clientY;   // barre : gauche ↔ droite
+    if (!moved) {
+      if (Math.abs(dy) < DEAD) return;
+      moved = true;
+      if (armed) {                                // cercle rouge → on enregistre
+        rec = { t0: performance.now(), pts: [[0, value]], lo: value, hi: value };
+        knobEl.classList.add('recording');
+        showMemoToast('● REC ' + lbl + ' : enregistrement… lâche pour boucler', '#FF2D3F', false);
+      } else cancelHold();                        // simple réglage
+    }
+    dy -= Math.sign(dy) * DEAD;
+    update(startValue + (dy / (hbar ? Math.max(120, dial.clientWidth) : 180)) * range, true);
+    if (rec) {
+      rec.pts.push([performance.now() - rec.t0, value]);
+      rec.lo = Math.min(rec.lo, value); rec.hi = Math.max(rec.hi, value);
+      drawRec(rec.lo, rec.hi, value);
+    }
     e.preventDefault();
   });
   function end(e) {
+    cancelHold();
     if (!dragging) return;
     dragging = false;
     knobEl.classList.remove('active');
     try { dial.releasePointerCapture(e.pointerId); } catch(err) {}
+    if (rec) finishRecording();
+    else if (armed && !moved) memorize();         // rouge + lâché sans bouger = mémoriser
+    disarm();
   }
   dial.addEventListener('pointerup', end);
   dial.addEventListener('pointercancel', end);
-  dial.addEventListener('dblclick', () => update(0, true));
+  dial.addEventListener('contextmenu', e => e.preventDefault());
+  // double-clic : revient à la position mémorisée (sinon à la valeur de départ)
+  dial.addEventListener('dblclick', () => update(eqMemo[key] !== undefined ? eqMemo[key] : defValue, true));
 
   update(value, false);
+  // relance la boucle enregistrée la dernière fois
+  if (savedLoops[key] && savedLoops[key].pts && savedLoops[key].pts.length > 1) startLoop(savedLoops[key].pts, savedLoops[key].dur);
   return {
-    setValue: (v) => update(v, true),
-    getValue: () => value
+    setValue: (v) => { stopLoop(true); update(v, true); },
+    getValue: () => value,
+    // pour les étoiles : range la boucle (sans l'effacer de son étoile) et remet le bouton à son point de départ
+    parkLoop() {
+      if (!KnobLoops.has(key)) return;
+      const b = KnobLoops.get(key).base; KnobLoops.delete(key);
+      knobEl.classList.remove('looping'); drawRec(null); update(b, false); paintAutoMarks();
+    },
+    startLoop: (pts, dur) => startLoop(pts, dur),
+    resync() { const L = KnobLoops.get(key); if (L) L.ph = 0; },            // relance depuis le début, garde le temps
+    clearLoop() { stopLoop(true); },                                        // efface la boucle
+    toDefault() { stopLoop(true); update(defValue, true); },                // réglage de départ
+    resetTime() {                                   // temps de la boucle à 0 et relance depuis le début
+      const L = KnobLoops.get(key); if (!L) return;
+      L.rate = 0; L.ph = 0; if (savedLoops[key]) savedLoops[key].rate = 0; paintRate(0);
+    },
+    setQuiet: (v) => update(v, false)
   };
 }
 
@@ -1662,19 +2586,170 @@ const fmtMs = v => Math.round(v);
 const fmtBal = v => v.toFixed(2);
 const fmtSpatial = v => (v > 0 ? '+' : '') + v.toFixed(1);
 
+// formes du bouton Signal : nom + icône (tracé SVG 32×16)
+const WAVES = [
+  { n: 'SINUS',    ic: 'M1 8 C5 -1.5 11 -1.5 16 8 S27 17.5 31 8' },
+  { n: 'TRIANGLE', ic: 'M1 13 L8.5 3 L16 13 L23.5 3 L31 13' },
+  { n: 'CARRÉ',    ic: 'M1 12 H8 V4 H16 V12 H24 V4 H31' },
+  { n: 'IMPULSION', ic: 'M1 12 H5 V4 H8 V12 H15 V4 H18 V12 H25 V4 H28 V12 H31' },
+  { n: 'S&H',      ic: 'M1 9 H5 V4 H9 V12 H13 V6 H17 V13 H21 V3 H25 V10 H29 V7 H31' }
+];
 const allKnobs = {};
+document.getElementById('dimOnOff').addEventListener('click', e => {
+  dimOn = !dimOn;
+  e.currentTarget.setAttribute('aria-pressed', dimOn);
+  e.currentTarget.textContent = dimOn ? 'ON' : 'OFF';
+  e.currentTarget.closest('.dimbox').classList.toggle('dim-off', !dimOn);
+  loopTick();
+});
+function paintLoopStars() {
+  document.querySelectorAll('#loopStars .lstar').forEach(b => {
+    const i = +b.dataset.slot, sl = loopSlots.slots[i];
+    b.classList.toggle('on', i === loopSlots.active);
+    b.classList.toggle('full', Object.keys(sl.loops).length > 0);
+  });
+}
+function rememberDim() {
+  const sl = loopSlots.slots[loopSlots.active]; sl.dim = P.dimension; sl.spd = P.dimSpeed; saveLoops();
+}
+function switchLoopSlot(i) {
+  if (i === loopSlots.active) return;
+  rememberDim();
+  Object.values(allKnobs).forEach(k => k.parkLoop());         // on range les boucles de l'étoile quittée
+  loopSlots.active = i;
+  const sl = loopSlots.slots[i];
+  savedLoops = sl.loops;
+  allKnobs.dimension.setQuiet(sl.dim !== undefined ? sl.dim : 100);
+  allKnobs.dimSpeed.setQuiet(sl.spd !== undefined ? sl.spd : 100);
+  Object.keys(savedLoops).forEach(key => {                     // et on relance celles de la nouvelle étoile
+    const L = savedLoops[key];
+    if (allKnobs[key] && L && L.pts && L.pts.length > 1) allKnobs[key].startLoop(L.pts, L.dur);
+  });
+  saveLoops(); applyAll(); paintLoopStars();
+  const n = Object.keys(savedLoops).length;
+  showMemoToast('★ Favori ' + (i + 1) + (n ? ' : ' + n + ' boucle' + (n > 1 ? 's' : '') : ' : vide, enregistre tes boucles'),
+    getComputedStyle(document.querySelector('.lstar[data-slot="' + i + '"]')).getPropertyValue('--s-color').trim(), true);
+}
+document.querySelectorAll('#loopStars .lstar').forEach(b => b.addEventListener('click', () => switchLoopSlot(+b.dataset.slot)));
+window.addEventListener('pagehide', rememberDim);
 document.querySelectorAll('.knob').forEach(k => {
   const key = k.dataset.key;
   let fmt = fmtDb;
   if (key === 'gain') fmt = fmtDb1;
   else if (key === 'balance') fmt = fmtBal;
   else if (key === 'spatial') fmt = fmtSpatial;
+  else if (key === 'dimension') fmt = v => Math.round(v) + '%';
+  else if (key === 'dimSpeed') fmt = v => '×' + +(v / 100).toFixed(2);
+  else if (key === 'fxMix') fmt = v => Math.round(v) + '%';
+  else if (key === 'chorPulse') fmt = v => '×' + Math.round(v);
+  else if (key === 'chorWave') {
+    const dial = k.querySelector('.knob-dial'), icons = WAVES.map((w, i) => {   // une icône au bout de chaque cran
+      const a = (-135 + i * 67.5) * Math.PI / 180, el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('viewBox', '0 0 32 16'); el.setAttribute('class', 'wave-pos');
+      el.innerHTML = '<path d="' + w.ic + '"/>';
+      el.style.left = (50 + 76 * Math.sin(a)) + '%'; el.style.top = (50 - 76 * Math.cos(a)) + '%';
+      dial.appendChild(el); return el;
+    });
+    fmt = v => { const i = Math.round(v); icons.forEach((el, j) => el.classList.toggle('on', j === i)); return (WAVES[i] || WAVES[0]).n; };
+  }
+  else if (key === 'chorPitch') fmt = v => (v > 0 ? '+' : '') + (v / 100).toFixed(2) + ' ½ton';
   else if (key === 'limit') fmt = fmtDb1;
   else if (key.indexOf('rvb') === 0 || key.indexOf('drv') === 0 ||
            key === 'echFeedback' || key === 'echMix' || key === 'echTone') fmt = fmtPct;
   else if (key === 'echTime') fmt = fmtMs;
+  else if (key.indexOf('chor') === 0) fmt = fmtPct;
   allKnobs[key] = createKnob(k, fmt);
 });
+// repère d'automatisation sur chaque conteneur : nombre de boucles + bouton « temps à 0 »
+function paintAutoMarks() {
+  autoMarks.forEach(m => {
+    const keys = [...m.box.querySelectorAll('.knob')].map(k => k.dataset.key).filter(k => KnobLoops.has(k));
+    const timed = keys.some(k => KnobLoops.get(k).rate);
+    m.el.classList.toggle('on', keys.length > 0); m.el.classList.toggle('timed', timed);
+    m.count.textContent = '↻ ' + keys.length;
+  });
+}
+// les 4 sortes de reset ; « box » = un bloc, ou toute la page pour TOUT RESET
+const RESETS = [
+  { id: 'time',  ic: '⏱', t: 'Temps à 0', d: 'Temps des boucles à 0, relancées ensemble' },
+  { id: 'sync',  ic: '▶', t: 'Relancer ensemble', d: 'Garde les temps, repart du début en même temps' },
+  { id: 'clear', ic: '✕', t: 'Effacer les boucles', d: 'Les boutons restent où ils sont', danger: true },
+  { id: 'def',   ic: '⌂', t: 'Réglages de départ', d: 'Efface les boucles + boutons à leur valeur de départ', danger: true }
+];
+function doReset(box, kind, name) {
+  const all = [...box.querySelectorAll('.knob')].map(k => k.dataset.key).filter(k => allKnobs[k]);
+  const looping = all.filter(k => KnobLoops.has(k));
+  const act = { time: k => allKnobs[k].resetTime(), sync: k => allKnobs[k].resync(),
+                clear: k => allKnobs[k].clearLoop(), def: k => allKnobs[k].toDefault() }[kind];
+  (kind === 'def' ? all : looping).forEach(act);
+  saveLoops(); paintAutoMarks(); applyAll();
+  const n = kind === 'def' ? all.length : looping.length, R = RESETS.find(r => r.id === kind);
+  showMemoToast('⟲ ' + name + ' · ' + R.t + ' (' + n + (kind === 'def' ? ' bouton' : ' boucle') + (n > 1 ? 's' : '') + ')',
+    R.danger ? '#FF2D3F' : '#FFC23D', true);
+}
+const resetMenu = document.createElement('div'); resetMenu.className = 'reset-menu'; document.body.appendChild(resetMenu);
+function closeResetMenu() { resetMenu.classList.remove('open'); }
+function openResetMenu(btn, box, name) {
+  resetMenu.innerHTML = '<h4>RESET · ' + name.toUpperCase() + '</h4>';
+  RESETS.forEach(r => {
+    const b = document.createElement('button'); b.type = 'button'; if (r.danger) b.className = 'danger';
+    b.innerHTML = '<i>' + r.ic + '</i><span>' + r.t + '<small>' + r.d + '</small></span>';
+    b.addEventListener('click', e => { e.stopPropagation(); closeResetMenu(); doReset(box, r.id, name); });
+    resetMenu.appendChild(b);
+  });
+  resetMenu.classList.add('open');
+  const rb = btn.getBoundingClientRect(), w = resetMenu.offsetWidth, h = resetMenu.offsetHeight;
+  resetMenu.style.left = Math.max(8, Math.min(innerWidth - w - 8, rb.right - w)) + 'px';
+  resetMenu.style.top = (rb.bottom + 6 + h > innerHeight ? Math.max(8, rb.top - h - 6) : rb.bottom + 6) + 'px';
+}
+document.addEventListener('pointerdown', e => { if (!resetMenu.contains(e.target)) closeResetMenu(); });
+window.addEventListener('scroll', closeResetMenu, true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeResetMenu(); });
+function blockName(box) {
+  if (box === document.body) return 'Tous les blocs';
+  if (box.classList.contains('xfade-wrap')) return 'Brut ↔ Effets';
+  const t = box.querySelector('.pedal-name, .section-title');
+  return t ? (t.firstChild.nodeType === 3 ? t.firstChild.textContent : t.textContent).replace(/[▲◐◈♫]/g, '').trim() : 'Bloc';
+}
+function addAutoMark(box, head, before, global) {
+  const el = document.createElement('span'); el.className = 'auto-mark';
+  el.innerHTML = '<b title="Boutons qui ont une boucle d’automatisation">↻ 0</b>'
+               + '<button type="button" title="Choisir le reset">⟲ ' + (global ? 'TOUT RESET' : 'RESET') + ' ▾</button>';
+  const m = { box, el, count: el.querySelector('b'), btn: el.querySelector('button') };
+  m.btn.addEventListener('pointerdown', e => e.stopPropagation());
+  m.btn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (resetMenu.classList.contains('open') && resetMenu._btn === m.btn) { closeResetMenu(); return; }
+    openResetMenu(m.btn, box, blockName(box)); resetMenu._btn = m.btn;
+  });
+  head.insertBefore(el, before);
+  autoMarks.push(m);
+}
+document.querySelectorAll('.xfade-wrap, #console > .section, .pedal').forEach(box => {
+  const head = box.querySelector('.pedal-actions') || box.querySelector('.section-title') || box.querySelector('.xf-head');
+  addAutoMark(box, head, box.classList.contains('xfade-wrap') ? head.querySelector('.knob-value') : (head.firstElementChild || null));
+});
+{ const bar = document.getElementById('autoAll'); addAutoMark(document.body, bar, null, true); }   // TOUT RESET
+
+// RESET TOUT LE SITE : tous les réglages comme au premier lancement (les stations et favoris radio sont gardés)
+document.getElementById('siteReset').addEventListener('click', () => {
+  if (!confirm('Remettre TOUT le site à zéro ?\n\n• tous les boutons et barres à leur valeur de départ\n• toutes les boucles des 5 étoiles effacées\n• toutes les positions mémorisées effacées\n• pédales sur OFF, Effets ON, Dimension ON\n\nTes stations et favoris radio sont gardés.')) return;
+  Object.values(allKnobs).forEach(k => k.parkLoop());
+  loopSlots = { active: 0, slots: [0, 1, 2, 3, 4].map(() => ({ loops: {} })) };
+  savedLoops = loopSlots.slots[0].loops; saveLoops();
+  Object.keys(eqMemo).forEach(k => delete eqMemo[k]); saveEqMemo();
+  Object.values(allKnobs).forEach(k => k.toDefault());
+  ['xenodrive', 'nightverb', 'echolocator', 'chorus'].forEach(n => setToggle(n, false));
+  fxMasterOn = true; try { localStorage.setItem('core_fx_master', '1'); } catch (err) {}
+  if (!dimOn) document.getElementById('dimOnOff').click();
+  paintFxQuick(); paintLoopStars(); paintAutoMarks(); applyAll();
+  showMemoToast('⟲ Site remis à zéro', '#FF2D3F', true);
+});
+// Dimension et vitesse de l'étoile allumée
+{ const sl = loopSlots.slots[loopSlots.active];
+  if (sl.dim !== undefined) allKnobs.dimension.setQuiet(sl.dim);
+  if (sl.spd !== undefined) allKnobs.dimSpeed.setQuiet(sl.spd);
+  paintLoopStars(); paintAutoMarks(); }
 
 function setToggle(name, on) {
   const btn = document.querySelector('.toggle-btn[data-toggle="' + name + '"]');
@@ -1691,9 +2766,69 @@ function setToggle(name, on) {
   if (name === 'xenodrive') xenodriveOn = on;
   else if (name === 'nightverb') nightverbOn = on;
   else if (name === 'echolocator') echolocatorOn = on;
+  else if (name === 'chorus') chorusOn = on;
 
+  paintFxQuick();
   applyAll();
 }
+function paintFxQuick() {
+  document.querySelectorAll('#fxQuick button').forEach(b => {
+    const btn = document.querySelector('.toggle-btn[data-toggle="' + b.dataset.fx + '"]');
+    const on = !!btn && btn.getAttribute('aria-pressed') === 'true';
+    b.classList.toggle('on', on);
+    b.querySelector('small').textContent = on ? (fxMasterOn ? 'ON' : 'EN PAUSE') : 'OFF';
+  });
+  const q = document.getElementById('fxQuick'); if (q) q.classList.toggle('bypass', !fxMasterOn);
+  document.querySelectorAll('.pedal').forEach(p => p.classList.toggle('bypass', !fxMasterOn));
+  const m = document.getElementById('fxMaster');
+  if (m) { m.classList.toggle('on', fxMasterOn); m.textContent = fxMasterOn ? 'ON' : 'OFF'; m.setAttribute('aria-checked', fxMasterOn); }
+}
+document.getElementById('fxMaster').addEventListener('click', e => {
+  e.stopPropagation();                         // ne pas ouvrir le tiroir
+  fxMasterOn = !fxMasterOn;
+  try { localStorage.setItem('core_fx_master', fxMasterOn ? '1' : '0'); } catch (err) {}
+  paintFxQuick(); applyAll();
+  setStatus(fxMasterOn ? '✦ Effets activés' : '✦ Effets coupés (son sans pédales)');
+});
+try { fxMasterOn = localStorage.getItem('core_fx_master') !== '0'; } catch (err) {}
+document.querySelectorAll('#fxQuick button').forEach(b => {
+  b.addEventListener('click', () => openFxDrawer(true, b.dataset.fx));
+  // l'interrupteur allume / éteint l'effet sans ouvrir la fenêtre
+  b.querySelector('.fxsw').addEventListener('click', e => {
+    e.stopPropagation();
+    const btn = document.querySelector('.toggle-btn[data-toggle="' + b.dataset.fx + '"]');
+    const on = btn.getAttribute('aria-pressed') === 'true';
+    if (!on && !fxMasterOn) { fxMasterOn = true; try { localStorage.setItem('core_fx_master', '1'); } catch (err) {} }
+    setToggle(b.dataset.fx, !on);
+  });
+});
+
+/* fenêtre des effets : glisser vers le bas pour la fermer */
+(function () {
+  const dr = document.getElementById('fxDrawer');
+  const zones = [dr.querySelector('.drawer-handle'), dr.querySelector('.dhead')];
+  let y0 = null, dy = 0, t0 = 0;
+  zones.forEach(z => {
+    z.style.touchAction = 'none';
+    z.addEventListener('pointerdown', e => {
+      if (e.target.closest('button')) return;
+      y0 = e.clientY; dy = 0; t0 = performance.now();
+      dr.style.transition = 'none'; try { z.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    z.addEventListener('pointermove', e => {
+      if (y0 === null) return;
+      dy = Math.max(0, e.clientY - y0);
+      dr.style.transform = 'translateY(' + dy + 'px)';
+    });
+    const end = () => {
+      if (y0 === null) return;
+      const fast = dy / Math.max(1, performance.now() - t0) > 0.6;
+      y0 = null; dr.style.transition = ''; dr.style.transform = '';
+      if (dy > 90 || (fast && dy > 30)) closeAllDrawers();
+    };
+    z.addEventListener('pointerup', end); z.addEventListener('pointercancel', end);
+  });
+})();
 
 document.querySelectorAll('.toggle-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -1752,7 +2887,9 @@ document.querySelectorAll('#presets button').forEach(b => {
   b.addEventListener('click', () => applyPreset(b.dataset.preset));
 });
 
-const BARS = 28;
+const BARS = 40;
+const barH = new Float32Array(BARS).fill(4);
+let _specData = null;
 const barEls = [];
 for (let i = 0; i < BARS; i++) {
   const e = document.createElement('i');
@@ -1786,15 +2923,22 @@ let idle = 0, lastFrame = 0;
 
   const playing = isPlaying;
   const live = playing && usingMix && analyser && _waveData;
+  if (live && ytCaptureActive) ytTickMeter();
+  if (live && chorusOn) updateChorusDisplay(t);
 
   if (live) {
     try {
-      analyser.getByteTimeDomainData(_waveData);
-      const step = Math.floor(_waveData.length / BARS);
+      // spectre (graves à gauche → aigus à droite), échelle logarithmique
+      analyser.getByteFrequencyData(_specData);
+      const Hmax = waveEl.clientHeight - 10, nyq = audioCtx.sampleRate / 2, bins = _specData.length;
       for (let k = 0; k < BARS; k++) {
-        const idx = Math.min(k * step + 20, _waveData.length - 1);
-        const h = Math.max(4, Math.abs(_waveData[idx] - 128) / 128 * 36);
-        barEls[k].style.height = h + 'px';
+        const f0 = 40 * Math.pow(16000 / 40, k / BARS), f1 = 40 * Math.pow(16000 / 40, (k + 1) / BARS);
+        const i0 = Math.max(1, Math.floor(f0 / nyq * bins)), i1 = Math.max(i0 + 1, Math.ceil(f1 / nyq * bins));
+        let m = 0; for (let i = i0; i < i1 && i < bins; i++) if (_specData[i] > m) m = _specData[i];
+        const v = Math.pow(m / 255, 1.6) * (1 + k / BARS * 0.8);   // léger bonus aux aigus
+        const target = Math.max(4, Math.min(1, v) * Hmax);
+        barH[k] = target > barH[k] ? target : barH[k] * 0.82 + target * 0.18;   // monte vite, retombe en douceur
+        barEls[k].style.height = barH[k].toFixed(1) + 'px';
       }
       if (anaL && _dataL) {
         anaL.getByteTimeDomainData(_dataL);
@@ -1829,8 +2973,470 @@ let idle = 0, lastFrame = 0;
   }
 })();
 
+/* =========================================================
+   YOUTUBE ON AIR — capture audio de l'onglet
+   ========================================================= */
+let ytFlowStep = 1, ytPopup = null, ytOpenedUrl = '';
+let ytTabs = [];       // onglets partagés en même temps : { stream, src, gain, n, muted }
+let ytTabCount = 0;
+// tous les onglets au même volume (baissé ensemble pour que la somme ne sature pas)
+function ytRegain() {
+  if (!audioCtx) return;
+  const on = ytTabs.filter(t => !t.muted).length || 1, g = 1 / Math.sqrt(on);
+  ytTabs.forEach(t => t.gain.gain.setTargetAtTime(t.muted ? 0 : g, audioCtx.currentTime, 0.05));
+}
+function paintYtTabs() {
+  const box = document.getElementById('ytTabList'); box.innerHTML = '';
+  ytTabs.forEach((t, i) => {
+    const row = document.createElement('div'); row.className = 'yt-tab' + (t.muted ? ' muted' : '');
+    row.innerHTML = '<i></i><span>Onglet ' + (i + 1) + '</span><button type="button" class="m">' + (t.muted ? 'Remettre' : 'Couper') + '</button><button type="button" class="x" title="Retirer cet onglet">✕</button>';
+    row.querySelector('.m').addEventListener('click', () => { t.muted = !t.muted; ytRegain(); paintYtTabs(); });
+    row.querySelector('.x').addEventListener('click', () => ytRemoveTab(t));
+    box.appendChild(row);
+  });
+}
+async function ytCapture() {
+  const stream = await navigator.mediaDevices.getDisplayMedia({
+    video: { displaySurface: 'browser' },
+    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, suppressLocalAudioPlayback: true },
+    systemAudio: 'exclude', selfBrowserSurface: 'exclude', monitorTypeSurfaces: 'exclude', surfaceSwitching: 'include'
+  });
+  if (!stream.getAudioTracks().length) {
+    stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+    throw new Error('Aucun son reçu. Choisis l’onglet et coche « Partager l’audio de cet onglet ».');
+  }
+  stream.getVideoTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+  if (audioCtx.state === 'suspended') await audioCtx.resume();
+  const src = audioCtx.createMediaStreamSource(stream), gain = audioCtx.createGain();
+  src.connect(gain); gain.connect(inBus);
+  const tab = { stream, src, gain, n: ++ytTabCount, muted: false };
+  ytTabs.push(tab); ytRegain(); paintYtTabs();
+  stream.getAudioTracks().forEach(t => t.addEventListener('ended', () => ytRemoveTab(tab), { once: true }));
+  return tab;
+}
+function ytRemoveTab(tab) {
+  const i = ytTabs.indexOf(tab); if (i < 0) return;
+  ytTabs.splice(i, 1);
+  try { tab.src.disconnect(); tab.gain.disconnect(); } catch (e) {}
+  tab.stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+  if (!ytTabs.length && ytCaptureActive) { stopYT(true); return; }
+  ytRegain(); paintYtTabs();
+  if (ytCaptureActive) ytSetStatus('<strong>À l’antenne</strong> · ' + ytTabs.length + ' onglet' + (ytTabs.length > 1 ? 's' : '') + ' ensemble.', 'live');
+}
+async function ytAddTab() {
+  if (!ytCaptureActive) { startYT(); return; }
+  const url = normalizeYT(document.getElementById('ytUrl').value);
+  if (url && url !== ytOpenedUrl) { const w = window.open(url, '_blank'); if (w) { ytPopup = w; ytOpenedUrl = url; } }
+  ytSetStatus('<strong>Choisis l’onglet suivant</strong> et coche <b>Partager l’audio</b>.');
+  try {
+    await ytCapture();
+    ytSetStatus('<strong>À l’antenne</strong> · ' + ytTabs.length + ' onglets ensemble, au même volume.', 'live');
+  } catch (e) {
+    ytSetStatus('<strong>Onglet non ajouté :</strong> ' + String(e && e.message ? e.message : e), 'bad');
+  }
+}
+// ytFlowStep = 1, ytPopup = null, ytOpenedUrl = '';
+function ytSetStatus(msg, mode) {
+  const el = document.getElementById('ytStatus');
+  el.className = 'yt-status' + (mode ? ' ' + mode : ''); el.innerHTML = msg;
+}
+function ytSetStep(step, done) {
+  ytFlowStep = step;
+  document.querySelectorAll('.yt-step').forEach(el => {
+    const n = Number(el.dataset.step);
+    el.classList.toggle('active', !done && n === step);
+    el.classList.toggle('done', done ? n <= step : n < step);
+  });
+  document.getElementById('ytFlowState').textContent = ['Prêt', 'Prêt', 'Choix de l’onglet', 'Partage audio', 'En direct'][Math.max(0, Math.min(4, step))];
+  document.getElementById('ytDial').style.setProperty('--needle', ((Math.max(1, Math.min(4, step)) - 1) * 25 + 12.5) + '%');
+  document.getElementById('ytCard').classList.toggle('is-wait', !done && (step === 2 || step === 3));
+}
+function ytButton(mode) {
+  const b = document.getElementById('ytMainButton');
+  const L = { idle: ['Passer à l’antenne', '↗'], live: ['Couper l’antenne', '■'], wait: ['Connexion', '◌'] }[mode];
+  b.innerHTML = '<span class="lb">' + L[0] + '</span><span class="ic">' + L[1] + '</span>';
+  b.classList.toggle('active', mode === 'live'); b.disabled = mode === 'wait';
+  document.getElementById('ytCard').classList.toggle('is-live', mode === 'live');
+}
+function ytSetMeter(rms) {
+  const live = ytCaptureActive && rms > 0.001;
+  document.getElementById('ytOutputState').textContent = live ? 'LIVE' : 'OFF';
+  document.getElementById('ytOutputBadge').classList.toggle('live', live);
+  const dbv = 20 * Math.log10(Math.max(0.0001, rms || 0));
+  document.getElementById('ytMeterFill').style.width = Math.max(0, Math.min(100, (dbv + 60) / 60 * 100)) + '%';
+  document.getElementById('ytMeterDb').textContent = (dbv <= -59 ? '−∞' : dbv.toFixed(1)) + ' dB';
+}
+function normalizeYT(raw) {
+  const u = (raw || '').trim(); if (!u) return null;
+  try {
+    const url = new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u), h = url.hostname.toLowerCase();
+    if (h === 'youtu.be' || h.endsWith('youtube.com') || h.endsWith('youtube-nocookie.com')) return url.href;
+  } catch (e) {}
+  return null;
+}
+async function stopYT(showStatus) {
+  ytCaptureActive = false;
+  ytTabs.slice().forEach(ytRemoveTab); ytTabCount = 0;
+  isPlaying = false; ytSetMeter(0); ytButton('idle'); ytSetStep(1);
+  if (showStatus) ytSetStatus('<strong>Antenne coupée.</strong> Colle un autre lien ou relance.');
+  title(lastRadio ? lastRadio.n : 'Rien en lecture');
+  render(); setStatus('⏹ YouTube coupé.');
+}
+async function startYT() {
+  if (ytCaptureActive) { await stopYT(true); return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    ytSetStatus('<strong>Capture indisponible.</strong> Utilise Chrome ou Edge, page ouverte via <code>LANCER.bat</code>.', 'bad'); return;
+  }
+  const url = normalizeYT(document.getElementById('ytUrl').value);
+  if (!url) { ytSetStatus('<strong>Lien invalide.</strong> Colle une adresse youtube.com ou youtu.be.', 'bad'); document.getElementById('ytUrl').focus(); return; }
+  ytButton('wait');
+  try {
+    // coupe la radio en cours
+    if (isPlaying) {
+      isPlaying = false; sessionId++;
+      [mixEl, player].forEach(el => { try { el.pause(); el.removeAttribute('src'); el.load(); } catch (e) {} });
+    }
+    buildGraph();
+    // n'ouvre la vidéo qu'une fois (un 2e clic relance juste le partage)
+    if (!(ytPopup && !ytPopup.closed && ytOpenedUrl === url)) {
+      ytSetStep(1);
+      ytPopup = window.open(url, '_blank'); ytOpenedUrl = url;
+      if (!ytPopup) throw new Error('Pop-up bloquée : autorise les fenêtres pour cette page puis réessaie.');
+    }
+    ytSetStep(2);
+    ytSetStatus('<strong>Choisis l’onglet YouTube</strong> dans la fenêtre du navigateur et coche <b>Partager l’audio</b>.');
+    const tab = await ytCapture();
+    ytSetStep(3);
+    applyAll();
+    const aTracks = tab.stream.getAudioTracks();
+    const muted = (aTracks[0].getSettings ? aTracks[0].getSettings() : {}).suppressLocalAudioPlayback === true;
+    ytCaptureActive = true; isPlaying = true; usingMix = true;
+    currentStation = { n: 'YouTube — On air', g: 'Capture onglet', u: 'capture://youtube', alts: [] };
+    title('YouTube — On air'); setStatus('● On air · EQ + pédales');
+    ytSetStep(4, true); ytButton('live');
+    ytSetStatus('<strong>À l’antenne.</strong> Tous les réglages agissent en direct.' + (muted ? '' : ' Son en double ? Coupe le son de l’onglet YouTube.'), 'live');
+    render();
+  } catch (e) {
+    ytCaptureActive = false; ytButton('idle'); ytSetStep(Math.max(1, ytFlowStep));
+    const msg = String(e && e.message ? e.message : e);
+    ytSetStatus(/activation|gesture|user/i.test(msg)
+      ? '<strong>Clique encore une fois sur Passer à l’antenne</strong> : la vidéo est déjà ouverte.'
+      : '<strong>Connexion interrompue :</strong> ' + msg, 'bad');
+    render();
+  }
+}
+document.getElementById('ytMainButton').addEventListener('click', startYT);
+document.getElementById('ytAddTab').addEventListener('click', ytAddTab);
+document.getElementById('ytUrl').addEventListener('keydown', e => { if (e.key === 'Enter') startYT(); });
+ytButton('idle'); ytSetStep(1);
+
+
+/* =========================================================
+   CHORUS — accorde / désaccorde le son (change la tonalité)
+   Principe : 2 lignes à retard dont le délai glisse en continu
+   (le glissement change la hauteur), relayées en fondu pour
+   ne jamais entendre le « saut ». Mix < 100 % = effet chorus.
+   ========================================================= */
+const CHOR_T = 0.1;      // durée d'un cycle (s) — méthode de secours
+/* Transpositeur de qualité (vocodeur de phase) exécuté dans un fil audio séparé */
+const CHI_PITCH_SRC = String.raw`// Vocodeur de phase (transposition sans changer la vitesse) — d'après S. M. Bernsee
+class PitchShift {
+  constructor(N, osamp, sr) {
+    this.N = N; this.os = osamp; this.sr = sr; this.step = N / osamp; this.lat = N - this.step;
+    this.inF = new Float64Array(N); this.outF = new Float64Array(N); this.acc = new Float64Array(2 * N);
+    this.lastPh = new Float64Array(N / 2 + 1); this.sumPh = new Float64Array(N / 2 + 1);
+    this.aM = new Float64Array(N / 2 + 1); this.aF = new Float64Array(N / 2 + 1);
+    this.sM = new Float64Array(N / 2 + 1); this.sF = new Float64Array(N / 2 + 1);
+    this.re = new Float64Array(N); this.im = new Float64Array(N);
+    this.win = new Float64Array(N); for (let k = 0; k < N; k++) this.win[k] = -0.5 * Math.cos(2 * Math.PI * k / N) + 0.5;
+    this.rover = this.lat;
+    // tables FFT
+    this.rev = new Uint32Array(N); const bits = Math.log2(N);
+    for (let i = 0; i < N; i++) { let r = 0; for (let b = 0; b < bits; b++) r |= ((i >> b) & 1) << (bits - 1 - b); this.rev[i] = r; }
+    this.cs = new Float64Array(N / 2); this.sn = new Float64Array(N / 2);
+    for (let i = 0; i < N / 2; i++) { this.cs[i] = Math.cos(2 * Math.PI * i / N); this.sn[i] = Math.sin(2 * Math.PI * i / N); }
+  }
+  fft(sign) {
+    const N = this.N, re = this.re, im = this.im, rev = this.rev;
+    for (let i = 0; i < N; i++) { const j = rev[i]; if (j > i) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+    for (let size = 2; size <= N; size <<= 1) {
+      const half = size >> 1, stepT = N / size;
+      for (let i = 0; i < N; i += size) {
+        for (let j = 0, k = 0; j < half; j++, k += stepT) {
+          const c = this.cs[k], s = sign * this.sn[k];
+          const a = i + j, b = a + half;
+          const tr = re[b] * c - im[b] * s, ti = re[b] * s + im[b] * c;
+          re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti;
+        }
+      }
+    }
+  }
+  process(inp, out, ratio) {
+    const N = this.N, h = N / 2, os = this.os, step = this.step, lat = this.lat;
+    const expct = 2 * Math.PI * step / N, fpb = this.sr / N;
+    for (let i = 0; i < inp.length; i++) {
+      this.inF[this.rover] = inp[i];
+      out[i] = this.outF[this.rover - lat];
+      this.rover++;
+      if (this.rover >= N) {
+        this.rover = lat;
+        for (let k = 0; k < N; k++) { this.re[k] = this.inF[k] * this.win[k]; this.im[k] = 0; }
+        this.fft(-1);
+        for (let k = 0; k <= h; k++) {
+          const re = this.re[k], im = this.im[k];
+          const mag = 2 * Math.sqrt(re * re + im * im), ph = Math.atan2(im, re);
+          let t = ph - this.lastPh[k]; this.lastPh[k] = ph;
+          t -= k * expct;
+          let q = Math.trunc(t / Math.PI); if (q >= 0) q += q & 1; else q -= q & 1;
+          t -= Math.PI * q;
+          t = os * t / (2 * Math.PI);
+          this.aM[k] = mag; this.aF[k] = k * fpb + t * fpb;
+        }
+        this.sM.fill(0); this.sF.fill(0);
+        for (let k = 0; k <= h; k++) {
+          const idx = Math.round(k * ratio);
+          if (idx <= h) { this.sM[idx] += this.aM[k]; this.sF[idx] = this.aF[k] * ratio; }
+        }
+        for (let k = 0; k <= h; k++) {
+          let t = this.sF[k] - k * fpb; t /= fpb; t = 2 * Math.PI * t / os; t += k * expct;
+          this.sumPh[k] += t; const ph = this.sumPh[k];
+          this.re[k] = this.sM[k] * Math.cos(ph); this.im[k] = this.sM[k] * Math.sin(ph);
+        }
+        for (let k = h + 1; k < N; k++) { this.re[k] = 0; this.im[k] = 0; }
+        this.fft(1);
+        for (let k = 0; k < N; k++) this.acc[k] += 2 * this.win[k] * this.re[k] / (h * os);
+        for (let k = 0; k < step; k++) this.outF[k] = this.acc[k];
+        this.acc.copyWithin(0, step, step + N); this.acc.fill(0, N);
+        this.inF.copyWithin(0, step, step + lat);
+      }
+    }
+  }
+}
+if (typeof registerProcessor === 'function') {
+  class ChiPitch extends AudioWorkletProcessor {
+    static get parameterDescriptors() { return [{ name: 'ratio', defaultValue: 1, minValue: 0.25, maxValue: 4, automationRate: 'k-rate' }]; }
+    constructor() { super(); this.ps = [new PitchShift(2048, 4, sampleRate), new PitchShift(2048, 4, sampleRate)]; this.tmp = new Float32Array(128); }
+    process(inputs, outputs, params) {
+      const inp = inputs[0], out = outputs[0], r = params.ratio[0];
+      for (let c = 0; c < out.length; c++) {
+        const src = inp[c] || inp[0];
+        if (!src) { out[c].fill(0); continue; }
+        const ps = this.ps[Math.min(c, 1)];
+        if (Math.abs(r - 1) < 1e-4) { ps.process(src, this.tmp, r); out[c].set(src); }   // tonalité normale : son d'origine
+        else ps.process(src, out[c], r);
+      }
+      return true;
+    }
+  }
+  registerProcessor('chi-pitch', ChiPitch);
+}
+`;
+const CHOR_BASE = 0.03;  // délai de base (s)
+function buildChorus(ctx) {
+  const c = {
+    input: ctx.createGain(), dry: ctx.createGain(), wet: ctx.createGain(), merger: ctx.createGain(),
+    shiftOut: ctx.createGain(), comp: ctx.createDynamicsCompressor(),
+    bass: ctx.createBiquadFilter(), treble: ctx.createBiquadFilter(), level: ctx.createGain(),
+    analyser: ctx.createAnalyser(), lfoGain: ctx.createGain(), shiftGains: []
+  };
+  c.dry.gain.value = 1; c.wet.gain.value = 0;
+  c.bass.type = 'lowshelf'; c.bass.frequency.value = 250;
+  c.treble.type = 'highshelf'; c.treble.frequency.value = 4000;
+  c.comp.attack.value = 0.005;
+  c.analyser.fftSize = 8192; c.analyser.smoothingTimeConstant = 0.6;
+
+  const len = Math.round(CHOR_T * ctx.sampleRate);
+  const ramp = ctx.createBuffer(1, len, ctx.sampleRate), win = ctx.createBuffer(1, len, ctx.sampleRate);
+  const rd = ramp.getChannelData(0), wd = win.getChannelData(0);
+  for (let i = 0; i < len; i++) { rd[i] = i / len; const s = Math.sin(Math.PI * i / len); wd[i] = s * s; }
+
+  // petite modulation lente : donne le « chatoiement » du chorus quand Mix < 100 %
+  const lfo = ctx.createOscillator(); lfo.frequency.value = 0.35; c.lfoGain.gain.value = 0;
+  // Signal : sinus / triangle / carré de l'oscillateur ; Impulsion et S&H = formes dessinées (une période, t de 0 à 1)
+  const shape = f => {                                  // forme → onde périodique (série de Fourier)
+    const M = 2048, N = 64, re = new Float32Array(N + 1), im = new Float32Array(N + 1);
+    for (let n = 1; n <= N; n++) {
+      let a = 0, b = 0;
+      for (let i = 0; i < M; i++) { const t = i / M, y = f(t); a += y * Math.cos(2 * Math.PI * n * t); b += y * Math.sin(2 * Math.PI * n * t); }
+      re[n] = 2 * a / M; im[n] = 2 * b / M;
+    }
+    return ctx.createPeriodicWave(re, im);
+  };
+  const sh = Array.from({ length: 8 }, () => Math.random() * 2 - 1);                     // 8 paliers tirés au hasard
+  c.waves = {
+    pulse: shape(t => t < 0.2 ? 1 : -0.25),                  // Impulsion : rectangle étroit (20 % du cycle)
+    sh: shape(t => sh[Math.floor(t * 8)])                     // Sample & Hold : saute d'une valeur au hasard à l'autre
+  };
+  c.oscSel = ctx.createGain();
+  c.lfoSmooth = ctx.createBiquadFilter(); c.lfoSmooth.type = 'lowpass'; c.lfoSmooth.frequency.value = 25;   // adoucit les sauts (pas de clics)
+  lfo.connect(c.oscSel); c.oscSel.connect(c.lfoSmooth); c.lfoSmooth.connect(c.lfoGain);
+  lfo.start(); c.lfo = lfo; c.waveNow = 0; c.delays = [];
+  // entrée de la transposition + étage d'ondulation (Vitesse)
+  c.pitchIn = ctx.createGain(); c.input.connect(c.pitchIn);
+  c.modDelay = ctx.createDelay(0.1); c.modDelay.delayTime.value = 0.01;
+  c.lfoGain.connect(c.modDelay.delayTime);
+
+  const t0 = ctx.currentTime + 0.05;
+  for (let k = 0; k < 2; k++) {
+    const d = ctx.createDelay(0.5); d.delayTime.value = CHOR_BASE; c.delays.push(d);
+    const rs = ctx.createBufferSource(); rs.buffer = ramp; rs.loop = true;
+    const g = ctx.createGain(); g.gain.value = 0;
+    rs.connect(g); g.connect(d.delayTime);
+    const ws = ctx.createBufferSource(); ws.buffer = win; ws.loop = true;
+    const vca = ctx.createGain(); vca.gain.value = 0; ws.connect(vca.gain);
+    c.pitchIn.connect(d); d.connect(vca); vca.connect(c.shiftOut);
+    const off = k * CHOR_T / 2;              // la 2e tête est décalée d'un demi-cycle
+    rs.start(t0, off); ws.start(t0, off);
+    c.shiftGains.push(g);
+  }
+  // --- Sustain : 4 retards qui se renvoient le son (0 = rien, 100 = tenu à l'infini) ---
+  const sus = { in: ctx.createGain(), out: ctx.createGain(), send: ctx.createGain(), ret: ctx.createGain(), lines: [], mat: [], damps: [] };
+  const curve = new Float32Array(2048);
+  for (let i = 0; i < 2048; i++) { const x = i / 1023.5 - 1; curve[i] = Math.tanh(x); }   // garde-fou : gain 1, adoucit seulement les crêtes
+  [0.061, 0.073, 0.089, 0.107].forEach(tm => {
+    const d = ctx.createDelay(0.2); d.delayTime.value = tm;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6000; lp.Q.value = -3.01;   // sans bosse (Q en dB)
+    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 30; hp.Q.value = -3.01;
+    const sh = ctx.createWaveShaper(); sh.curve = curve;
+    const inG = ctx.createGain(); inG.gain.value = 0.5;
+    sus.send.connect(inG); inG.connect(d); d.connect(lp); lp.connect(hp); hp.connect(sh);
+    sh.connect(sus.ret);
+    sus.lines.push({ d, sh }); sus.damps.push(lp);
+  });
+  // 4 boucles indépendantes de longueurs différentes (stables ; le mélange croisé ne l'est pas ici)
+  for (let i = 0; i < 4; i++) {
+    const gn = ctx.createGain(); gn.gain.value = 0;
+    sus.lines[i].sh.connect(gn); gn.connect(sus.lines[i].d);
+    sus.mat.push({ gn, h: 2 });
+  }
+  sus.send.gain.value = 0; sus.ret.gain.value = 0;
+  sus.in.connect(sus.out); sus.in.connect(sus.send); sus.ret.connect(sus.out);
+  c.sus = sus;
+  c.shiftOut.connect(c.modDelay); c.modDelay.connect(sus.in); sus.out.connect(c.comp); c.comp.connect(c.bass); c.bass.connect(c.treble);
+  // charge le transpositeur de qualité ; en cas d'échec on garde la méthode de secours
+  if (ctx.audioWorklet && window.AudioWorkletNode) {
+    const url = URL.createObjectURL(new Blob([CHI_PITCH_SRC], { type: 'application/javascript' }));
+    ctx.audioWorklet.addModule(url).then(() => {
+      if (ctx.state === 'closed') return;
+      const node = new AudioWorkletNode(ctx, 'chi-pitch', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
+      c.pitchIn.disconnect(); c.pitchIn.connect(node); node.connect(c.shiftOut);
+      c.pv = node; applyAll();
+    }).catch(err => console.warn('[Chichorus] transpositeur de secours utilisé', err));
+  }
+  c.treble.connect(c.level); c.level.connect(c.wet); c.wet.connect(c.merger);
+  c.input.connect(c.dry); c.dry.connect(c.merger);
+  c.merger.connect(c.analyser);
+  return c;
+}
+
+function applyChorus(t) {
+  const c = chorusChain; if (!c) return;
+  const on = chorusOn && fxMasterOn, ratio = P.chorRef / 440;
+  const g = on ? (1 - ratio) * CHOR_T : 0;           // pente du délai = changement de hauteur
+  if (c.pv) {                                          // transpositeur de qualité
+    c.shiftGains.forEach(sg => setParam(sg.gain, 0, t));
+    const rp = c.pv.parameters.get('ratio'); rp.cancelScheduledValues(t); rp.setValueAtTime(on ? ratio : 1, t);
+  } else c.shiftGains.forEach(sg => setParam(sg.gain, g, t));
+  // Vitesse : ondulation du chorus de 0,02 à 1,6 Hz (0 = arrêtée)
+  const pulse = Math.max(1, Math.min(6, Math.round(P.chorPulse || 1)));   // Temps : 1 à 6 impulsions par cycle
+  const sp = P.chorSpeed / 100, rate = (sp > 0 ? 0.02 * Math.pow(80, sp) : 0.02) * pulse;
+  const depth = on && sp > 0 ? Math.min(0.006, 0.025 / (2 * Math.PI * rate)) : 0;
+  setParam(c.lfo.frequency, rate, t);
+  const wv = Math.max(0, Math.min(4, Math.round(P.chorWave || 0)));
+  if (c.waveNow !== wv) {                               // Sinus · Triangle · Carré · Impulsion · S&H
+    if (wv < 3) c.lfo.type = ['sine', 'triangle', 'square'][wv];
+    else c.lfo.setPeriodicWave(wv === 3 ? c.waves.pulse : c.waves.sh);
+    c.waveNow = wv;
+  }
+  // délai de base assez long pour la descente de hauteur + l'ondulation
+  const base = 0.012 + Math.max(0, -g);
+  c.delays.forEach(d => setParam(d.delayTime, base, t));
+  setParam(c.modDelay.delayTime, 0.002 + depth, t);
+  const sus = P.chorSustain / 100, rel = P.chorRelease / 100, ta = (P.chorTone - 50) / 50, mix = P.chorMix / 100;
+  // compresseur neutre : le Sustain est maintenant une vraie tenue du son
+  setParam(c.comp.threshold, 0, t); setParam(c.comp.ratio, 1, t);
+  const fb = sus >= 0.995 ? 1 : 1 - Math.pow(1 - sus, 2.2);      // 100 % = boucle parfaite = infini
+  c.sus.mat.forEach(m => setParam(m.gn.gain, on ? 0.5 * m.h * fb : 0, t));
+  setParam(c.sus.send.gain, on && sus > 0 ? (sus >= 0.995 ? 0 : Math.max(0.08, 1 - fb)) : 0, t);
+  setParam(c.sus.ret.gain, on ? Math.min(1, sus * 1.4) * 0.9 : 0, t);
+  // Release = couleur de la tenue : sombre (0) → brillante (100)
+  c.sus.damps.forEach(lp => setParam(lp.frequency, 1200 * Math.pow(14, rel), t));
+  setParam(c.bass.gain, -ta * 6, t);
+  setParam(c.treble.gain, ta * 6, t);
+  setParam(c.level.gain, 1, t);
+  setParam(c.dry.gain, on ? 1 - mix : 1, t);
+  setParam(c.wet.gain, on ? mix : 0, t);
+  setParam(c.lfoGain.gain, depth, t);
+}
+
+/* ---- barre Tonalité : −12 à +12 demi-tons (bouton « chorPitch » en cents, automatisable) ---- */
+function setChorRef(hz) {                              // utilisé par les favoris d'effet (stockés en Hz de LA4)
+  hz = Math.max(220, Math.min(880, +hz || 440));
+  allKnobs.chorPitch.setValue(1200 * Math.log2(hz / 440));
+}
+
+/* ---- affichage : note jouée APRÈS le Chorus ---- */
+let _chorBuf = null, chorLast = 0;
+function updateChorusDisplay(now) {
+  if (now - chorLast < 80 || !chorusChain) return;
+  chorLast = now;
+  const an = chorusChain.analyser;
+  const disp = document.getElementById('chorDisplay'), noteEl = document.getElementById('chorNote'),
+        hzEl = document.getElementById('chorHz'), needle = document.getElementById('chorNeedle'),
+        centsEl = document.getElementById('chorCents');
+  // Détection de hauteur YIN (précise au centième de demi-ton)
+  if (!_chorBuf || _chorBuf.length !== 4096) _chorBuf = new Float32Array(4096);
+  const buf = _chorBuf; an.getFloatTimeDomainData(buf);
+  const sr = audioCtx.sampleRate, W = 2048;
+  let energy = 0; for (let i = 0; i < W; i++) energy += buf[i] * buf[i];
+  if (Math.sqrt(energy / W) < 0.01) { resetChorusDisplay(); return; }
+  const minLag = Math.floor(sr / 1200), maxLag = Math.min(buf.length - W - 1, Math.ceil(sr / 45));
+  if (!updateChorusDisplay.d || updateChorusDisplay.d.length !== maxLag + 2) updateChorusDisplay.d = new Float32Array(maxLag + 2);
+  const d = updateChorusDisplay.d; let run = 0, tau = -1; d[0] = 1;
+  for (let lag = 1; lag <= maxLag + 1; lag++) {
+    let sum = 0;
+    for (let i = 0; i < W; i++) { const x = buf[i] - buf[i + lag]; sum += x * x; }
+    run += sum; d[lag] = run ? sum * lag / run : 1;       // différence normalisée cumulée
+  }
+  for (let lag = minLag; lag <= maxLag; lag++) {
+    if (d[lag] < 0.15) { while (lag + 1 <= maxLag && d[lag + 1] < d[lag]) lag++; tau = lag; break; }
+  }
+  if (tau < 0) { resetChorusDisplay(); return; }
+  const s0 = d[tau - 1], s1 = d[tau], s2 = d[tau + 1], dn = s0 + s2 - 2 * s1;
+  const bt = Math.abs(dn) > 1e-9 ? tau + (s0 - s2) / (2 * dn) : tau;
+  const freq = sr / bt; if (freq < 40 || freq > 1200) { resetChorusDisplay(); return; }
+  const nn = 12 * Math.log2(freq / 440), rn = Math.round(nn), cents = (nn - rn) * 100, fromC = rn + 9;
+  const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  noteEl.classList.remove('idle');
+  noteEl.textContent = names[((fromC % 12) + 12) % 12] + (Math.floor(fromC / 12) + 4);
+  hzEl.textContent = freq.toFixed(1) + ' Hz';
+  centsEl.textContent = (cents >= 0 ? '+' : '') + cents.toFixed(0) + ' cents';
+  needle.style.left = (50 + Math.max(-50, Math.min(50, cents))) + '%';
+  disp.classList.toggle('locked', Math.abs(cents) < 5);
+}
+function resetChorusDisplay() {
+  const n = document.getElementById('chorNote'); n.classList.add('idle'); n.textContent = '—';
+  document.getElementById('chorHz').textContent = '0.0 Hz';
+  document.getElementById('chorCents').textContent = '0 cents';
+  document.getElementById('chorNeedle').style.left = '50%';
+  document.getElementById('chorDisplay').classList.remove('locked');
+}
+
+/* ---- vu-mètre YouTube ---- */
+let _ytBuf = null, ytMeterLast = 0;
+function ytTickMeter() {
+  const now = performance.now(); if (now - ytMeterLast < 150 || !analyser) return;
+  ytMeterLast = now;
+  if (!_ytBuf || _ytBuf.length !== analyser.fftSize) _ytBuf = new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(_ytBuf);
+  let s = 0; for (let i = 0; i < _ytBuf.length; i++) s += _ytBuf[i] * _ytBuf[i];
+  ytSetMeter(Math.sqrt(s / _ytBuf.length));
+}
+
+
 initFxFavButtons();
 paintFxFavButtons();
+paintFxQuick();
 paintFavsList();
 paintList();
 render();
