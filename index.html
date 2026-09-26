@@ -43,6 +43,19 @@
   .orb::after{content:'';position:absolute;inset:7px;border-radius:50%;background:var(--cyan)}
   .brand{font-weight:900;letter-spacing:.12em;color:#bff8ff;font-size:20px}
   .brand small{opacity:.5;font-size:12px;letter-spacing:.1em;margin-left:5px}
+  .rec-wrap{margin-left:auto;display:flex;align-items:center;gap:10px;flex:none}
+  .rec-time{font:800 14px/1 ui-monospace,Consolas,monospace;color:#FF6B78;letter-spacing:.06em;display:none}
+  .rec-wrap.on .rec-time{display:inline}
+  .rec-btn{position:relative;width:40px;height:40px;border-radius:50%;border:3px solid #FF2D3F;background:#0b0f1a;cursor:pointer;
+    padding:0;flex:none;box-shadow:0 0 12px rgba(255,45,63,.35);transition:transform .12s}
+  .rec-btn::before{content:'';position:absolute;inset:7px;border-radius:50%;background:#FF2D3F;box-shadow:0 0 10px #FF2D3F}
+  .rec-btn:active{transform:scale(.92)}
+  .rec-btn i{display:none;position:absolute;top:10px;bottom:10px;width:5px;border-radius:2px;background:#fff}
+  .rec-btn i:first-child{left:11px} .rec-btn i:last-child{right:11px}
+  .rec-wrap.on .rec-btn{background:#FF2D3F;animation:recPulse 1.2s ease-in-out infinite}
+  .rec-wrap.on .rec-btn::before{display:none}
+  .rec-wrap.on .rec-btn i{display:block}
+  @keyframes recPulse{50%{box-shadow:0 0 0 7px rgba(255,45,63,.25),0 0 24px #FF2D3F}}
 
   .now{font-size:28px;font-weight:600;line-height:1.15;letter-spacing:-.03em;margin:0}
   .sub{font-size:18px;color:var(--muted);min-height:24px;margin-top:3px}
@@ -77,7 +90,6 @@
     font-size:19px;letter-spacing:.14em;color:var(--cyan);font-weight:800;
     margin:0 0 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 
-  /* ⭐ Étiquette de canal EQ centrée au-dessus de chaque rangée */
   .eq-channel-label{
     display:flex;align-items:center;justify-content:center;
     font-size:22px;font-weight:900;letter-spacing:.4em;
@@ -365,7 +377,6 @@
   /* ===== 11 graduations : 1 centrale plus grosse + 5 de chaque côté ===== */
   .knob-dial::before{display:none}
   .knob-tick{position:absolute;inset:0;pointer-events:none}
-  /* graduations = bulles creuses ; --tc couleur, --tf remplissage (0 → 1 quand l'aiguille s'approche) */
   .knob-tick::before{content:'';position:absolute;left:50%;top:-15%;width:3px;height:9%;transform:translateX(-50%);
     border-radius:2px;background:rgba(234,241,255,.22);transition:background .12s,box-shadow .12s}
   .knob-tick.major::before{width:5px;height:12%;top:-18%;background:rgba(234,241,255,.4)}
@@ -373,8 +384,7 @@
   .knob-tick.here::before{background:#fff;box-shadow:0 0 6px #fff,0 0 12px var(--k-color,var(--cyan))}
   .knob.on-tick .knob-indicator::before{background:#fff;box-shadow:0 0 10px #fff,0 0 20px var(--k-color,var(--cyan))}
   /* ===== Dimension : gros bouton central ===== */
-  .knob-grid.master5{grid-template-columns:1fr 1fr 1.7fr 1fr 1fr;align-items:center}   /* noms alignés sur la même ligne */
-  /* double bouton : rond central = % de Dimension, anneau externe = vitesse des boucles */
+  .knob-grid.master5{grid-template-columns:1fr 1fr 1.7fr 1fr 1fr;align-items:center}
   .dimbox{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
   .dim-stack{position:relative;width:100%;max-width:160px;aspect-ratio:1 / 1;margin-top:4%}
   .dim-stack .knob{position:absolute;gap:0}
@@ -390,27 +400,26 @@
   .dim-vals{display:flex;gap:12px;justify-content:center;align-items:baseline}
   .dim-vals .knob-value{font-size:24px}
   .dimbox > .knob-label{font-size:18px;letter-spacing:.12em;color:#FF6B78}
-  /* interrupteur Dimension : OFF = écoute sans les boucles (rien n'est effacé) */
   .dim-onoff{min-width:44px;height:24px;padding:0 8px;border-radius:12px;font-size:12px;font-weight:900;letter-spacing:.06em;
     border:2px solid #FF2D3F;background:#FF2D3F;color:#fff;box-shadow:0 0 12px rgba(255,45,63,.55);cursor:pointer}
   .dim-onoff[aria-pressed="false"]{background:rgba(0,0,0,.4);color:var(--muted);border-color:var(--muted);box-shadow:none}
   .dimbox.dim-off .dim-stack{opacity:.45;filter:saturate(.4)}
-  /* temps de la boucle de chaque bouton : −10 (très lent) · 0 (normal) · +10 (très rapide) */
   .loop-rate{position:absolute;left:50%;top:84%;transform:translateX(-50%);z-index:3;display:none;
     min-width:30px;height:20px;padding:0 5px;border-radius:10px;box-sizing:border-box;
     font-size:12px;font-weight:900;line-height:16px;text-align:center;font-variant-numeric:tabular-nums;
     background:#050810;border:2px solid #FF2D3F;color:#fff;cursor:ns-resize;touch-action:none;user-select:none}
   .knob.looping .loop-rate{display:block}
-  /* petites boules : au-dessus = +10, en dessous = −10 */
+  .loop-rate.rec{border-color:#FF2D3F!important;color:#FF2D3F!important;animation:recBlink .8s ease-in-out infinite}
+  .loop-rate.rloop{border-style:dashed;box-shadow:0 0 8px currentColor}
+  .loop-rate.rloop span::before{content:'↻ ';font-size:10px}
   .lr-b{position:absolute;left:50%;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;cursor:pointer;
     background:#050810;border:2px solid currentColor;box-sizing:border-box;box-shadow:0 0 6px currentColor}
-  .lr-b::after{content:'';position:absolute;inset:-7px}              /* zone de clic plus large au doigt */
+  .lr-b::after{content:'';position:absolute;inset:-7px}
   .lr-b.up{top:-17px} .lr-b.dn{bottom:-17px}
   .lr-b:hover{background:currentColor}
   .lr-b:active{transform:scale(.8)}
   .loop-rate.slow{border-color:#2FE7FF;color:#2FE7FF}
   .loop-rate.fast{border-color:#FFC23D;color:#FFC23D}
-  /* barre BRUT ↔ EFFETS (mélange global de toute la chaîne) */
   .xfade-wrap{padding:2px 0 30px;margin-bottom:14px;border-bottom:1px solid rgba(234,241,255,.08)}
   .knob.hbar{gap:20px;align-items:stretch;cursor:ew-resize}
   .xf-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
@@ -433,7 +442,6 @@
   .hbar .knob-memo{inset:auto;top:-9px;bottom:auto;height:0;transform:none!important}
   .hbar .knob-memo::before{top:0}
   .hbar .loop-rate{left:50%;top:50%;transform:translate(-50%,-50%)}
-  /* repère d'automatisation + remise à zéro du temps, sur chaque conteneur */
   .auto-mark{display:inline-flex;align-items:center;gap:6px;margin-right:auto;flex:none;
     font:800 13px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.02em;color:var(--muted)}
   .auto-mark b{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:13px;
@@ -446,7 +454,6 @@
   .auto-mark button:not(:disabled):active{transform:scale(.92)}
   .pedal-actions .auto-mark{margin-right:8px}
   .xf-head .auto-mark{margin-right:0}
-  /* menu de choix du reset + barre « tout reset » */
   .auto-all{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-4px 0 14px;padding-bottom:12px;
     border-bottom:1px solid rgba(234,241,255,.08);font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--muted)}
   .auto-all .auto-mark{margin-right:0}
@@ -466,14 +473,82 @@
   .reset-menu button i{font-style:normal;width:22px;text-align:center;font-size:16px}
   .reset-menu button small{display:block;color:var(--muted);font-weight:600;font-size:12px;margin-top:2px}
   .reset-menu button.danger{color:#ffb3bc}
-  /* 5 favoris d'automatisation : une étoile = un jeu de boucles */
+  .eq-presets{margin:0 0 18px;padding:14px;border:1px solid rgba(234,241,255,.1);border-radius:16px;background:rgba(0,0,0,.22)}
+  .eqp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .eqp-title{font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--muted)}
+  .eqp-now{font-size:13px;font-weight:800;color:#fff}
+  .eqp-now b{color:var(--t-color,#fff)}
+  .eqp-themes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .eqp-theme{height:34px;padding:0 14px;border-radius:17px;border:1.5px solid color-mix(in srgb,var(--t-color) 45%,transparent);
+    background:none;color:var(--t-color);font:800 13px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.04em;cursor:pointer}
+  .eqp-theme.on{background:var(--t-color);color:#050810;box-shadow:0 0 14px color-mix(in srgb,var(--t-color) 55%,transparent)}
+  .eqp-subs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .eqp-sub{display:flex;flex-direction:column;align-items:center;gap:6px;padding:9px 4px 8px;border-radius:12px;cursor:pointer;
+    border:1.5px solid rgba(234,241,255,.12);background:#07101f;color:var(--ink,#EAF1FF);font:700 12.5px/1.15 -apple-system,"Segoe UI",sans-serif;text-align:center}
+  .eqp-sub:hover{border-color:var(--t-color)}
+  .eqp-sub.on{border-color:var(--t-color);box-shadow:0 0 12px color-mix(in srgb,var(--t-color) 45%,transparent);background:color-mix(in srgb,var(--t-color) 14%,#07101f)}
+  .eqp-curve{display:flex;align-items:center;gap:3px;height:26px}
+  .eqp-curve i{width:5px;border-radius:2px;background:var(--t-color);opacity:.85}
+  .eqp-curve i.neg{opacity:.45}
+  .eqp-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .eqp-target{display:flex;gap:4px;align-items:center;font-size:12px;font-weight:700;color:var(--muted)}
+  .eqp-target button,.eqp-flat{height:28px;padding:0 11px;border-radius:14px;border:1.5px solid rgba(234,241,255,.2);background:none;
+    color:var(--ink,#EAF1FF);font:800 12px/1 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
+  .eqp-target button.on{background:#EAF1FF;color:#050810;border-color:#EAF1FF}
+  .eqp-flat:hover{border-color:#fff}
+  .agent{margin:0 0 16px;border:1.5px solid rgba(255,194,61,.35);border-radius:18px;background:linear-gradient(160deg,rgba(255,194,61,.07),rgba(0,0,0,.25))}
+  .agent > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 16px;
+    font-size:15px;font-weight:900;letter-spacing:.14em;color:#FFC23D}
+  .agent > summary::-webkit-details-marker{display:none}
+  .agent > summary .ag-st{margin-left:auto;font-size:12px;letter-spacing:.04em;color:var(--muted);font-weight:700}
+  .agent[open] > summary{border-bottom:1px solid rgba(255,194,61,.18)}
+  .ag-body{padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px}
+  .ag-row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;font-size:13px;font-weight:700;color:var(--muted)}
+  .ag-row select{height:32px;border-radius:10px;background:#07101f;color:#EAF1FF;border:1.5px solid rgba(234,241,255,.2);padding:0 8px;font:700 13px -apple-system,"Segoe UI",sans-serif}
+  .ag-seg{display:inline-flex;border:1.5px solid rgba(234,241,255,.2);border-radius:16px;overflow:hidden}
+  .ag-seg button{height:30px;padding:0 12px;border:0;background:none;color:#EAF1FF;font:800 12px/1 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
+  .ag-seg button.on{background:#FFC23D;color:#050810}
+  .ag-row label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+  .ag-go{height:48px;border-radius:24px;border:0;cursor:pointer;font:900 15px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.04em;
+    background:linear-gradient(135deg,#FFC23D,#FF8A2F);color:#1a0f00;box-shadow:0 0 22px rgba(255,160,50,.35)}
+  .ag-go:disabled{opacity:.6;cursor:wait}
+  .ag-meter{height:6px;border-radius:3px;background:rgba(234,241,255,.08);overflow:hidden}
+  .ag-meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#FFC23D,#FF2D3F);transition:width .2s linear}
+  .ag-report{font-size:13.5px;line-height:1.55;color:#EAF1FF;display:none}
+  .ag-report.show{display:block}
+  .ag-report h5{margin:0 0 4px;font-size:14px;color:#FFC23D;letter-spacing:.04em}
+  .ag-report ul{margin:0;padding-left:18px}
+  .ag-report .ag-bands{display:flex;gap:6px;margin:8px 0}
+  .ag-report .ag-bands span{flex:1;text-align:center;font-size:11.5px;color:var(--muted)}
+  .ag-report .ag-bands b{display:block;font-size:14px;color:#fff}
+  .ag-fb{display:none;flex-wrap:wrap;gap:8px}
+  .ag-fb.show{display:flex}
+  .ag-fb button,.ag-list button{height:34px;padding:0 14px;border-radius:17px;border:1.5px solid rgba(234,241,255,.2);background:#07101f;
+    color:#EAF1FF;font:800 12.5px/1 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
+  .ag-fb button:hover,.ag-list button:hover{border-color:#FFC23D}
+  .ag-list{display:flex;flex-direction:column;gap:6px}
+  .ag-list .it{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:12px;background:rgba(0,0,0,.25);font-size:13px;color:#EAF1FF}
+  .ag-list .it span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ag-list .it small{color:var(--muted)}
+  .ag-list button{height:28px;padding:0 10px}
+  .ag-learn{font-size:12px;color:var(--muted)}
+  .ag-pop{position:fixed;left:50%;bottom:24px;z-index:90;transform:translate(-50%,140%);transition:transform .35s cubic-bezier(.2,.9,.3,1.2);
+    width:min(420px,calc(100vw - 32px));padding:16px 18px;border-radius:20px;background:#0b1222;border:2px solid #FFC23D;
+    box-shadow:0 14px 50px rgba(0,0,0,.7),0 0 30px rgba(255,194,61,.25);color:#EAF1FF;font:700 14px/1.4 -apple-system,"Segoe UI",sans-serif}
+  .ag-pop.show{transform:translate(-50%,0)}
+  .ag-pop h4{margin:0 0 4px;font-size:17px;color:#FFC23D}
+  .ag-pop p{margin:0 0 12px;color:var(--muted);font-size:13px;font-weight:600}
+  .ag-pop .b{display:flex;gap:10px}
+  .ag-pop .b button{flex:1;height:44px;border-radius:22px;border:0;cursor:pointer;font:900 15px/1 -apple-system,"Segoe UI",sans-serif}
+  .ag-pop .yes{background:#B9FF45;color:#0a1400}
+  .ag-pop .no{background:#FF2D3F;color:#fff}
+  .ag-pop .x{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer}
   .loop-stars{display:flex;gap:4px;justify-content:center}
   .lstar{width:28px;height:28px;padding:0;border:0;background:none;cursor:pointer;font-size:22px;line-height:28px;
     color:var(--s-color);opacity:.45;transition:transform .15s,opacity .15s,text-shadow .15s}
   .lstar.full{opacity:.7}
   .lstar.on{opacity:1;transform:scale(1.25);text-shadow:0 0 8px var(--s-color),0 0 16px var(--s-color)}
   .lstar:active{transform:scale(.9)}
-  /* graduations collées (segments contigus) */
   .knob-seg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
   .knob-seg path{fill:none;stroke-linecap:butt}
   .knob-seg .sg-bg{stroke:color-mix(in srgb,var(--k-color) 22%,#1a2033)}
@@ -502,6 +577,8 @@
     .auto-mark{gap:4px;font-size:11px} .auto-mark b,.auto-mark button{height:22px;padding:0 6px;font-size:11px}
     .auto-all > span{display:none} .site-reset{height:22px;padding:0 8px;font-size:11px}
     .site-reset .l{display:none} .site-reset .s{display:inline}
+    .eq-presets{padding:10px} .eqp-theme{height:30px;padding:0 10px;font-size:12px}
+    .eqp-subs{grid-template-columns:repeat(3,1fr)} .eqp-sub{font-size:11.5px}
     .loop-stars{gap:1px} .lstar{width:17px;height:20px;font-size:15px;line-height:20px}
     .dim-vals{gap:4px} .knob-grid.master5 .dim-vals .knob-value{font-size:14px}
     .knob-grid.master5 .dimbox > .knob-label{font-size:12px;letter-spacing:.06em}
@@ -517,7 +594,6 @@
     100%{box-shadow:0 0 20px var(--k-color),0 0 40px var(--k-color);background:var(--k-color)}}
   .knob.memo-flash .knob-dial{animation:memoFlash .6s ease-out}
   @keyframes memoFlash{0%{box-shadow:0 0 0 0 var(--k-color)}40%{box-shadow:0 0 0 10px color-mix(in srgb,var(--k-color) 40%,transparent),0 0 30px var(--k-color)}100%{box-shadow:inset 0 0 12px rgba(0,0,0,.7)}}
-  /* repère de la position mémorisée sur la couronne */
   .knob-memo{position:absolute;inset:0;pointer-events:none;display:none}
   .knob.memo .knob-memo{display:block}
   .knob-memo::before{content:'';position:absolute;left:50%;top:1px;width:7px;height:7px;border-radius:50%;
@@ -541,7 +617,6 @@
   .eq-hint.live{color:#fff}
   @media (max-width:700px){.eq-hint{font-size:11.5px;max-width:60%}}
 
-  /* ===== Interrupteur général des effets (bouton Effets) ===== */
   #openFx{gap:10px}
   .fx-master{display:inline-flex;align-items:center;justify-content:center;min-width:52px;height:30px;padding:0 10px;
     border-radius:99px;font-size:13px;font-weight:900;letter-spacing:.08em;line-height:1;
@@ -549,7 +624,6 @@
   .fx-master.on{color:#03121A;background:var(--lime);border-color:transparent;box-shadow:0 0 14px rgba(185,255,69,.55)}
   .fx-master:active{transform:scale(.92)}
 
-  /* ===== Les 4 effets en accès rapide (à la place des presets) ===== */
   .fxquick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--edge2)}
   .fxquick button{position:relative;min-height:54px;padding:6px 8px;border-radius:12px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
@@ -567,140 +641,6 @@
   .fxquick.bypass button.on{opacity:.4;box-shadow:none}
   .pedal.bypass{opacity:.45}
   @media (max-width:700px){.fxquick button{font-size:12px;letter-spacing:.02em;min-height:50px}}
-/* ===== ON AIR — module YouTube (style éditorial radio) ===== */
-.onair{--red:#FF2D3F;--ink:#EAF1FF;--dim:rgba(234,241,255,.46);--line:rgba(234,241,255,.12);
-  position:relative;overflow:hidden;padding:26px 28px 22px!important}
-.onair:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
-  background:radial-gradient(80% 120% at 100% 0%,rgba(255,45,63,.07),transparent 55%)}
-.onair>*{position:relative}
-.oa-mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-.oa-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.oa-top>div:first-child{min-width:0}
-.oa-kicker{display:flex;gap:14px;align-items:center;white-space:nowrap}
-.oa-kicker b{color:var(--ink);font-weight:600}
-.oa-title{white-space:nowrap;margin:10px 0 0;font-weight:900;font-size:clamp(40px,6.2vw,84px);line-height:.86;
-  letter-spacing:-.045em;color:var(--ink)}
-.oa-title em{font-family:"Instrument Serif",Georgia,"Times New Roman",serif;font-style:italic;
-  font-weight:400;letter-spacing:-.02em;color:transparent;-webkit-text-stroke:1px rgba(234,241,255,.55);
-  transition:color .5s,-webkit-text-stroke-color .5s}
-.onair.is-live .oa-title em{color:var(--red);-webkit-text-stroke-color:var(--red);
-  text-shadow:0 0 38px rgba(255,45,63,.35)}
-/* voyant ON AIR */
-.oa-lamp{flex:none;display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border-radius:6px;
-  border:1px solid rgba(255,45,63,.35);color:rgba(255,45,63,.5);background:rgba(255,45,63,.04);
-  font:800 12px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.22em;transition:all .35s}
-.oa-lamp i{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.6}
-.oa-lamp.live{color:#fff;background:var(--red);border-color:var(--red);
-  box-shadow:0 0 0 4px rgba(255,45,63,.12),0 0 34px rgba(255,45,63,.55)}
-.oa-lamp.live i{opacity:1;animation:oaBlink 1.2s steps(2) infinite}
-@keyframes oaBlink{50%{opacity:.25}}
-.oa-lamp #ytOutputState{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-/* champ + bouton */
-.oa-input{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:end;margin-top:26px}
-.oa-field{position:relative;display:block}
-.oa-field .oa-mono{display:block;margin-bottom:8px}
-.oa-field input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);
-  color:var(--ink);font:500 20px/1.2 -apple-system,"Segoe UI",sans-serif;padding:6px 0 12px;outline:none;
-  letter-spacing:-.01em;border-radius:0}
-.oa-field input::placeholder{color:rgba(234,241,255,.25)}
-.oa-field:after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--ink);
-  transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.32,.72,0,1)}
-.oa-field:focus-within:after{transform:scaleX(1)}
-.oa-go{display:inline-flex;align-items:center;gap:14px;border:0;cursor:pointer;border-radius:999px;
-  padding:8px 8px 8px 24px;background:var(--ink);color:#07101f;font:800 14px/1 -apple-system,"Segoe UI",sans-serif;
-  letter-spacing:-.01em;transition:transform .2s,background .3s,color .3s;white-space:nowrap}
-.oa-go .ic{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#07101f;color:var(--ink);
-  font-size:13px;transition:transform .45s cubic-bezier(.32,.72,0,1)}
-.oa-go:hover .ic{transform:rotate(-45deg)}
-.oa-go:active{transform:scale(.97)}
-.oa-go.active{background:var(--red);color:#fff}
-.oa-go.active .ic{background:#fff;color:var(--red);transform:none}
-.oa-go:disabled{opacity:.7;cursor:wait}
-.oa-go:disabled .ic{animation:oaSpin 1s linear infinite}
-@keyframes oaSpin{to{transform:rotate(360deg)}}
-/* cadran de fréquence = progression */
-.oa-dial{position:relative;margin-top:30px;height:74px;--needle:12.5%}
-.oa-scale{position:absolute;left:0;right:0;top:0;height:22px;
-  background:
-    repeating-linear-gradient(90deg,rgba(234,241,255,.16) 0 1px,transparent 1px 2.5%);
-  background-size:100% 55%;background-repeat:no-repeat;
-  border-top:1px solid var(--line)}
-.oa-needle{position:absolute;top:-6px;left:var(--needle);width:2px;height:36px;background:var(--red);
-  box-shadow:0 0 14px var(--red);transform:translateX(-1px);transition:left .9s cubic-bezier(.32,.72,0,1)}
-.oa-needle:after{content:"";position:absolute;top:-4px;left:-3px;width:8px;height:8px;border-radius:50%;background:var(--red)}
-.onair.is-wait .oa-needle{animation:oaHunt 1.6s ease-in-out infinite}
-@keyframes oaHunt{50%{transform:translateX(-7px)}}
-.oa-stations{position:absolute;left:0;right:0;top:36px;display:grid;grid-template-columns:repeat(4,1fr)}
-.oa-stations .yt-step{position:relative;text-align:center;padding:0 6px;color:rgba(234,241,255,.3);transition:color .4s}
-.oa-stations .yt-step:before{content:"";position:absolute;left:50%;top:-36px;width:1px;height:22px;background:rgba(234,241,255,.38)}
-.oa-stations .yt-step.done:before,.oa-stations .yt-step.active:before{background:rgba(234,241,255,.8)}
-.oa-stations .yt-step b{display:block;font:800 13px/1.2 -apple-system,"Segoe UI",sans-serif;letter-spacing:-.01em;color:inherit}
-.oa-stations .yt-step .oa-mono{display:block;margin-bottom:3px;color:inherit;font-size:9.5px}
-.oa-stations .yt-step.done{color:rgba(234,241,255,.62)}
-.oa-stations .yt-step.active{color:var(--ink)}
-.oa-stations .yt-step.active .oa-mono{color:var(--red)}
-/* ligne d'état + VU */
-.oa-foot{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,300px);gap:24px;align-items:end;
-  margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
-/* plusieurs onglets partagés en même temps */
-.yt-tabs{display:none;flex-direction:column;gap:8px;margin-top:14px}
-.onair.is-live .yt-tabs{display:flex}
-.yt-tab{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.25)}
-.yt-tab i{width:8px;height:8px;border-radius:50%;background:#B9FF45;box-shadow:0 0 8px #B9FF45;flex:none}
-.yt-tab.muted i{background:rgba(234,241,255,.3);box-shadow:none}
-.yt-tab span{flex:1;font-weight:700;color:var(--ink);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.yt-tab.muted span{color:var(--dim);text-decoration:line-through}
-.yt-tab button{height:34px;min-width:34px;padding:0 12px;border-radius:17px;border:1px solid var(--line);background:#07101f;color:var(--ink);font:800 13px/1 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
-.yt-tab button.x{color:#ffb3bc}
-.yt-add{align-self:flex-start;height:40px;padding:0 18px;border-radius:20px;border:1px dashed rgba(234,241,255,.45);
-  background:none;color:var(--ink);font-weight:800;font-size:14px;cursor:pointer}
-.yt-add:hover{border-color:#B9FF45;color:#B9FF45}
-.yt-status{font-size:13px;line-height:1.5;color:var(--dim);padding-left:16px;position:relative;min-height:20px}
-.yt-status:before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:rgba(234,241,255,.35)}
-.yt-status strong{color:var(--ink);font-weight:700}
-.yt-status b{color:var(--ink);font-weight:600}
-.yt-status code{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink)}
-.yt-status.live:before{background:#B9FF45;box-shadow:0 0 10px #B9FF45}
-.yt-status.bad{color:#ffb3bc}.yt-status.bad:before{background:var(--red);box-shadow:0 0 10px var(--red)}
-.oa-vu-head{display:flex;justify-content:space-between;margin-bottom:8px}
-.oa-vu-head strong{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink);font-weight:500}
-.oa-vu{height:12px;position:relative;background:rgba(234,241,255,.06);
-  -webkit-mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px);
-          mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px)}
-.oa-vu .yt-meter-fill{height:100%;width:0;background:linear-gradient(90deg,#B9FF45 0 62%,#FFC24B 62% 84%,#FF2D3F 84%);
-  background-size:300px 100%;transition:width .09s linear}
-.oa-chain{margin-top:14px;display:flex;flex-wrap:wrap;gap:4px 10px}
-.oa-chain span:not(:last-child):after{content:"/";margin-left:10px;color:rgba(234,241,255,.2)}
-@media(max-width:760px){
-  .onair{padding:20px 16px 18px!important}
-  .oa-kicker span:first-child{display:none}.oa-title{font-size:clamp(34px,11vw,48px)}
-  .oa-top{display:block;position:relative}.oa-top>div:first-child{min-width:0}
-  .oa-lamp{position:absolute;top:-4px;right:0;padding:6px 9px;font-size:10px;letter-spacing:.16em}
-  .oa-input{grid-template-columns:1fr}.oa-go{justify-content:space-between}
-  .oa-foot{grid-template-columns:1fr}
-  .oa-stations .yt-step b{font-size:11px}.oa-stations .yt-step .oa-mono{letter-spacing:.1em}
-}
-
-  /* ===== Bouton YouTube dans la barre du haut ===== */
-  .tb-btns{grid-template-columns:repeat(6,1fr)!important}
-  .tb-btns .pill{grid-column:span 2}
-  .tb-btns #power,.tb-btns #openYT{grid-column:span 3}
-  .pill.yt-btn{background:linear-gradient(135deg,#FF2D3F,#A3122A);color:#fff}
-  .pill.yt-btn.live{box-shadow:0 0 0 3px rgba(255,45,63,.25),0 0 26px rgba(255,45,63,.6)}
-  @media (min-width:900px){ .tb-btns{grid-template-columns:repeat(5,1fr)!important} .tb-btns .pill,.tb-btns #power,.tb-btns #openYT{grid-column:auto} }
-  @media (max-width:700px){ .tb-btns .pill{font-size:15px;padding:0 8px;white-space:nowrap;min-height:48px} .tb-btns #power,.tb-btns #openYT{font-size:17px} }
-
-  /* ===== Tiroir YouTube (depuis le haut) ===== */
-  .drawer-top{left:0;right:0;top:0;max-height:94vh;max-height:94dvh;overflow-y:auto;
-    border-bottom-left-radius:24px;border-bottom-right-radius:24px;border-bottom:1px solid var(--edge2);
-    transform:translateY(-101%);box-shadow:0 20px 60px rgba(0,0,0,.6)}
-  .drawer-top.open{transform:translateY(0)}
-  .drawer-top .onair{border:0;border-radius:0;background:transparent;display:block}
-  .drawer-top .yt-status{font-size:17px}
-  .drawer-top .oa-lamp{margin-right:60px}
-  .yt-close{position:absolute;top:16px;right:18px;z-index:3;width:48px;height:48px;border-radius:50%;
-    border:1px solid var(--edge2);background:rgba(234,241,255,.06);font-size:22px;display:flex;align-items:center;justify-content:center}
 
   /* ===== Pédale CHORUS ===== */
   .chor-display{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
@@ -731,7 +671,6 @@
     box-shadow:0 0 0 4px rgba(47,231,255,.18),0 2px 8px rgba(0,0,0,.5)}
   .chor-ref input::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff}
   #pedalChorus .knob-label{font-size:13px}
-  /* ===== V25 : corrections d'alignement ===== */
   .brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .brand-row{min-width:0}
   .pedal-head{min-width:0}
@@ -743,6 +682,8 @@
   @media (max-width:700px){
     .brand{font-size:17px;letter-spacing:.1em}
     .brand small{font-size:10px;margin-left:3px}
+    .rec-btn{width:34px;height:34px} .rec-btn i{top:8px;bottom:8px;width:4px} .rec-btn i:first-child{left:9px} .rec-btn i:last-child{right:9px}
+    .rec-time{font-size:12px}
     .tb-btns #openFx{gap:6px;padding:0 8px}
     .fx-master{min-width:40px;height:26px;padding:0 7px;font-size:11px}
     .fxquick{gap:5px}
@@ -759,14 +700,17 @@
   <div class="card topbar">
     <div class="brand-row">
       <span class="orb"></span>
-      <span class="brand">RADIO THE CORE <small>• ESSAI · V41</small></span>
+      <span class="brand">RADIO THE CORE <small>• ESSAI · V45</small></span>
+      <div class="rec-wrap" id="recWrap">
+        <span class="rec-time" id="recTime">00:00</span>
+        <button class="rec-btn" id="recBtn" type="button" title="Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur"><i></i><i></i></button>
+      </div>
     </div>
     <div class="now" id="npName">Rien en lecture</div>
     <div class="sub" id="npState">Ouvre les stations pour choisir</div>
 
     <div class="tb-btns">
       <button class="pill" id="power">▶ Écouter</button>
-      <button class="pill yt-btn" id="openYT">▶ YouTube</button>
       <button class="pill fav-btn" id="openFavs">★ Favoris</button>
       <button class="pill ghost" id="openFx">✦ Effets <span class="fx-master on" id="fxMaster" role="switch" aria-checked="true" title="Activer / couper tous les effets">ON</span></button>
       <button class="pill ghost" id="openDrawer">☰ Stations</button>
@@ -778,6 +722,36 @@
   </div>
 
   <div class="card console" id="console">
+    <div class="ag-pop" id="agPop" role="dialog" aria-live="polite">
+      <button class="x" type="button" id="agPopX" title="Plus tard">✕</button>
+      <h4>🤖 T'aimes bien ce réglage ?</h4>
+      <p id="agPopTxt">Si tu dis oui, je l'enregistre et j'apprends ce que tu aimes.</p>
+      <div class="b"><button class="yes" type="button" id="agPopYes">✔ Oui</button><button class="no" type="button" id="agPopNo">✖ Non</button></div>
+    </div>
+    <details class="agent" id="agentBox">
+      <summary>🤖 AGENT PRESET <span class="ag-st" id="agSt">prêt · écoute puis crée un preset</span></summary>
+      <div class="ag-body">
+        <div class="ag-row">
+          <span>Style</span>
+          <select id="agGenre"><option value="auto">Auto (l'agent devine)</option><option>Rock</option><option>Jazz</option>
+            <option>Classique</option><option>Électronique</option><option>Vocal / Acoustique</option></select>
+          <span>Caractère</span>
+          <span class="ag-seg" id="agChar"><button type="button" data-v="0.55">Subtil</button><button type="button" data-v="1" class="on">Équilibré</button><button type="button" data-v="1.6">Créatif</button></span>
+          <label><input type="checkbox" id="agMotion" checked> Automatisations</label>
+        </div>
+        <button class="ag-go" id="agGo" type="button">🎧 Écouter la musique et créer un preset (8 s)</button>
+        <div class="ag-meter"><i id="agBar"></i></div>
+        <div class="ag-report" id="agReport"></div>
+        <div class="ag-fb" id="agFb">
+          <button type="button" id="agYes">👍 J'aime</button>
+          <button type="button" id="agNo">👎 Autre version</button>
+          <button type="button" id="agTweak" title="Retouche les boutons à ton oreille, puis clique : l'agent retient tes corrections">✍ Apprendre de mes retouches</button>
+          <button type="button" id="agKeep">💾 Garder ce preset</button>
+        </div>
+        <div class="ag-list" id="agList"></div>
+        <div class="ag-learn" id="agLearn"></div>
+      </div>
+    </details>
     <div class="auto-all" id="autoAll"><span>AUTOMATISATION · TOUS LES BLOCS</span>
       <button class="site-reset" id="siteReset" type="button" title="Remet TOUT le site comme au premier lancement"><span class="l">⟲ RESET TOUT LE SITE</span><span class="s">⟲ SITE</span></button></div>
     <div class="xfade-wrap">
@@ -800,11 +774,9 @@
         </div>
         <div class="dimbox">
           <div class="dim-stack">
-            <!-- anneau externe : vitesse de toutes les boucles (0 à x2) -->
             <div class="knob knob-dimspeed seg-ticks" data-key="dimSpeed" data-label="Vitesse Dimension" data-seg-r="41" data-seg-w="8" data-min="0" data-max="200" data-step="5" data-value="100" style="--k-color:#FFC23D">
               <div class="knob-dial"><div class="knob-indicator"></div></div>
             </div>
-            <!-- rond central : pourcentage de Dimension (amplitude des boucles) -->
             <div class="knob knob-dim seg-ticks" data-key="dimension" data-seg-r="60" data-seg-w="9" data-min="0" data-max="100" data-step="1" data-value="100" style="--k-color:#FF2D3F">
               <div class="knob-dial"><div class="knob-indicator"></div></div>
             </div>
@@ -844,51 +816,61 @@
     <div class="section">
       <h3 class="section-title">ÉGALISEUR <span class="eq-hint" id="eqHint"><span class="long">● Appui 1 s sur un bouton → cercle rouge : bouge = boucle enregistrée · lâche sans bouger = mémoriser</span><span class="short">● Appui 1 s = REC / mémoire</span></span></h3>
 
-      <!-- ⭐ Rangée L -->
+      <div class="eq-presets" id="eqPresets">
+        <div class="eqp-head"><span class="eqp-title">PRESETS D'ÉGALISEUR</span><span class="eqp-now" id="eqpNow">Aucun preset</span></div>
+        <div class="eqp-themes" id="eqpThemes"></div>
+        <div class="eqp-subs" id="eqpSubs"></div>
+        <div class="eqp-foot">
+          <div class="eqp-target">Appliquer à :
+            <button type="button" data-t="LR" class="on">L + R</button><button type="button" data-t="L">L</button><button type="button" data-t="R">R</button></div>
+          <label class="eqp-target">Intensité <input type="range" id="eqpAmt" min="1" max="4" step="0.5" value="2.5" style="width:110px;accent-color:#FFC23D"> <b id="eqpAmtV" style="color:#fff">×2.5</b></label>
+          <button type="button" class="eqp-flat" id="eqpFlat">⌂ Plat (tout à 0)</button>
+        </div>
+      </div>
+
       <div class="eq-channel-label" style="--ch-color:#FF3D9E">L</div>
       <div class="knob-grid cols5">
-        <div class="knob" data-key="subL" data-min="-24" data-max="24" data-value="0" style="--k-color:#FF3D9E">
+        <div class="knob" data-key="subL" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#FF3D9E">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Sub</div>
         </div>
-        <div class="knob" data-key="bassL" data-min="-24" data-max="24" data-value="0" style="--k-color:#FF3D9E">
+        <div class="knob" data-key="bassL" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#FF3D9E">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Bass</div>
         </div>
-        <div class="knob" data-key="midL" data-min="-24" data-max="24" data-value="0" style="--k-color:#FF3D9E">
+        <div class="knob" data-key="midL" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#FF3D9E">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Mid</div>
         </div>
-        <div class="knob" data-key="himidL" data-min="-24" data-max="24" data-value="0" style="--k-color:#FF3D9E">
+        <div class="knob" data-key="himidL" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#FF3D9E">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Hi-Mid</div>
         </div>
-        <div class="knob" data-key="highL" data-min="-24" data-max="24" data-value="0" style="--k-color:#FF3D9E">
+        <div class="knob" data-key="highL" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#FF3D9E">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">High</div>
         </div>
       </div>
 
-      <!-- ⭐ Rangée R -->
       <div class="eq-channel-label" style="--ch-color:#2FE7FF">R</div>
       <div class="knob-grid cols5">
-        <div class="knob" data-key="subR" data-min="-24" data-max="24" data-value="0" style="--k-color:#2FE7FF">
+        <div class="knob" data-key="subR" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#2FE7FF">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Sub</div>
         </div>
-        <div class="knob" data-key="bassR" data-min="-24" data-max="24" data-value="0" style="--k-color:#2FE7FF">
+        <div class="knob" data-key="bassR" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#2FE7FF">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Bass</div>
         </div>
-        <div class="knob" data-key="midR" data-min="-24" data-max="24" data-value="0" style="--k-color:#2FE7FF">
+        <div class="knob" data-key="midR" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#2FE7FF">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Mid</div>
         </div>
-        <div class="knob" data-key="himidR" data-min="-24" data-max="24" data-value="0" style="--k-color:#2FE7FF">
+        <div class="knob" data-key="himidR" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#2FE7FF">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">Hi-Mid</div>
         </div>
-        <div class="knob" data-key="highR" data-min="-24" data-max="24" data-value="0" style="--k-color:#2FE7FF">
+        <div class="knob" data-key="highR" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#2FE7FF">
           <div class="knob-dial"><div class="knob-indicator"></div></div>
           <div class="knob-value">0</div><div class="knob-label">High</div>
         </div>
@@ -1042,7 +1024,6 @@
         </div>
       </div>
 
-
       <div class="pedal off" id="pedalChorus" style="--k-color:#B9FF45">
         <div class="pedal-head">
           <span class="pedal-name"><span class="icon">♫</span>CHICHORUS</span>
@@ -1100,44 +1081,6 @@
   </div>
 </aside>
 
-<aside class="drawer drawer-top" id="ytDrawer" aria-modal="true" aria-label="YouTube vers les effets">
-  <button class="yt-close" id="closeYT" aria-label="Fermer">✕</button>
-  <section class="onair" id="ytCard">
-    <div class="oa-top">
-      <div>
-        <div class="oa-kicker oa-mono"><span>Entrée 02</span><b>YouTube</b><span id="ytFlowState">Prêt</span></div>
-        <h2 class="oa-title">YouTube <em>on air</em></h2>
-      </div>
-      <div class="oa-lamp" id="ytOutputBadge"><i></i>ON AIR<span id="ytOutputState">OFF</span></div>
-    </div>
-    <div class="oa-input">
-      <label class="oa-field"><span class="oa-mono">Lien de la vidéo</span>
-        <input id="ytUrl" type="text" inputmode="url" autocomplete="off" placeholder="youtube.com/watch?v=…"></label>
-      <button class="oa-go" id="ytMainButton" type="button"><span class="lb">Passer à l’antenne</span><span class="ic">↗</span></button>
-    </div>
-    <div class="oa-dial" id="ytDial">
-      <div class="oa-scale"></div>
-      <div class="oa-needle"></div>
-      <div class="oa-stations">
-        <div class="yt-step" data-step="1"><span class="oa-mono">01</span><b>Lien</b></div>
-        <div class="yt-step" data-step="2"><span class="oa-mono">02</span><b>Onglet</b></div>
-        <div class="yt-step" data-step="3"><span class="oa-mono">03</span><b>Partage audio</b></div>
-        <div class="yt-step" data-step="4"><span class="oa-mono">04</span><b>À l’antenne</b></div>
-      </div>
-    </div>
-    <div class="oa-foot">
-      <div>
-        <div id="ytStatus" class="yt-status">Colle un lien, puis <b>Passer à l’antenne</b>. Choisis l’onglet YouTube et coche <b>Partager l’audio</b>.</div>
-        <div class="yt-tabs"><div id="ytTabList" style="display:contents"></div>
-          <button class="yt-add" id="ytAddTab" type="button" title="Colle un autre lien (ou laisse le même) puis choisis un autre onglet : tous les onglets jouent ensemble, au même volume">＋ Ajouter un onglet</button></div>
-      </div>
-      <div><div class="oa-vu-head oa-mono"><span>Signal</span><strong id="ytMeterDb">−∞ dB</strong></div>
-        <div class="oa-vu"><div id="ytMeterFill" class="yt-meter-fill"></div></div></div>
-    </div>
-    <div class="oa-chain oa-mono"><span>Balance</span><span>Spatial</span><span>EQ L/R</span><span>Drive</span><span>Reverb</span><span>Écho</span><span>Chichorus</span><span>Limiter</span></div>
-  </section>
-</aside>
-
 <script>
 (function(){
 "use strict";
@@ -1159,11 +1102,13 @@ let srcNode = null;
 let pannerNode = null;
 let spatialNode = null;
 let masterGain = null;
-let inBus = null, fxDry = null, fxWet = null;   // barre Brut ↔ Effets
+let inBus = null, fxDry = null, fxWet = null;
+let agAna = null, agAnaL = null, agAnaR = null;
 let eqSplitter = null, eqMerger = null;
 let eqL = {}, eqR = {};
 let gainL = null, gainR = null;
 let limiterNode = null, softLimiter = null;
+let recDest = null;
 let analyser = null;
 let splitterVU = null, anaL = null, anaR = null;
 let _waveData = null, _dataL = null, _dataR = null;
@@ -1172,8 +1117,8 @@ let driveChain = null;
 let reverbChain = null;
 let echoChain = null;
 let chorusChain = null, chorusOn = false;
-let fxMasterOn = true;   // interrupteur général du bouton Effets
-let ytCaptureActive = false, lastRadio = null;
+let fxMasterOn = true;
+let lastRadio = null;
 
 let graphBuilt = false;
 let isPlaying = false;
@@ -1199,7 +1144,6 @@ const RETRY_BASE = 800;
 const RETRY_MAX = 20000;
 const GOOD_PLAYBACK_MS = 15000;
 
-/* FAVORIS D'EFFETS */
 const FX_FAV_KEY = 'core_fx_favs';
 let fxFavs = {};
 try {
@@ -1332,7 +1276,7 @@ function makeDistortionCurve(amount) {
   const n = 4096;
   const curve = new Float32Array(n);
   const a = amount / 100;
-  const k = a * a * 10;                     // progressif : doux au début, fort seulement tout en haut
+  const k = a * a * 10;
   for (let i = 0; i < n; i++) {
     const x = (i * 2) / n - 1;
     curve[i] = (1 + k) * x / (1 + k * Math.abs(x));
@@ -1405,7 +1349,7 @@ function buildGraph() {
   driveChain.wet.gain.value = 1;
   driveChain.preGain.gain.value = 1;
   driveChain.shaper.curve = makeDistortionCurve(30);
-  driveChain.shaper.oversample = '4x';     // moins de grésillement
+  driveChain.shaper.oversample = '4x';
   driveChain.tone.type = 'lowpass';
   driveChain.tone.frequency.value = 8000;
   driveChain.tone.Q.value = 0.7;
@@ -1480,11 +1424,14 @@ function buildGraph() {
   anaL = audioCtx.createAnalyser(); anaL.fftSize = 256;
   anaR = audioCtx.createAnalyser(); anaR.fftSize = 256;
 
-  // entrée commune (radio + onglets) : une voie traitée par toute la chaîne, une voie brute
   inBus = audioCtx.createGain(); fxDry = audioCtx.createGain(); fxWet = audioCtx.createGain();
   fxDry.gain.value = 0; fxWet.gain.value = 1;
   srcNode.connect(inBus);
   inBus.connect(pannerNode);
+  agAna = audioCtx.createAnalyser(); agAna.fftSize = 8192; agAna.smoothingTimeConstant = 0.2; inBus.connect(agAna);
+  { const sp = audioCtx.createChannelSplitter(2); inBus.connect(sp);
+    agAnaL = audioCtx.createAnalyser(); agAnaR = audioCtx.createAnalyser(); agAnaL.fftSize = agAnaR.fftSize = 2048;
+    sp.connect(agAnaL, 0); sp.connect(agAnaR, 1); }
   inBus.connect(fxDry); fxDry.connect(limiterNode);
   pannerNode.connect(spatialNode);
   spatialNode.connect(masterGain);
@@ -1514,6 +1461,7 @@ function buildGraph() {
 
   limiterNode.connect(softLimiter);
   softLimiter.connect(analyser);
+  recDest = audioCtx.createMediaStreamDestination(); softLimiter.connect(recDest);
   analyser.connect(audioCtx.destination);
 
   limiterNode.connect(splitterVU);
@@ -1543,12 +1491,11 @@ function setParam(param, value, time) {
 }
 
 function applyAll() {
-  if (P.chorPitch !== undefined) P.chorRef = 440 * Math.pow(2, P.chorPitch / 1200);   // barre Tonalité (automatisable)
+  if (P.chorPitch !== undefined) P.chorRef = 440 * Math.pow(2, P.chorPitch / 1200);
   if (!audioCtx || !graphBuilt) return;
   const t = audioCtx.currentTime;
 
   setParam(masterGain.gain, Math.pow(10, P.gain / 20), t);
-  // Brut ↔ Effets : fondu à puissance constante ; la voie brute garde le Volume
   const xf = Math.max(0, Math.min(1, (P.fxMix !== undefined ? P.fxMix : 100) / 100));
   setParam(fxWet.gain, Math.sin(xf * Math.PI / 2), t);
   setParam(fxDry.gain, Math.cos(xf * Math.PI / 2) * Math.pow(10, P.gain / 20), t);
@@ -1585,8 +1532,7 @@ function applyAll() {
     if (driveChain._lastAmt !== P.drvAmount) { driveChain._lastAmt = P.drvAmount; driveChain.shaper.curve = makeDistortionCurve(P.drvAmount); }
     const toneFreq = 500 * Math.pow(36, P.drvTone / 100);
     setParam(driveChain.tone.frequency, toneFreq, t);
-    // compense la montée de volume due à la saturation
-    setParam(driveChain.outLevel.gain, (P.drvLevel / 60) / (1 + 1.8 * Math.pow(da, 0.8)), t);   // volume stable quel que soit le Drive
+    setParam(driveChain.outLevel.gain, (P.drvLevel / 60) / (1 + 1.8 * Math.pow(da, 0.8)), t);
     const mix = P.drvMix / 100;
     setParam(driveChain.dry.gain, 1 - mix, t);
     setParam(driveChain.wet.gain, mix, t);
@@ -1727,7 +1673,6 @@ async function streamSession(station, mySession) {
 }
 
 async function togglePlay(station) {
-  if (ytCaptureActive) { await stopYT(true); return; }
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
@@ -1832,8 +1777,6 @@ function setStatus(msg) { npState.textContent = msg; statusMini.textContent = ms
 function title(t) { npName.textContent = t; }
 function render() {
   const p = isPlaying;
-  const yb = document.getElementById('openYT');
-  if (yb) { yb.classList.toggle('live', ytCaptureActive); yb.textContent = ytCaptureActive ? '● On air' : '▶ YouTube'; }
   waveEl.classList.toggle('on', p);
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
@@ -1883,7 +1826,6 @@ function paintFavsList() {
 }
 
 function playStation(st) {
-  if (ytCaptureActive) { stopYT(false).then(() => playStation(st)); return; }
   lastRadio = st;
   currentStation = st;
   title(st.n);
@@ -2058,7 +2000,7 @@ function searchLibrary(q) {
         q: (r.bitrate ? r.bitrate + ' kbps' : ''),
         u: u, alts: []
       });
-    }));
+    });
     online = out;
     listMsg.innerHTML = out.length
       ? '<b>' + out.length + ' stations trouvées.</b>'
@@ -2115,9 +2057,7 @@ const scrim = document.getElementById('scrim');
 const fxDrawer = document.getElementById('fxDrawer');
 const favsDrawer = document.getElementById('favsDrawer');
 
-const ytDrawer = document.getElementById('ytDrawer');
 function closeAllDrawers() {
-  ytDrawer.classList.remove('open');
   drawer.classList.remove('open');
   fxDrawer.classList.remove('open');
   favsDrawer.classList.remove('open');
@@ -2162,23 +2102,15 @@ document.getElementById('fxAll').addEventListener('click', () => openFxDrawer(tr
 document.getElementById('closeFxDrawer').addEventListener('click', () => openFxDrawer(false));
 document.getElementById('openFavs').addEventListener('click', () => openFavsDrawer(true));
 document.getElementById('closeFavsDrawer').addEventListener('click', () => openFavsDrawer(false));
-function openYTDrawer(o) {
-  closeAllDrawers();
-  if (o) { ytDrawer.classList.add('open'); scrim.classList.add('open');
-    setTimeout(() => { const i = document.getElementById('ytUrl'); if (i && !ytCaptureActive) i.focus(); }, 350); }
-}
-document.getElementById('openYT').addEventListener('click', () => openYTDrawer(true));
-document.getElementById('closeYT').addEventListener('click', () => openYTDrawer(false));
 scrim.addEventListener('click', closeAllDrawers);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllDrawers(); });
 
 document.getElementById('power').addEventListener('click', () => {
-  if (ytCaptureActive || isPlaying) { togglePlay(); return; }
+  if (isPlaying) { togglePlay(); return; }
   const st = (currentStation && !/^capture:/.test(currentStation.u)) ? currentStation : (lastRadio || CORE[0]);
   togglePlay(st);
 });
 
-/* Mémoire d'équilibre : positions retenues pour les boutons de l'égaliseur */
 const EQ_MEMO_KEY = 'core_eq_memo';
 let eqMemo = {};
 try { eqMemo = JSON.parse(localStorage.getItem(EQ_MEMO_KEY) || '{}') || {}; } catch (e) { eqMemo = {}; }
@@ -2195,27 +2127,25 @@ function showMemoToast(txt, color, autoHide) {
 }
 function hideMemoToast() { if (memoToast.textContent.includes('maintiens')) memoToast.classList.remove('show'); }
 
-/* ===== Boucles d'automation : mouvements enregistrés et rejoués en boucle ===== */
-const LOOP_KEY = 'core_knob_loops';          // ancien stockage (une seule série de boucles)
-const SLOT_KEY = 'core_loop_slots';           // 5 favoris d'automatisation (étoiles)
+const LOOP_KEY = 'core_knob_loops';
+const SLOT_KEY = 'core_loop_slots';
 let loopSlots = null;
 try { loopSlots = JSON.parse(localStorage.getItem(SLOT_KEY) || 'null'); } catch (e) { loopSlots = null; }
 if (!loopSlots || !Array.isArray(loopSlots.slots) || loopSlots.slots.length !== 5) {
   let old = {};
   try { old = JSON.parse(localStorage.getItem(LOOP_KEY) || '{}') || {}; } catch (e) { old = {}; }
-  loopSlots = { active: 0, slots: [0, 1, 2, 3, 4].map(i => ({ loops: i === 0 ? old : {} })) };   // les boucles d'avant vont dans l'étoile 1
+  loopSlots = { active: 0, slots: [0, 1, 2, 3, 4].map(i => ({ loops: i === 0 ? old : {} })) };
 }
-// temps des boucles : l'ancienne échelle −10…+10 devient −100…+100 (même vitesse : ancien +10 = nouveau +50)
 try {
   if (localStorage.getItem('core_rate_x100') !== '1') {
     loopSlots.slots.forEach(sl => Object.values(sl.loops).forEach(L => { if (L && L.rate) L.rate = Math.round(L.rate * 5); }));
     localStorage.setItem('core_rate_x100', '1');
   }
 } catch (e) {}
-let savedLoops = loopSlots.slots[loopSlots.active].loops;     // boucles de l'étoile allumée
+let savedLoops = loopSlots.slots[loopSlots.active].loops;
 function saveLoops() { try { localStorage.setItem(SLOT_KEY, JSON.stringify(loopSlots)); } catch (e) {} }
-const KnobLoops = new Map();      // clé → { pts:[[t,v]], dur, t0, api }
-const autoMarks = [];             // repères d'automatisation des blocs (remplis plus bas)
+const KnobLoops = new Map();
+const autoMarks = [];
 let loopTimer = null;
 function sampleLoop(pts, tt) {
   if (tt <= pts[0][0]) return pts[0][1];
@@ -2228,17 +2158,21 @@ function sampleLoop(pts, tt) {
   return pts[pts.length - 1][1];
 }
 let loopLast = 0;
-let dimOn = true;   // interrupteur Dimension : OFF = boucles en pause, boutons à leur point de départ
+let dimOn = true;
 function loopTick() {
   if (!KnobLoops.size) { clearInterval(loopTimer); loopTimer = null; loopLast = 0; return; }
   const now = performance.now(); let changed = false;
   const dt = loopLast ? Math.min(200, now - loopLast) : 0; loopLast = now;
-  const dim = (P.dimension !== undefined ? P.dimension : 100) / 100;   // rond central : amplitude
-  const spd = (P.dimSpeed !== undefined ? P.dimSpeed : 100) / 100;     // anneau externe : vitesse
+  const dim = (P.dimension !== undefined ? P.dimension : 100) / 100;
+  const spd = (P.dimSpeed !== undefined ? P.dimSpeed : 100) / 100;
   KnobLoops.forEach(L => {
     if (!dimOn) { if (L.api.setLoopValue(L.base, 0)) changed = true; return; }
-    const own = Math.pow(2, (L.rate || 0) / 25);                           // −100 = ÷16, −50 = ÷4, 0 = normal, +50 = ×4, +100 = ×16
-    // Dimension réduit le trajet ET la durée : même allure, donc 10 % de Dimension = boucle 10 fois plus rapide
+    if (L.rateLoop) {
+      L.rph = ((L.rph || 0) + dt) % L.rateLoop.dur;
+      const r = Math.round(sampleLoop(L.rateLoop.pts, L.rph));
+      if (r !== L.rate) { L.rate = r; if (L.onRate) L.onRate(r); }
+    }
+    const own = Math.pow(2, (L.rate || 0) / 25);
     const scaled = L.key !== 'dimension' && L.key !== 'dimSpeed';
     const byDim = scaled ? 1 / Math.max(0.02, dim) : 1;
     L.ph = ((L.ph || 0) + dt * own * byDim * (L.key === 'dimSpeed' ? 1 : spd)) % L.dur;
@@ -2248,10 +2182,8 @@ function loopTick() {
   });
   if (changed) applyAll();
 }
-// un minuteur (et non l'affichage) : les boucles continuent même si tu es sur l'onglet YouTube
 function ensureLoopTimer() { if (!loopTimer) loopTimer = setInterval(loopTick, 30); }
 
-/* couleur « chaleur » : 0 = vert, 0,45 = jaune, 0,75 = orange, 1 = rouge */
 function heatColor(t) {
   const stops = [[0, [185, 255, 69]], [0.45, [255, 214, 72]], [0.75, [255, 130, 47]], [1, [255, 45, 63]]];
   t = Math.max(0, Math.min(1, t));
@@ -2270,8 +2202,8 @@ function createKnob(knobEl, format) {
   const indicator = knobEl.querySelector('.knob-indicator');
   const valueEl = knobEl.querySelector('.knob-value') || document.querySelector('.knob-value[data-for="' + key + '"]');
   const labelEl = knobEl.querySelector('.knob-label') || document.querySelector('.knob-label[data-for="' + key + '"]');
-  const seg = knobEl.classList.contains('seg-ticks');   // graduations collées (Dimension)
-  const hbar = knobEl.classList.contains('hbar');       // barre horizontale (Brut ↔ Effets)
+  const seg = knobEl.classList.contains('seg-ticks');
+  const hbar = knobEl.classList.contains('hbar');
 
   const min = parseFloat(knobEl.dataset.min);
   const max = parseFloat(knobEl.dataset.max);
@@ -2280,11 +2212,10 @@ function createKnob(knobEl, format) {
   const angleOf = v => -135 + ((v - min) / range) * 270;
 
   const memoEl = document.createElement('div'); memoEl.className = 'knob-memo'; dial.appendChild(memoEl);
-  // graduations : la grosse est sur le ZÉRO de l'aiguille, les autres tous les 27° autour
-  const tickRef = (min < 0 && max > 0) ? 0 : min;   // bipolaire : depuis 0 ; sinon depuis le minimum
+  const tickRef = (min < 0 && max > 0) ? 0 : min;
   const refAngle = angleOf(tickRef);
   const ticks = [];
-  const nT = range / step <= 10 ? Math.round(range / step) : 10;   // bouton à crans (Signal) : 1 graduation par position
+  const nT = range / step <= 10 ? Math.round(range / step) : 10;
   for (let i = 0; i <= nT && !seg && !hbar; i++) {
     const ang = -135 + i * 270 / nT;
     const tk = document.createElement('i'); tk.className = 'knob-tick' + (i * 2 === nT ? ' major' : '');
@@ -2296,7 +2227,7 @@ function createKnob(knobEl, format) {
   const segBounds = [];
   const pctOf = v => ((v - min) / range) * 100;
   const xfFill = hbar ? knobEl.querySelector('.xf-fill') : null;
-  if (hbar) for (let i = 1; i < 10; i++) {            // 9 repères, celui du milieu plus marqué
+  if (hbar) for (let i = 1; i < 10; i++) {
     const c = document.createElement('i'); c.className = 'xf-cut' + (i === 5 ? ' mid' : ''); c.style.left = i * 10 + '%';
     dial.insertBefore(c, dial.firstChild);
   }
@@ -2325,7 +2256,6 @@ function createKnob(knobEl, format) {
     knobEl.classList.toggle('on-tick', onTick);
   }
 
-  // tracé rouge de la boucle (de où à où) + point rouge qui suit la lecture
   const NS = 'http://www.w3.org/2000/svg';
   const recSvg = document.createElementNS(NS, 'svg'); recSvg.setAttribute('viewBox', '0 0 100 100'); recSvg.setAttribute('class', 'knob-rec');
   const arcP = document.createElementNS(NS, 'path'); const dotC = document.createElementNS(NS, 'circle'); dotC.setAttribute('r', '5');
@@ -2334,7 +2264,7 @@ function createKnob(knobEl, format) {
   const xfRec = document.createElement('div'); xfRec.className = 'xf-rec'; xfRec.appendChild(document.createElement('i'));
   if (hbar) dial.appendChild(xfRec);
   function drawRec(vMin, vMax, vNow) {
-    if (hbar) {                                       // zone parcourue = bande rouge, point = lecture
+    if (hbar) {
       if (vMin === null) { xfRec.style.display = 'none'; return; }
       const a = pctOf(vMin), b = pctOf(vMax);
       xfRec.style.display = 'block'; xfRec.style.left = a + '%'; xfRec.style.width = Math.max(0, b - a) + '%';
@@ -2348,7 +2278,6 @@ function createKnob(knobEl, format) {
     const d = polar(angleOf(vNow), R); dotC.setAttribute('cx', d[0]); dotC.setAttribute('cy', d[1]);
   }
   drawRec(null);
-  // graduations collées : 10 segments contigus sur 270°, séparés par un fin trait
   const SEG_R = parseFloat(knobEl.dataset.segR) || 58, SEG_W = parseFloat(knobEl.dataset.segW) || 8;
   function arcD(a0, a1, R) {
     if (a1 - a0 < 0.2) return 'M 0 0';
@@ -2371,9 +2300,9 @@ function createKnob(knobEl, format) {
   let value = parseFloat(knobEl.dataset.value) || 0;
   const defValue = value;
   let dragging = false, moved = false, startY = 0, startValue = 0, holdTimer = null, armed = false;
-  let rec = null;            // enregistrement en cours : { t0, pts, lo, hi }
-  const DEAD = 6;            // px : en dessous, un doigt immobile ne bouge pas le réglage
-  const HOLD_MS = 1000;      // appui 1 s = cercle rouge
+  let rec = null;
+  const DEAD = 6;
+  const HOLD_MS = 1000;
 
   function paintMemo() {
     const has = eqMemo[key] !== undefined;
@@ -2418,7 +2347,7 @@ function createKnob(knobEl, format) {
   }
   function disarm() { armed = false; knobEl.classList.remove('rec-armed'); }
   function memorize() {
-    if (eqMemo[key] === value) {                 // même position déjà retenue → on l'efface
+    if (eqMemo[key] === value) {
       delete eqMemo[key];
       showMemoToast('○ ' + lbl + ' : mémoire effacée', color, true);
     } else {
@@ -2429,16 +2358,15 @@ function createKnob(knobEl, format) {
     knobEl.classList.remove('memo-flash'); void knobEl.offsetWidth; knobEl.classList.add('memo-flash');
   }
 
-  // ---- temps de la boucle (pastille sous le bouton) ----
   const rateEl = document.createElement('div'); rateEl.className = 'loop-rate';
-  rateEl.title = 'Temps de la boucle (−100 à +100) : boule du haut = +10, boule du bas = −10 · glisse vers le haut / le bas = réglage fin · molette = ±5 · double-clic = 0';
+  rateEl.title = 'Temps de la boucle (−100 à +100) : boule du haut = +10, boule du bas = −10 · glisse = réglage fin · molette = ±5 · double-clic = 0 · appui 1 s puis glisse = enregistrer le temps en boucle';
   const rateV = document.createElement('span'); rateEl.appendChild(rateV);
-  [['up', 10], ['dn', -10]].forEach(([c, n]) => {           // boule au-dessus = +10, en dessous = −10
+  [['up', 10], ['dn', -10]].forEach(([c, n]) => {
     const b = document.createElement('i'); b.className = 'lr-b ' + c; b.title = (n > 0 ? '+' : '−') + '10';
     b.addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); });
     b.addEventListener('pointerup', e => e.stopPropagation());
     b.addEventListener('dblclick', e => e.stopPropagation());
-    b.addEventListener('click', e => { e.stopPropagation(); const L = KnobLoops.get(key); if (L) setRate((L.rate || 0) + n); });
+    b.addEventListener('click', e => { e.stopPropagation(); const L = KnobLoops.get(key); if (L) { stopRateLoop(L); setRate((L.rate || 0) + n); } });
     rateEl.appendChild(b);
   });
   if (!knobEl.closest('.dim-stack')) dial.appendChild(rateEl);
@@ -2446,29 +2374,71 @@ function createKnob(knobEl, format) {
     rateV.textContent = r > 0 ? '+' + r : r < 0 ? '−' + (-r) : '0';
     rateEl.classList.toggle('slow', r < 0); rateEl.classList.toggle('fast', r > 0);
   }
-  function setRate(r) {
+  function stopRateLoop(L, loud) {
+    if (!L || !L.rateLoop) return;
+    delete L.rateLoop; if (savedLoops[key]) { delete savedLoops[key].rateLoop; savedLoops[key].rate = L.rate || 0; }
+    saveLoops(); rateEl.classList.remove('rloop');
+    if (loud) showMemoToast('■ ' + lbl + ' : boucle de temps arrêtée (reste à ' + rateV.textContent + ')', color, true);
+  }
+  function setRate(r, quiet) {
     r = Math.max(-100, Math.min(100, Math.round(r)));
     const L = KnobLoops.get(key); if (!L || L.rate === r) return;
-    L.rate = r; if (savedLoops[key]) savedLoops[key].rate = r; saveLoops(); paintRate(r); paintAutoMarks();
+    L.rate = r; if (savedLoops[key]) savedLoops[key].rate = r; paintRate(r);
+    if (quiet) return;
+    saveLoops(); paintAutoMarks();
     showMemoToast('⏱ ' + lbl + ' : temps ' + rateV.textContent + (r ? (r < 0 ? ' (plus lent)' : ' (plus rapide)') : ' (normal)'), color, true);
   }
-  let rateDrag = null;
+  let rateDrag = null, rateHold = null, rateArmed = false, rateRec = null;
   rateEl.addEventListener('pointerdown', e => {
     e.stopPropagation(); e.preventDefault();
     const L = KnobLoops.get(key); if (!L) return;
-    rateDrag = { y: e.clientY, r: L.rate || 0 };
+    rateDrag = { y: e.clientY, r: L.rate || 0, moved: false };
     try { rateEl.setPointerCapture(e.pointerId); } catch (err) {}
+    clearTimeout(rateHold);
+    rateHold = setTimeout(() => {
+      rateHold = null; rateArmed = true; rateEl.classList.add('rec');
+      showMemoToast('● REC temps ' + lbl + ' : glisse haut / bas pour enregistrer · lâche pour boucler', '#FF2D3F', false);
+      if (navigator.vibrate) try { navigator.vibrate(30); } catch (err) {}
+    }, 1000);
   });
   rateEl.addEventListener('pointermove', e => {
     if (!rateDrag) return;
-    setRate(rateDrag.r + (rateDrag.y - e.clientY) / 3);    // 3 px = 1 cran
+    const L = KnobLoops.get(key); if (!L) return;
+    const dy = rateDrag.y - e.clientY;
+    if (!rateDrag.moved) {
+      if (Math.abs(dy) < 5) return;
+      rateDrag.moved = true; clearTimeout(rateHold); rateHold = null;
+      stopRateLoop(L);
+      if (rateArmed) rateRec = { t0: performance.now(), pts: [[0, L.rate || 0]] };
+    }
+    setRate(rateDrag.r + dy / 3, !!rateRec);
+    if (rateRec) rateRec.pts.push([performance.now() - rateRec.t0, L.rate || 0]);
     e.preventDefault();
   });
-  ['pointerup', 'pointercancel'].forEach(ev => rateEl.addEventListener(ev, e => { e.stopPropagation(); rateDrag = null; }));
-  rateEl.addEventListener('dblclick', e => { e.stopPropagation(); setRate(0); });
-  rateEl.addEventListener('wheel', e => { e.preventDefault(); e.stopPropagation(); const L = KnobLoops.get(key); if (L) setRate((L.rate || 0) + (e.deltaY < 0 ? 5 : -5)); }, { passive: false });
+  function rateEnd(e) {
+    e.stopPropagation(); clearTimeout(rateHold); rateHold = null;
+    const L = KnobLoops.get(key);
+    if (rateRec && L) {
+      const t = performance.now() - rateRec.t0; rateRec.pts.push([t, L.rate || 0]);
+      const vals = rateRec.pts.map(q => q[1]);
+      if (t < 150 || Math.min(...vals) === Math.max(...vals)) showMemoToast('○ Mouvement de temps trop court', '#FF2D3F', true);
+      else {
+        let pts = rateRec.pts; if (pts.length > 300) { const k = Math.ceil(pts.length / 300); pts = pts.filter((_, i) => i % k === 0).concat([rateRec.pts[rateRec.pts.length - 1]]); }
+        L.rateLoop = { pts: pts.map(q => [Math.round(q[0]), q[1]]), dur: Math.max(150, Math.round(t)) }; L.rph = 0;
+        if (savedLoops[key]) savedLoops[key].rateLoop = L.rateLoop;
+        rateEl.classList.add('rloop'); paintAutoMarks();
+        showMemoToast('↻ ' + lbl + ' : temps en boucle (' + (t / 1000).toFixed(1) + ' s) · touche la pastille pour l'arrêter', '#FF2D3F', true);
+      }
+      saveLoops();
+    } else if (rateDrag && !rateDrag.moved && L && L.rateLoop) stopRateLoop(L, true);
+    else if (rateDrag && rateDrag.moved) { saveLoops(); paintAutoMarks(); }
+    if (rateArmed && !rateRec) hideMemoToast();
+    rateRec = null; rateArmed = false; rateDrag = null; rateEl.classList.remove('rec');
+  }
+  ['pointerup', 'pointercancel'].forEach(ev => rateEl.addEventListener(ev, rateEnd));
+  rateEl.addEventListener('dblclick', e => { e.stopPropagation(); const L = KnobLoops.get(key); stopRateLoop(L); setRate(0); });
+  rateEl.addEventListener('wheel', e => { e.preventDefault(); e.stopPropagation(); const L = KnobLoops.get(key); if (L) { stopRateLoop(L); setRate((L.rate || 0) + (e.deltaY < 0 ? 5 : -5)); } }, { passive: false });
 
-  // ---- boucle ----
   function stopLoop(silent) {
     if (!KnobLoops.has(key)) return;
     KnobLoops.delete(key); delete savedLoops[key]; saveLoops();
@@ -2477,18 +2447,22 @@ function createKnob(knobEl, format) {
   }
   function startLoop(pts, dur) {
     let lo = Infinity, hi = -Infinity; pts.forEach(p => { lo = Math.min(lo, p[1]); hi = Math.max(hi, p[1]); });
-    const rate = (savedLoops[key] && savedLoops[key].rate) || 0;          // temps propre gardé avec la boucle
+    const rate = (savedLoops[key] && savedLoops[key].rate) || 0;
     const L = { pts, dur, t0: performance.now(), ph: 0, lo, hi, api: null, key, base: pts[0][1], rate };
     L.api = {
       setLoopValue(v, d) {
         v = Math.max(min, Math.min(max, Math.round(v / step) * step));
         if (d === undefined) d = 1;
-        drawRec(L.base + (L.lo - L.base) * d, L.base + (L.hi - L.base) * d, v);   // l'arc rouge suit la Dimension
+        drawRec(L.base + (L.lo - L.base) * d, L.base + (L.hi - L.base) * d, v);
         if (v === value) return false;
         update(v, false); return true;
       }
     };
+    const rl = savedLoops[key] && savedLoops[key].rateLoop;
     KnobLoops.set(key, L); savedLoops[key] = { pts, dur, rate }; saveLoops();
+    L.onRate = paintRate;
+    if (rl && rl.pts && rl.pts.length > 1) { L.rateLoop = rl; L.rph = 0; savedLoops[key].rateLoop = rl; saveLoops(); }
+    rateEl.classList.toggle('rloop', !!L.rateLoop);
     knobEl.classList.add('looping'); drawRec(lo, hi, value); paintRate(rate); paintAutoMarks();
     ensureLoopTimer();
   }
@@ -2497,21 +2471,19 @@ function createKnob(knobEl, format) {
     const t = performance.now() - r.t0;
     r.pts.push([t, value]);
     if (t < 150 || r.hi === r.lo) { drawRec(null); showMemoToast('○ Mouvement trop court', '#FF2D3F', true); return; }
-    // allège la boucle (max ~400 points)
     let pts = r.pts; if (pts.length > 400) { const k = pts.length / 400; pts = pts.filter((_, i) => i % Math.ceil(k) === 0).concat([r.pts[r.pts.length - 1]]); }
     startLoop(pts.map(p => [Math.round(p[0]), p[1]]), Math.max(150, t));
-    showMemoToast('↻ ' + lbl + ' : boucle de ' + (t / 1000).toFixed(1) + ' s · touche le bouton pour l’arrêter', '#FF2D3F', true);
+    showMemoToast('↻ ' + lbl + ' : boucle de ' + (t / 1000).toFixed(1) + ' s · touche le bouton pour l'arrêter', '#FF2D3F', true);
   }
 
   dial.addEventListener('pointerdown', (e) => {
-    stopLoop(true);                               // toucher un bouton en boucle l'arrête
+    stopLoop(true);
     dragging = true; moved = false; startY = hbar ? e.clientX : e.clientY; startValue = value;
     knobEl.classList.add('active');
     try { dial.setPointerCapture(e.pointerId); } catch(err) {}
     disarm(); startHold();
     e.preventDefault();
   });
-  // l'appui long marche aussi sur le chiffre et le nom sous le bouton (mémoriser)
   [valueEl, labelEl].filter(Boolean).forEach(el => {
     el.addEventListener('pointerdown', e => { disarm(); startHold(); e.preventDefault(); });
     el.addEventListener('pointerup', () => { cancelHold(); if (armed) { disarm(); memorize(); } });
@@ -2520,15 +2492,15 @@ function createKnob(knobEl, format) {
   });
   dial.addEventListener('pointermove', (e) => {
     if (!dragging) return;
-    let dy = hbar ? e.clientX - startY : startY - e.clientY;   // barre : gauche ↔ droite
+    let dy = hbar ? e.clientX - startY : startY - e.clientY;
     if (!moved) {
       if (Math.abs(dy) < DEAD) return;
       moved = true;
-      if (armed) {                                // cercle rouge → on enregistre
+      if (armed) {
         rec = { t0: performance.now(), pts: [[0, value]], lo: value, hi: value };
         knobEl.classList.add('recording');
         showMemoToast('● REC ' + lbl + ' : enregistrement… lâche pour boucler', '#FF2D3F', false);
-      } else cancelHold();                        // simple réglage
+      } else cancelHold();
     }
     dy -= Math.sign(dy) * DEAD;
     update(startValue + (dy / (hbar ? Math.max(120, dial.clientWidth) : 180)) * range, true);
@@ -2546,34 +2518,31 @@ function createKnob(knobEl, format) {
     knobEl.classList.remove('active');
     try { dial.releasePointerCapture(e.pointerId); } catch(err) {}
     if (rec) finishRecording();
-    else if (armed && !moved) memorize();         // rouge + lâché sans bouger = mémoriser
+    else if (armed && !moved) memorize();
     disarm();
   }
   dial.addEventListener('pointerup', end);
   dial.addEventListener('pointercancel', end);
   dial.addEventListener('contextmenu', e => e.preventDefault());
-  // double-clic : revient à la position mémorisée (sinon à la valeur de départ)
   dial.addEventListener('dblclick', () => update(eqMemo[key] !== undefined ? eqMemo[key] : defValue, true));
 
   update(value, false);
-  // relance la boucle enregistrée la dernière fois
   if (savedLoops[key] && savedLoops[key].pts && savedLoops[key].pts.length > 1) startLoop(savedLoops[key].pts, savedLoops[key].dur);
   return {
     setValue: (v) => { stopLoop(true); update(v, true); },
     getValue: () => value,
-    // pour les étoiles : range la boucle (sans l'effacer de son étoile) et remet le bouton à son point de départ
     parkLoop() {
       if (!KnobLoops.has(key)) return;
       const b = KnobLoops.get(key).base; KnobLoops.delete(key);
       knobEl.classList.remove('looping'); drawRec(null); update(b, false); paintAutoMarks();
     },
     startLoop: (pts, dur) => startLoop(pts, dur),
-    resync() { const L = KnobLoops.get(key); if (L) L.ph = 0; },            // relance depuis le début, garde le temps
-    clearLoop() { stopLoop(true); },                                        // efface la boucle
-    toDefault() { stopLoop(true); update(defValue, true); },                // réglage de départ
-    resetTime() {                                   // temps de la boucle à 0 et relance depuis le début
+    resync() { const L = KnobLoops.get(key); if (L) L.ph = 0; },
+    clearLoop() { stopLoop(true); },
+    toDefault() { stopLoop(true); update(defValue, true); },
+    resetTime() {
       const L = KnobLoops.get(key); if (!L) return;
-      L.rate = 0; L.ph = 0; if (savedLoops[key]) savedLoops[key].rate = 0; paintRate(0);
+      stopRateLoop(L); L.rate = 0; L.ph = 0; if (savedLoops[key]) savedLoops[key].rate = 0; paintRate(0);
     },
     setQuiet: (v) => update(v, false)
   };
@@ -2586,7 +2555,6 @@ const fmtMs = v => Math.round(v);
 const fmtBal = v => v.toFixed(2);
 const fmtSpatial = v => (v > 0 ? '+' : '') + v.toFixed(1);
 
-// formes du bouton Signal : nom + icône (tracé SVG 32×16)
 const WAVES = [
   { n: 'SINUS',    ic: 'M1 8 C5 -1.5 11 -1.5 16 8 S27 17.5 31 8' },
   { n: 'TRIANGLE', ic: 'M1 13 L8.5 3 L16 13 L23.5 3 L31 13' },
@@ -2615,13 +2583,13 @@ function rememberDim() {
 function switchLoopSlot(i) {
   if (i === loopSlots.active) return;
   rememberDim();
-  Object.values(allKnobs).forEach(k => k.parkLoop());         // on range les boucles de l'étoile quittée
+  Object.values(allKnobs).forEach(k => k.parkLoop());
   loopSlots.active = i;
   const sl = loopSlots.slots[i];
   savedLoops = sl.loops;
   allKnobs.dimension.setQuiet(sl.dim !== undefined ? sl.dim : 100);
   allKnobs.dimSpeed.setQuiet(sl.spd !== undefined ? sl.spd : 100);
-  Object.keys(savedLoops).forEach(key => {                     // et on relance celles de la nouvelle étoile
+  Object.keys(savedLoops).forEach(key => {
     const L = savedLoops[key];
     if (allKnobs[key] && L && L.pts && L.pts.length > 1) allKnobs[key].startLoop(L.pts, L.dur);
   });
@@ -2638,12 +2606,13 @@ document.querySelectorAll('.knob').forEach(k => {
   if (key === 'gain') fmt = fmtDb1;
   else if (key === 'balance') fmt = fmtBal;
   else if (key === 'spatial') fmt = fmtSpatial;
+  else if (isEqKey(key)) fmt = v => (v > 0 ? '+' : '') + (Number.isInteger(v) ? v : v.toFixed(1));
   else if (key === 'dimension') fmt = v => Math.round(v) + '%';
   else if (key === 'dimSpeed') fmt = v => '×' + +(v / 100).toFixed(2);
   else if (key === 'fxMix') fmt = v => Math.round(v) + '%';
   else if (key === 'chorPulse') fmt = v => '×' + Math.round(v);
   else if (key === 'chorWave') {
-    const dial = k.querySelector('.knob-dial'), icons = WAVES.map((w, i) => {   // une icône au bout de chaque cran
+    const dial = k.querySelector('.knob-dial'), icons = WAVES.map((w, i) => {
       const a = (-135 + i * 67.5) * Math.PI / 180, el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       el.setAttribute('viewBox', '0 0 32 16'); el.setAttribute('class', 'wave-pos');
       el.innerHTML = '<path d="' + w.ic + '"/>';
@@ -2660,7 +2629,6 @@ document.querySelectorAll('.knob').forEach(k => {
   else if (key.indexOf('chor') === 0) fmt = fmtPct;
   allKnobs[key] = createKnob(k, fmt);
 });
-// repère d'automatisation sur chaque conteneur : nombre de boucles + bouton « temps à 0 »
 function paintAutoMarks() {
   autoMarks.forEach(m => {
     const keys = [...m.box.querySelectorAll('.knob')].map(k => k.dataset.key).filter(k => KnobLoops.has(k));
@@ -2669,7 +2637,6 @@ function paintAutoMarks() {
     m.count.textContent = '↻ ' + keys.length;
   });
 }
-// les 4 sortes de reset ; « box » = un bloc, ou toute la page pour TOUT RESET
 const RESETS = [
   { id: 'time',  ic: '⏱', t: 'Temps à 0', d: 'Temps des boucles à 0, relancées ensemble' },
   { id: 'sync',  ic: '▶', t: 'Relancer ensemble', d: 'Garde les temps, repart du début en même temps' },
@@ -2713,7 +2680,7 @@ function blockName(box) {
 }
 function addAutoMark(box, head, before, global) {
   const el = document.createElement('span'); el.className = 'auto-mark';
-  el.innerHTML = '<b title="Boutons qui ont une boucle d’automatisation">↻ 0</b>'
+  el.innerHTML = '<b title="Boutons qui ont une boucle d'automatisation">↻ 0</b>'
                + '<button type="button" title="Choisir le reset">⟲ ' + (global ? 'TOUT RESET' : 'RESET') + ' ▾</button>';
   const m = { box, el, count: el.querySelector('b'), btn: el.querySelector('button') };
   m.btn.addEventListener('pointerdown', e => e.stopPropagation());
@@ -2729,9 +2696,8 @@ document.querySelectorAll('.xfade-wrap, #console > .section, .pedal').forEach(bo
   const head = box.querySelector('.pedal-actions') || box.querySelector('.section-title') || box.querySelector('.xf-head');
   addAutoMark(box, head, box.classList.contains('xfade-wrap') ? head.querySelector('.knob-value') : (head.firstElementChild || null));
 });
-{ const bar = document.getElementById('autoAll'); addAutoMark(document.body, bar, null, true); }   // TOUT RESET
+{ const bar = document.getElementById('autoAll'); addAutoMark(document.body, bar, null, true); }
 
-// RESET TOUT LE SITE : tous les réglages comme au premier lancement (les stations et favoris radio sont gardés)
 document.getElementById('siteReset').addEventListener('click', () => {
   if (!confirm('Remettre TOUT le site à zéro ?\n\n• tous les boutons et barres à leur valeur de départ\n• toutes les boucles des 5 étoiles effacées\n• toutes les positions mémorisées effacées\n• pédales sur OFF, Effets ON, Dimension ON\n\nTes stations et favoris radio sont gardés.')) return;
   Object.values(allKnobs).forEach(k => k.parkLoop());
@@ -2745,7 +2711,6 @@ document.getElementById('siteReset').addEventListener('click', () => {
   paintFxQuick(); paintLoopStars(); paintAutoMarks(); applyAll();
   showMemoToast('⟲ Site remis à zéro', '#FF2D3F', true);
 });
-// Dimension et vitesse de l'étoile allumée
 { const sl = loopSlots.slots[loopSlots.active];
   if (sl.dim !== undefined) allKnobs.dimension.setQuiet(sl.dim);
   if (sl.spd !== undefined) allKnobs.dimSpeed.setQuiet(sl.spd);
@@ -2784,7 +2749,7 @@ function paintFxQuick() {
   if (m) { m.classList.toggle('on', fxMasterOn); m.textContent = fxMasterOn ? 'ON' : 'OFF'; m.setAttribute('aria-checked', fxMasterOn); }
 }
 document.getElementById('fxMaster').addEventListener('click', e => {
-  e.stopPropagation();                         // ne pas ouvrir le tiroir
+  e.stopPropagation();
   fxMasterOn = !fxMasterOn;
   try { localStorage.setItem('core_fx_master', fxMasterOn ? '1' : '0'); } catch (err) {}
   paintFxQuick(); applyAll();
@@ -2793,7 +2758,6 @@ document.getElementById('fxMaster').addEventListener('click', e => {
 try { fxMasterOn = localStorage.getItem('core_fx_master') !== '0'; } catch (err) {}
 document.querySelectorAll('#fxQuick button').forEach(b => {
   b.addEventListener('click', () => openFxDrawer(true, b.dataset.fx));
-  // l'interrupteur allume / éteint l'effet sans ouvrir la fenêtre
   b.querySelector('.fxsw').addEventListener('click', e => {
     e.stopPropagation();
     const btn = document.querySelector('.toggle-btn[data-toggle="' + b.dataset.fx + '"]');
@@ -2803,7 +2767,6 @@ document.querySelectorAll('#fxQuick button').forEach(b => {
   });
 });
 
-/* fenêtre des effets : glisser vers le bas pour la fermer */
 (function () {
   const dr = document.getElementById('fxDrawer');
   const zones = [dr.querySelector('.drawer-handle'), dr.querySelector('.dhead')];
@@ -2923,21 +2886,19 @@ let idle = 0, lastFrame = 0;
 
   const playing = isPlaying;
   const live = playing && usingMix && analyser && _waveData;
-  if (live && ytCaptureActive) ytTickMeter();
   if (live && chorusOn) updateChorusDisplay(t);
 
   if (live) {
     try {
-      // spectre (graves à gauche → aigus à droite), échelle logarithmique
       analyser.getByteFrequencyData(_specData);
       const Hmax = waveEl.clientHeight - 10, nyq = audioCtx.sampleRate / 2, bins = _specData.length;
       for (let k = 0; k < BARS; k++) {
         const f0 = 40 * Math.pow(16000 / 40, k / BARS), f1 = 40 * Math.pow(16000 / 40, (k + 1) / BARS);
         const i0 = Math.max(1, Math.floor(f0 / nyq * bins)), i1 = Math.max(i0 + 1, Math.ceil(f1 / nyq * bins));
         let m = 0; for (let i = i0; i < i1 && i < bins; i++) if (_specData[i] > m) m = _specData[i];
-        const v = Math.pow(m / 255, 1.6) * (1 + k / BARS * 0.8);   // léger bonus aux aigus
+        const v = Math.pow(m / 255, 1.6) * (1 + k / BARS * 0.8);
         const target = Math.max(4, Math.min(1, v) * Hmax);
-        barH[k] = target > barH[k] ? target : barH[k] * 0.82 + target * 0.18;   // monte vite, retombe en douceur
+        barH[k] = target > barH[k] ? target : barH[k] * 0.82 + target * 0.18;
         barEls[k].style.height = barH[k].toFixed(1) + 'px';
       }
       if (anaL && _dataL) {
@@ -2973,172 +2934,7 @@ let idle = 0, lastFrame = 0;
   }
 })();
 
-/* =========================================================
-   YOUTUBE ON AIR — capture audio de l'onglet
-   ========================================================= */
-let ytFlowStep = 1, ytPopup = null, ytOpenedUrl = '';
-let ytTabs = [];       // onglets partagés en même temps : { stream, src, gain, n, muted }
-let ytTabCount = 0;
-// tous les onglets au même volume (baissé ensemble pour que la somme ne sature pas)
-function ytRegain() {
-  if (!audioCtx) return;
-  const on = ytTabs.filter(t => !t.muted).length || 1, g = 1 / Math.sqrt(on);
-  ytTabs.forEach(t => t.gain.gain.setTargetAtTime(t.muted ? 0 : g, audioCtx.currentTime, 0.05));
-}
-function paintYtTabs() {
-  const box = document.getElementById('ytTabList'); box.innerHTML = '';
-  ytTabs.forEach((t, i) => {
-    const row = document.createElement('div'); row.className = 'yt-tab' + (t.muted ? ' muted' : '');
-    row.innerHTML = '<i></i><span>Onglet ' + (i + 1) + '</span><button type="button" class="m">' + (t.muted ? 'Remettre' : 'Couper') + '</button><button type="button" class="x" title="Retirer cet onglet">✕</button>';
-    row.querySelector('.m').addEventListener('click', () => { t.muted = !t.muted; ytRegain(); paintYtTabs(); });
-    row.querySelector('.x').addEventListener('click', () => ytRemoveTab(t));
-    box.appendChild(row);
-  });
-}
-async function ytCapture() {
-  const stream = await navigator.mediaDevices.getDisplayMedia({
-    video: { displaySurface: 'browser' },
-    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, suppressLocalAudioPlayback: true },
-    systemAudio: 'exclude', selfBrowserSurface: 'exclude', monitorTypeSurfaces: 'exclude', surfaceSwitching: 'include'
-  });
-  if (!stream.getAudioTracks().length) {
-    stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
-    throw new Error('Aucun son reçu. Choisis l’onglet et coche « Partager l’audio de cet onglet ».');
-  }
-  stream.getVideoTracks().forEach(t => { try { t.stop(); } catch (e) {} });
-  if (audioCtx.state === 'suspended') await audioCtx.resume();
-  const src = audioCtx.createMediaStreamSource(stream), gain = audioCtx.createGain();
-  src.connect(gain); gain.connect(inBus);
-  const tab = { stream, src, gain, n: ++ytTabCount, muted: false };
-  ytTabs.push(tab); ytRegain(); paintYtTabs();
-  stream.getAudioTracks().forEach(t => t.addEventListener('ended', () => ytRemoveTab(tab), { once: true }));
-  return tab;
-}
-function ytRemoveTab(tab) {
-  const i = ytTabs.indexOf(tab); if (i < 0) return;
-  ytTabs.splice(i, 1);
-  try { tab.src.disconnect(); tab.gain.disconnect(); } catch (e) {}
-  tab.stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
-  if (!ytTabs.length && ytCaptureActive) { stopYT(true); return; }
-  ytRegain(); paintYtTabs();
-  if (ytCaptureActive) ytSetStatus('<strong>À l’antenne</strong> · ' + ytTabs.length + ' onglet' + (ytTabs.length > 1 ? 's' : '') + ' ensemble.', 'live');
-}
-async function ytAddTab() {
-  if (!ytCaptureActive) { startYT(); return; }
-  const url = normalizeYT(document.getElementById('ytUrl').value);
-  if (url && url !== ytOpenedUrl) { const w = window.open(url, '_blank'); if (w) { ytPopup = w; ytOpenedUrl = url; } }
-  ytSetStatus('<strong>Choisis l’onglet suivant</strong> et coche <b>Partager l’audio</b>.');
-  try {
-    await ytCapture();
-    ytSetStatus('<strong>À l’antenne</strong> · ' + ytTabs.length + ' onglets ensemble, au même volume.', 'live');
-  } catch (e) {
-    ytSetStatus('<strong>Onglet non ajouté :</strong> ' + String(e && e.message ? e.message : e), 'bad');
-  }
-}
-// ytFlowStep = 1, ytPopup = null, ytOpenedUrl = '';
-function ytSetStatus(msg, mode) {
-  const el = document.getElementById('ytStatus');
-  el.className = 'yt-status' + (mode ? ' ' + mode : ''); el.innerHTML = msg;
-}
-function ytSetStep(step, done) {
-  ytFlowStep = step;
-  document.querySelectorAll('.yt-step').forEach(el => {
-    const n = Number(el.dataset.step);
-    el.classList.toggle('active', !done && n === step);
-    el.classList.toggle('done', done ? n <= step : n < step);
-  });
-  document.getElementById('ytFlowState').textContent = ['Prêt', 'Prêt', 'Choix de l’onglet', 'Partage audio', 'En direct'][Math.max(0, Math.min(4, step))];
-  document.getElementById('ytDial').style.setProperty('--needle', ((Math.max(1, Math.min(4, step)) - 1) * 25 + 12.5) + '%');
-  document.getElementById('ytCard').classList.toggle('is-wait', !done && (step === 2 || step === 3));
-}
-function ytButton(mode) {
-  const b = document.getElementById('ytMainButton');
-  const L = { idle: ['Passer à l’antenne', '↗'], live: ['Couper l’antenne', '■'], wait: ['Connexion', '◌'] }[mode];
-  b.innerHTML = '<span class="lb">' + L[0] + '</span><span class="ic">' + L[1] + '</span>';
-  b.classList.toggle('active', mode === 'live'); b.disabled = mode === 'wait';
-  document.getElementById('ytCard').classList.toggle('is-live', mode === 'live');
-}
-function ytSetMeter(rms) {
-  const live = ytCaptureActive && rms > 0.001;
-  document.getElementById('ytOutputState').textContent = live ? 'LIVE' : 'OFF';
-  document.getElementById('ytOutputBadge').classList.toggle('live', live);
-  const dbv = 20 * Math.log10(Math.max(0.0001, rms || 0));
-  document.getElementById('ytMeterFill').style.width = Math.max(0, Math.min(100, (dbv + 60) / 60 * 100)) + '%';
-  document.getElementById('ytMeterDb').textContent = (dbv <= -59 ? '−∞' : dbv.toFixed(1)) + ' dB';
-}
-function normalizeYT(raw) {
-  const u = (raw || '').trim(); if (!u) return null;
-  try {
-    const url = new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u), h = url.hostname.toLowerCase();
-    if (h === 'youtu.be' || h.endsWith('youtube.com') || h.endsWith('youtube-nocookie.com')) return url.href;
-  } catch (e) {}
-  return null;
-}
-async function stopYT(showStatus) {
-  ytCaptureActive = false;
-  ytTabs.slice().forEach(ytRemoveTab); ytTabCount = 0;
-  isPlaying = false; ytSetMeter(0); ytButton('idle'); ytSetStep(1);
-  if (showStatus) ytSetStatus('<strong>Antenne coupée.</strong> Colle un autre lien ou relance.');
-  title(lastRadio ? lastRadio.n : 'Rien en lecture');
-  render(); setStatus('⏹ YouTube coupé.');
-}
-async function startYT() {
-  if (ytCaptureActive) { await stopYT(true); return; }
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-    ytSetStatus('<strong>Capture indisponible.</strong> Utilise Chrome ou Edge, page ouverte via <code>LANCER.bat</code>.', 'bad'); return;
-  }
-  const url = normalizeYT(document.getElementById('ytUrl').value);
-  if (!url) { ytSetStatus('<strong>Lien invalide.</strong> Colle une adresse youtube.com ou youtu.be.', 'bad'); document.getElementById('ytUrl').focus(); return; }
-  ytButton('wait');
-  try {
-    // coupe la radio en cours
-    if (isPlaying) {
-      isPlaying = false; sessionId++;
-      [mixEl, player].forEach(el => { try { el.pause(); el.removeAttribute('src'); el.load(); } catch (e) {} });
-    }
-    buildGraph();
-    // n'ouvre la vidéo qu'une fois (un 2e clic relance juste le partage)
-    if (!(ytPopup && !ytPopup.closed && ytOpenedUrl === url)) {
-      ytSetStep(1);
-      ytPopup = window.open(url, '_blank'); ytOpenedUrl = url;
-      if (!ytPopup) throw new Error('Pop-up bloquée : autorise les fenêtres pour cette page puis réessaie.');
-    }
-    ytSetStep(2);
-    ytSetStatus('<strong>Choisis l’onglet YouTube</strong> dans la fenêtre du navigateur et coche <b>Partager l’audio</b>.');
-    const tab = await ytCapture();
-    ytSetStep(3);
-    applyAll();
-    const aTracks = tab.stream.getAudioTracks();
-    const muted = (aTracks[0].getSettings ? aTracks[0].getSettings() : {}).suppressLocalAudioPlayback === true;
-    ytCaptureActive = true; isPlaying = true; usingMix = true;
-    currentStation = { n: 'YouTube — On air', g: 'Capture onglet', u: 'capture://youtube', alts: [] };
-    title('YouTube — On air'); setStatus('● On air · EQ + pédales');
-    ytSetStep(4, true); ytButton('live');
-    ytSetStatus('<strong>À l’antenne.</strong> Tous les réglages agissent en direct.' + (muted ? '' : ' Son en double ? Coupe le son de l’onglet YouTube.'), 'live');
-    render();
-  } catch (e) {
-    ytCaptureActive = false; ytButton('idle'); ytSetStep(Math.max(1, ytFlowStep));
-    const msg = String(e && e.message ? e.message : e);
-    ytSetStatus(/activation|gesture|user/i.test(msg)
-      ? '<strong>Clique encore une fois sur Passer à l’antenne</strong> : la vidéo est déjà ouverte.'
-      : '<strong>Connexion interrompue :</strong> ' + msg, 'bad');
-    render();
-  }
-}
-document.getElementById('ytMainButton').addEventListener('click', startYT);
-document.getElementById('ytAddTab').addEventListener('click', ytAddTab);
-document.getElementById('ytUrl').addEventListener('keydown', e => { if (e.key === 'Enter') startYT(); });
-ytButton('idle'); ytSetStep(1);
-
-
-/* =========================================================
-   CHORUS — accorde / désaccorde le son (change la tonalité)
-   Principe : 2 lignes à retard dont le délai glisse en continu
-   (le glissement change la hauteur), relayées en fondu pour
-   ne jamais entendre le « saut ». Mix < 100 % = effet chorus.
-   ========================================================= */
-const CHOR_T = 0.1;      // durée d'un cycle (s) — méthode de secours
-/* Transpositeur de qualité (vocodeur de phase) exécuté dans un fil audio séparé */
+const CHOR_T = 0.1;
 const CHI_PITCH_SRC = String.raw`// Vocodeur de phase (transposition sans changer la vitesse) — d'après S. M. Bernsee
 class PitchShift {
   constructor(N, osamp, sr) {
@@ -3150,7 +2946,6 @@ class PitchShift {
     this.re = new Float64Array(N); this.im = new Float64Array(N);
     this.win = new Float64Array(N); for (let k = 0; k < N; k++) this.win[k] = -0.5 * Math.cos(2 * Math.PI * k / N) + 0.5;
     this.rover = this.lat;
-    // tables FFT
     this.rev = new Uint32Array(N); const bits = Math.log2(N);
     for (let i = 0; i < N; i++) { let r = 0; for (let b = 0; b < bits; b++) r |= ((i >> b) & 1) << (bits - 1 - b); this.rev[i] = r; }
     this.cs = new Float64Array(N / 2); this.sn = new Float64Array(N / 2);
@@ -3222,7 +3017,7 @@ if (typeof registerProcessor === 'function') {
         const src = inp[c] || inp[0];
         if (!src) { out[c].fill(0); continue; }
         const ps = this.ps[Math.min(c, 1)];
-        if (Math.abs(r - 1) < 1e-4) { ps.process(src, this.tmp, r); out[c].set(src); }   // tonalité normale : son d'origine
+        if (Math.abs(r - 1) < 1e-4) { ps.process(src, this.tmp, r); out[c].set(src); }
         else ps.process(src, out[c], r);
       }
       return true;
@@ -3231,7 +3026,7 @@ if (typeof registerProcessor === 'function') {
   registerProcessor('chi-pitch', ChiPitch);
 }
 `;
-const CHOR_BASE = 0.03;  // délai de base (s)
+const CHOR_BASE = 0.03;
 function buildChorus(ctx) {
   const c = {
     input: ctx.createGain(), dry: ctx.createGain(), wet: ctx.createGain(), merger: ctx.createGain(),
@@ -3250,10 +3045,8 @@ function buildChorus(ctx) {
   const rd = ramp.getChannelData(0), wd = win.getChannelData(0);
   for (let i = 0; i < len; i++) { rd[i] = i / len; const s = Math.sin(Math.PI * i / len); wd[i] = s * s; }
 
-  // petite modulation lente : donne le « chatoiement » du chorus quand Mix < 100 %
   const lfo = ctx.createOscillator(); lfo.frequency.value = 0.35; c.lfoGain.gain.value = 0;
-  // Signal : sinus / triangle / carré de l'oscillateur ; Impulsion et S&H = formes dessinées (une période, t de 0 à 1)
-  const shape = f => {                                  // forme → onde périodique (série de Fourier)
+  const shape = f => {
     const M = 2048, N = 64, re = new Float32Array(N + 1), im = new Float32Array(N + 1);
     for (let n = 1; n <= N; n++) {
       let a = 0, b = 0;
@@ -3262,16 +3055,15 @@ function buildChorus(ctx) {
     }
     return ctx.createPeriodicWave(re, im);
   };
-  const sh = Array.from({ length: 8 }, () => Math.random() * 2 - 1);                     // 8 paliers tirés au hasard
+  const sh = Array.from({ length: 8 }, () => Math.random() * 2 - 1);
   c.waves = {
-    pulse: shape(t => t < 0.2 ? 1 : -0.25),                  // Impulsion : rectangle étroit (20 % du cycle)
-    sh: shape(t => sh[Math.floor(t * 8)])                     // Sample & Hold : saute d'une valeur au hasard à l'autre
+    pulse: shape(t => t < 0.2 ? 1 : -0.25),
+    sh: shape(t => sh[Math.floor(t * 8)])
   };
   c.oscSel = ctx.createGain();
-  c.lfoSmooth = ctx.createBiquadFilter(); c.lfoSmooth.type = 'lowpass'; c.lfoSmooth.frequency.value = 25;   // adoucit les sauts (pas de clics)
+  c.lfoSmooth = ctx.createBiquadFilter(); c.lfoSmooth.type = 'lowpass'; c.lfoSmooth.frequency.value = 25;
   lfo.connect(c.oscSel); c.oscSel.connect(c.lfoSmooth); c.lfoSmooth.connect(c.lfoGain);
   lfo.start(); c.lfo = lfo; c.waveNow = 0; c.delays = [];
-  // entrée de la transposition + étage d'ondulation (Vitesse)
   c.pitchIn = ctx.createGain(); c.input.connect(c.pitchIn);
   c.modDelay = ctx.createDelay(0.1); c.modDelay.delayTime.value = 0.01;
   c.lfoGain.connect(c.modDelay.delayTime);
@@ -3285,17 +3077,16 @@ function buildChorus(ctx) {
     const ws = ctx.createBufferSource(); ws.buffer = win; ws.loop = true;
     const vca = ctx.createGain(); vca.gain.value = 0; ws.connect(vca.gain);
     c.pitchIn.connect(d); d.connect(vca); vca.connect(c.shiftOut);
-    const off = k * CHOR_T / 2;              // la 2e tête est décalée d'un demi-cycle
+    const off = k * CHOR_T / 2;
     rs.start(t0, off); ws.start(t0, off);
     c.shiftGains.push(g);
   }
-  // --- Sustain : 4 retards qui se renvoient le son (0 = rien, 100 = tenu à l'infini) ---
   const sus = { in: ctx.createGain(), out: ctx.createGain(), send: ctx.createGain(), ret: ctx.createGain(), lines: [], mat: [], damps: [] };
   const curve = new Float32Array(2048);
-  for (let i = 0; i < 2048; i++) { const x = i / 1023.5 - 1; curve[i] = Math.tanh(x); }   // garde-fou : gain 1, adoucit seulement les crêtes
+  for (let i = 0; i < 2048; i++) { const x = i / 1023.5 - 1; curve[i] = Math.tanh(x); }
   [0.061, 0.073, 0.089, 0.107].forEach(tm => {
     const d = ctx.createDelay(0.2); d.delayTime.value = tm;
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6000; lp.Q.value = -3.01;   // sans bosse (Q en dB)
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6000; lp.Q.value = -3.01;
     const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 30; hp.Q.value = -3.01;
     const sh = ctx.createWaveShaper(); sh.curve = curve;
     const inG = ctx.createGain(); inG.gain.value = 0.5;
@@ -3303,7 +3094,6 @@ function buildChorus(ctx) {
     sh.connect(sus.ret);
     sus.lines.push({ d, sh }); sus.damps.push(lp);
   });
-  // 4 boucles indépendantes de longueurs différentes (stables ; le mélange croisé ne l'est pas ici)
   for (let i = 0; i < 4; i++) {
     const gn = ctx.createGain(); gn.gain.value = 0;
     sus.lines[i].sh.connect(gn); gn.connect(sus.lines[i].d);
@@ -3313,7 +3103,6 @@ function buildChorus(ctx) {
   sus.in.connect(sus.out); sus.in.connect(sus.send); sus.ret.connect(sus.out);
   c.sus = sus;
   c.shiftOut.connect(c.modDelay); c.modDelay.connect(sus.in); sus.out.connect(c.comp); c.comp.connect(c.bass); c.bass.connect(c.treble);
-  // charge le transpositeur de qualité ; en cas d'échec on garde la méthode de secours
   if (ctx.audioWorklet && window.AudioWorkletNode) {
     const url = URL.createObjectURL(new Blob([CHI_PITCH_SRC], { type: 'application/javascript' }));
     ctx.audioWorklet.addModule(url).then(() => {
@@ -3332,34 +3121,30 @@ function buildChorus(ctx) {
 function applyChorus(t) {
   const c = chorusChain; if (!c) return;
   const on = chorusOn && fxMasterOn, ratio = P.chorRef / 440;
-  const g = on ? (1 - ratio) * CHOR_T : 0;           // pente du délai = changement de hauteur
-  if (c.pv) {                                          // transpositeur de qualité
+  const g = on ? (1 - ratio) * CHOR_T : 0;
+  if (c.pv) {
     c.shiftGains.forEach(sg => setParam(sg.gain, 0, t));
     const rp = c.pv.parameters.get('ratio'); rp.cancelScheduledValues(t); rp.setValueAtTime(on ? ratio : 1, t);
   } else c.shiftGains.forEach(sg => setParam(sg.gain, g, t));
-  // Vitesse : ondulation du chorus de 0,02 à 1,6 Hz (0 = arrêtée)
-  const pulse = Math.max(1, Math.min(6, Math.round(P.chorPulse || 1)));   // Temps : 1 à 6 impulsions par cycle
+  const pulse = Math.max(1, Math.min(6, Math.round(P.chorPulse || 1)));
   const sp = P.chorSpeed / 100, rate = (sp > 0 ? 0.02 * Math.pow(80, sp) : 0.02) * pulse;
   const depth = on && sp > 0 ? Math.min(0.006, 0.025 / (2 * Math.PI * rate)) : 0;
   setParam(c.lfo.frequency, rate, t);
   const wv = Math.max(0, Math.min(4, Math.round(P.chorWave || 0)));
-  if (c.waveNow !== wv) {                               // Sinus · Triangle · Carré · Impulsion · S&H
+  if (c.waveNow !== wv) {
     if (wv < 3) c.lfo.type = ['sine', 'triangle', 'square'][wv];
     else c.lfo.setPeriodicWave(wv === 3 ? c.waves.pulse : c.waves.sh);
     c.waveNow = wv;
   }
-  // délai de base assez long pour la descente de hauteur + l'ondulation
   const base = 0.012 + Math.max(0, -g);
   c.delays.forEach(d => setParam(d.delayTime, base, t));
   setParam(c.modDelay.delayTime, 0.002 + depth, t);
   const sus = P.chorSustain / 100, rel = P.chorRelease / 100, ta = (P.chorTone - 50) / 50, mix = P.chorMix / 100;
-  // compresseur neutre : le Sustain est maintenant une vraie tenue du son
   setParam(c.comp.threshold, 0, t); setParam(c.comp.ratio, 1, t);
-  const fb = sus >= 0.995 ? 1 : 1 - Math.pow(1 - sus, 2.2);      // 100 % = boucle parfaite = infini
+  const fb = sus >= 0.995 ? 1 : 1 - Math.pow(1 - sus, 2.2);
   c.sus.mat.forEach(m => setParam(m.gn.gain, on ? 0.5 * m.h * fb : 0, t));
   setParam(c.sus.send.gain, on && sus > 0 ? (sus >= 0.995 ? 0 : Math.max(0.08, 1 - fb)) : 0, t);
   setParam(c.sus.ret.gain, on ? Math.min(1, sus * 1.4) * 0.9 : 0, t);
-  // Release = couleur de la tenue : sombre (0) → brillante (100)
   c.sus.damps.forEach(lp => setParam(lp.frequency, 1200 * Math.pow(14, rel), t));
   setParam(c.bass.gain, -ta * 6, t);
   setParam(c.treble.gain, ta * 6, t);
@@ -3369,13 +3154,11 @@ function applyChorus(t) {
   setParam(c.lfoGain.gain, depth, t);
 }
 
-/* ---- barre Tonalité : −12 à +12 demi-tons (bouton « chorPitch » en cents, automatisable) ---- */
-function setChorRef(hz) {                              // utilisé par les favoris d'effet (stockés en Hz de LA4)
+function setChorRef(hz) {
   hz = Math.max(220, Math.min(880, +hz || 440));
   allKnobs.chorPitch.setValue(1200 * Math.log2(hz / 440));
 }
 
-/* ---- affichage : note jouée APRÈS le Chorus ---- */
 let _chorBuf = null, chorLast = 0;
 function updateChorusDisplay(now) {
   if (now - chorLast < 80 || !chorusChain) return;
@@ -3384,7 +3167,6 @@ function updateChorusDisplay(now) {
   const disp = document.getElementById('chorDisplay'), noteEl = document.getElementById('chorNote'),
         hzEl = document.getElementById('chorHz'), needle = document.getElementById('chorNeedle'),
         centsEl = document.getElementById('chorCents');
-  // Détection de hauteur YIN (précise au centième de demi-ton)
   if (!_chorBuf || _chorBuf.length !== 4096) _chorBuf = new Float32Array(4096);
   const buf = _chorBuf; an.getFloatTimeDomainData(buf);
   const sr = audioCtx.sampleRate, W = 2048;
@@ -3396,7 +3178,7 @@ function updateChorusDisplay(now) {
   for (let lag = 1; lag <= maxLag + 1; lag++) {
     let sum = 0;
     for (let i = 0; i < W; i++) { const x = buf[i] - buf[i + lag]; sum += x * x; }
-    run += sum; d[lag] = run ? sum * lag / run : 1;       // différence normalisée cumulée
+    run += sum; d[lag] = run ? sum * lag / run : 1;
   }
   for (let lag = minLag; lag <= maxLag; lag++) {
     if (d[lag] < 0.15) { while (lag + 1 <= maxLag && d[lag + 1] < d[lag]) lag++; tau = lag; break; }
@@ -3422,17 +3204,438 @@ function resetChorusDisplay() {
   document.getElementById('chorDisplay').classList.remove('locked');
 }
 
-/* ---- vu-mètre YouTube ---- */
-let _ytBuf = null, ytMeterLast = 0;
-function ytTickMeter() {
-  const now = performance.now(); if (now - ytMeterLast < 150 || !analyser) return;
-  ytMeterLast = now;
-  if (!_ytBuf || _ytBuf.length !== analyser.fftSize) _ytBuf = new Float32Array(analyser.fftSize);
-  analyser.getFloatTimeDomainData(_ytBuf);
-  let s = 0; for (let i = 0; i < _ytBuf.length; i++) s += _ytBuf[i] * _ytBuf[i];
-  ytSetMeter(Math.sqrt(s / _ytBuf.length));
+const EQ_BANDS = ['sub', 'bass', 'mid', 'himid', 'high'];
+const EQ_PRESETS = [
+  { t: 'Rock', c: '#FF3D9E', p: [
+    ['Rock général',  [3, -1, -1, 2, 2]],
+    ['Hard Rock',     [2, -1.5, 0, 2, 1.5]],
+    ['Classic Rock',  [1.5, -2, 0, 1.5, 1]],
+    ['Punk',          [3, 1, 0, 2, 3]],
+    ['Metal',         [4, -1, -2.5, 3, 3.5]] ] },
+  { t: 'Jazz', c: '#FFC23D', p: [
+    ['Jazz général',  [2, -0.5, 0, 1.5, 1]],
+    ['Jazz Lofi',     [2, 1.5, 0, -1.5, -3]],
+    ['Acid Jazz',     [3.5, 0.5, 0.5, 2, 1]],
+    ['Smooth Jazz',   [2, -0.5, 0, 1.5, 0.5]],
+    ['Jazz Vocal',    [-1, 2, 1, 1.5, 0]] ] },
+  { t: 'Classique', c: '#B06CFF', p: [
+    ['Classique général', [-2, -1.5, 3, 2, 2]],
+    ['Baroque',       [0, 2, 0, 1.5, 1]],
+    ['Romantique',    [1, 2, 0, 2, 0.5]],
+    ['Orchestral',    [0, 0, 0, 1.5, 0.5]],
+    ['Piano',         [0, 0, 0.5, 1.5, 0]] ] },
+  { t: 'Électronique', c: '#2FE7FF', p: [
+    ['Minimal',       [5, -1, -0.5, 2.5, 2.5]],
+    ['House',         [3, -2, -1, 2, 1.5]],
+    ['Deep House',    [4, -1, -1.5, 1, 0.5]],
+    ['Techno',        [4, -2.5, 0.5, 1.5, 2]],
+    ['Trance',        [3.5, 0, -1, 1, 3]] ] },
+  { t: 'Vocal / Acoustique', c: '#B9FF45', p: [
+    ['Voix claire',   [-4, -2, 0.5, 1.5, 1]],
+    ['Acoustique',    [1, 1, 0, 1.5, 1.5]],
+    ['Voix YouTube',  [-3, -1, 1.5, 2, 0]],
+    ['Anti-fatigue',  [0.5, 0, -0.5, -2, -3]],
+    ['Podcast',       [-5, -1.5, 1.5, 2, -0.5]] ] }
+];
+let eqpTheme = 0, eqpTarget = 'LR', eqpAmt = 2.5;
+try { const a = parseFloat(localStorage.getItem('core_eq_amt')); if (a >= 1 && a <= 4) eqpAmt = a; } catch (e) {}
+const eqpScaled = g => g.map(v => Math.max(-24, Math.min(24, Math.round(v * eqpAmt * 2) / 2)));
+try { const sv = JSON.parse(localStorage.getItem('core_eq_preset') || 'null'); if (sv) { eqpTheme = sv.theme || 0; eqpTarget = sv.target || 'LR'; } } catch (e) {}
+function eqpPaintNow(txt, col) {
+  const el = document.getElementById('eqpNow');
+  el.style.setProperty('--t-color', col || '#fff');
+  el.innerHTML = txt;
+}
+function eqpPaint() {
+  const th = EQ_PRESETS[eqpTheme];
+  document.querySelectorAll('.eqp-theme').forEach((b, i) => b.classList.toggle('on', i === eqpTheme));
+  const box = document.getElementById('eqpSubs'); box.innerHTML = ''; box.style.setProperty('--t-color', th.c);
+  let cur = null; try { cur = JSON.parse(localStorage.getItem('core_eq_preset') || 'null'); } catch (e) {}
+  th.p.forEach(([name, g], i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'eqp-sub';
+    if (cur && cur.theme === eqpTheme && cur.sub === i) b.classList.add('on');
+    const gs = eqpScaled(g);
+    b.title = name + ' (×' + eqpAmt + ') : ' + EQ_BANDS.map((k, j) => ['Sub', 'Bass', 'Mid', 'Hi-Mid', 'High'][j] + ' ' + (gs[j] > 0 ? '+' : '') + gs[j]).join(' · ') + ' dB';
+    b.innerHTML = '<span class="eqp-curve">' + gs.map(v => '<i class="' + (v < 0 ? 'neg' : '') + '" style="height:' + (3 + Math.min(22, Math.abs(v) * 1.8)) + 'px"></i>').join('') + '</span>' + name;
+    b.addEventListener('click', () => eqpApply(eqpTheme, i));
+    box.appendChild(b);
+  });
+  document.querySelectorAll('.eqp-target button').forEach(b => b.classList.toggle('on', b.dataset.t === eqpTarget));
+}
+function eqpApply(ti, si) {
+  const th = EQ_PRESETS[ti], name = th.p[si][0], g = eqpScaled(th.p[si][1]);
+  const chans = eqpTarget === 'LR' ? ['L', 'R'] : [eqpTarget];
+  chans.forEach(ch => EQ_BANDS.forEach((b, j) => allKnobs[b + ch] && allKnobs[b + ch].setValue(g[j])));
+  try { localStorage.setItem('core_eq_preset', JSON.stringify({ theme: ti, sub: si, target: eqpTarget })); } catch (e) {}
+  eqpPaint();
+  eqpPaintNow('<b>' + th.t + ' › ' + name + '</b> · ×' + eqpAmt + ' · ' + (eqpTarget === 'LR' ? 'L + R' : eqpTarget), th.c);
+  showMemoToast('🎚 Preset ' + name + ' → ' + (eqpTarget === 'LR' ? 'L + R' : eqpTarget), th.c, true);
+}
+{
+  const tb = document.getElementById('eqpThemes');
+  EQ_PRESETS.forEach((th, i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'eqp-theme'; b.textContent = th.t;
+    b.style.setProperty('--t-color', th.c);
+    b.addEventListener('click', () => { eqpTheme = i; eqpPaint(); });
+    tb.appendChild(b);
+  });
+  document.querySelectorAll('.eqp-target button').forEach(b => b.addEventListener('click', () => { eqpTarget = b.dataset.t; eqpPaint(); }));
+  const amt = document.getElementById('eqpAmt'); amt.value = eqpAmt; document.getElementById('eqpAmtV').textContent = '×' + eqpAmt;
+  amt.addEventListener('input', () => {
+    eqpAmt = parseFloat(amt.value); document.getElementById('eqpAmtV').textContent = '×' + eqpAmt;
+    try { localStorage.setItem('core_eq_amt', eqpAmt); } catch (e) {}
+    let cur = null; try { cur = JSON.parse(localStorage.getItem('core_eq_preset') || 'null'); } catch (e) {}
+    if (cur && EQ_PRESETS[cur.theme]) { eqpTarget = cur.target || eqpTarget; eqpApply(cur.theme, cur.sub); } else eqpPaint();
+  });
+  document.getElementById('eqpFlat').addEventListener('click', () => {
+    const chans = eqpTarget === 'LR' ? ['L', 'R'] : [eqpTarget];
+    chans.forEach(ch => EQ_BANDS.forEach(b => allKnobs[b + ch] && allKnobs[b + ch].setValue(0)));
+    try { localStorage.removeItem('core_eq_preset'); } catch (e) {}
+    eqpPaint(); eqpPaintNow('Plat (0 dB)');
+    showMemoToast('⌂ Égaliseur à plat', '#EAF1FF', true);
+  });
+  eqpPaint();
+  try { const sv = JSON.parse(localStorage.getItem('core_eq_preset') || 'null');
+    if (sv && EQ_PRESETS[sv.theme] && EQ_PRESETS[sv.theme].p[sv.sub]) eqpPaintNow('<b>' + EQ_PRESETS[sv.theme].t + ' › ' + EQ_PRESETS[sv.theme].p[sv.sub][0] + '</b> (dernier choisi)', EQ_PRESETS[sv.theme].c); } catch (e) {}
 }
 
+const AG_KEY = 'core_agent';
+let agMem = { taste: {}, votes: 0, presets: [] };
+try { agMem = Object.assign(agMem, JSON.parse(localStorage.getItem(AG_KEY) || '{}')); } catch (e) {}
+function agSave() { try { localStorage.setItem(AG_KEY, JSON.stringify(agMem)); } catch (e) {} }
+const AG_GENRES = ['Rock', 'Jazz', 'Classique', 'Électronique', 'Vocal / Acoustique'];
+const AG_BASE = [15, 7.5, 0, -8, -14];
+const AG_GOFF = { 'Rock': [1, -0.5, 0, 1, 0.5], 'Jazz': [0, 0.5, 0, 0, -0.5], 'Classique': [-1, 0.5, 0, 0, 0],
+                  'Électronique': [3, -0.5, -0.5, 0, 1], 'Vocal / Acoustique': [-2, -0.5, 0.5, 1, 0] };
+const AG_BANDS_HZ = [[30, 120], [120, 500], [500, 2000], [2000, 6000], [6000, 16000]];
+const AG_BAND_NAMES = ['Sub', 'Bass', 'Mid', 'Hi-Mid', 'High'];
+let agChar = 1, agLast = null, agBusy = false;
+const agSt = t => document.getElementById('agSt').textContent = t;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const r05 = v => Math.round(v * 2) / 2;
+
+function agListen(ms) {
+  return new Promise(resolve => {
+    const sr = audioCtx.sampleRate, N = agAna.frequencyBinCount, fd = new Float32Array(N);
+    const tl = new Float32Array(agAnaL.fftSize), tr = new Float32Array(agAnaR.fftSize);
+    const bandIdx = AG_BANDS_HZ.map(([a, b]) => [Math.max(1, Math.round(a / (sr / 2) * N)), Math.min(N - 1, Math.round(b / (sr / 2) * N))]);
+    const pow = [0, 0, 0, 0, 0], onset = []; let frames = 0, sL = 0, sR = 0, sLR = 0, peak = 0, prevE = 0;
+    const t0 = performance.now(), dt = 25;
+    const iv = setInterval(() => {
+      agAna.getFloatFrequencyData(fd);
+      let e = 0;
+      bandIdx.forEach(([a, b], k) => {
+        let acc = 0; for (let i = a; i <= b; i++) acc += Math.pow(10, fd[i] / 10);
+        const m = acc / (b - a + 1); pow[k] += m; if (k <= 1) e += m;
+      });
+      onset.push(Math.max(0, e - prevE)); prevE = e;
+      agAnaL.getFloatTimeDomainData(tl); agAnaR.getFloatTimeDomainData(tr);
+      for (let i = 0; i < tl.length; i += 4) { sL += tl[i] * tl[i]; sR += tr[i] * tr[i]; sLR += tl[i] * tr[i]; peak = Math.max(peak, Math.abs(tl[i]), Math.abs(tr[i])); }
+      frames++;
+      const f = (performance.now() - t0) / ms; document.getElementById('agBar').style.width = Math.min(100, f * 100) + '%';
+      agSt('écoute… ' + Math.max(0, Math.ceil((ms - (performance.now() - t0)) / 1000)) + ' s');
+      if (f >= 1) {
+        clearInterval(iv);
+        const db = pow.map(v => 10 * Math.log10(v / frames + 1e-20));
+        const n = frames * tl.length / 4;
+        const rmsL = Math.sqrt(sL / n), rmsR = Math.sqrt(sR / n), rms = Math.sqrt((sL + sR) / (2 * n));
+        resolve({ db, rel: db.map(v => v - db[2]), rmsDb: 20 * Math.log10(rms + 1e-9), balDb: 20 * Math.log10((rmsL + 1e-9) / (rmsR + 1e-9)),
+                  corr: sLR / Math.sqrt(sL * sR + 1e-20), crest: 20 * Math.log10((peak + 1e-9) / (rms + 1e-9)), tempo: agTempo(onset, dt) });
+      }
+    }, dt);
+  });
+}
+function agTempo(on, dt) {
+  const m = on.reduce((a, b) => a + b, 0) / on.length, x = on.map(v => v - m);
+  let best = 0, bestBpm = 120, sum0 = x.reduce((a, v) => a + v * v, 0) || 1;
+  for (let bpm = 60; bpm <= 180; bpm += 0.5) {
+    const lag = 60000 / bpm / dt, l0 = Math.floor(lag), fr = lag - l0; let c = 0;
+    for (let i = 0; i + l0 + 1 < x.length; i++) c += x[i] * (x[i + l0] * (1 - fr) + x[i + l0 + 1] * fr);
+    if (c > best) { best = c; bestBpm = bpm; }
+  }
+  while (bestBpm < 80) bestBpm *= 2; while (bestBpm > 160) bestBpm /= 2;
+  return { bpm: Math.round(bestBpm), sure: best / sum0 > 0.15 };
+}
+function agGuessGenre(a) {
+  const dev = a.rel.map((v, i) => v - AG_BASE[i]), c = a.crest, b = a.tempo.bpm;
+  const sc = {
+    'Électronique': (dev[0] > 2 ? 2 : 0) + (c < 11 ? 1.5 : 0) + (a.tempo.sure && b >= 115 && b <= 150 ? 1.5 : 0),
+    'Classique': (c > 16 ? 2 : 0) + (dev[0] < -2 ? 1.5 : 0) + (!a.tempo.sure ? 1 : 0),
+    'Vocal / Acoustique': (dev[2] > dev[1] ? 1 : 0) + (dev[3] > 0 ? 1 : 0) + (dev[0] < -1 ? 1 : 0) + (c > 12 && c < 17 ? 0.5 : 0),
+    'Rock': (dev[3] > 0.5 ? 1.5 : 0) + (c >= 9 && c <= 14 ? 1 : 0) + (dev[4] > -1 ? 1 : 0),
+    'Jazz': (c >= 12 && c <= 18 ? 1.5 : 0) + (dev[4] < 0 ? 1 : 0) + (b < 125 ? 0.5 : 0)
+  };
+  return Object.entries(sc).sort((x, y) => y[1] - x[1])[0][0];
+}
+function agPlan(a, genre, explore) {
+  const I = agChar, taste = agMem.taste[genre] || { eq: [0, 0, 0, 0, 0], fx: 1, motion: 1 };
+  const dev = a.rel.map((v, i) => v - AG_BASE[i]);
+  const corr = dev.map((v, i) => clamp(AG_GOFF[genre][i] * 2 - v * 0.8, -9, 9));
+  const lib = EQ_PRESETS.find(t => t.t === genre);
+  let sub = lib.p[0], bestD = Infinity;
+  lib.p.forEach(pp => { const dd = eqpScaled(pp[1]).reduce((s, v, i) => s + (v - corr[i]) ** 2, 0); if (dd < bestD) { bestD = dd; sub = pp; } });
+  const subS = eqpScaled(sub[1]);
+  let eq = corr.map((v, i) => (0.5 * v + 0.5 * subS[i]) * I + taste.eq[i] + explore.eq[i]);
+  const mx = Math.max(...eq); if (mx > 8) eq = eq.map(v => v - (mx - 8));
+  const mean = eq.reduce((x, y) => x + y, 0) / 5; if (mean > 2) eq = eq.map(v => v - (mean - 2));
+  eq = eq.map(v => r05(clamp(v, -14, 9)));
+  const boost = Math.max(0, ...eq) * 0.4;
+  const gain = r05(clamp((-16 - a.rmsDb) * 0.5 - boost, -6, 6));
+  const balance = Math.abs(a.balDb) > 0.8 ? Math.round(clamp(-a.balDb / 10, -0.3, 0.3) * 100) / 100 : 0;
+  const F = I * taste.fx * explore.fx, beat = 60 / a.tempo.bpm;
+  const fx = { drv: null, rvb: null, ech: null, chor: null };
+  if (genre === 'Rock') fx.drv = { drvAmount: r05(30 * F + 10), drvTone: 58, drvLevel: 60, drvMix: Math.round(clamp(28 * F, 8, 60)) };
+  const rv = { 'Rock': [40, 18, 50, 15], 'Jazz': [60, 30, 45, 25], 'Classique': [80, 38, 35, 30], 'Électronique': [55, 22, 55, 10], 'Vocal / Acoustique': [35, 16, 55, 12] }[genre];
+  fx.rvb = { rvbSize: rv[0], rvbMix: Math.round(clamp(rv[1] * F, 6, 65)), rvbDamp: rv[2], rvbPredelay: rv[3] };
+  if (genre === 'Électronique' || I > 1.2) fx.ech = { echTime: Math.round(clamp(beat * 750, 20, 1200)), echFeedback: Math.round(clamp(38 * F, 15, 70)),
+    echTone: 45, echMix: Math.round(clamp(20 * F, 8, 50)) };
+  if (I > 1.2) fx.chor = { chorMix: Math.round(clamp(26 * F, 10, 50)), chorSpeed: 30, chorWave: genre === 'Électronique' ? 3 : 0, chorPulse: 1, chorTone: 50 };
+  const bar = beat * 4 * 1000, M = I * taste.motion * explore.motion, loops = [];
+  if (document.getElementById('agMotion').checked) {
+    const add = (key, base, amp, bars, shape) => loops.push({ key, base, amp: amp * M, dur: Math.round(bar * bars), shape });
+    add('rvbMix', fx.rvb.rvbMix, Math.max(8, fx.rvb.rvbMix * 0.9), 8, 'sine');
+    if (genre !== 'Classique' || I > 1) add('spatial', 0, 2, 16, 'sine');
+    if (fx.ech) add('echMix', fx.ech.echMix, Math.max(8, fx.ech.echMix * 0.9), 2, 'tri');
+    if (genre === 'Électronique') ['highL', 'highR'].forEach(k => add(k, 0, 4, 4, 'sine'));
+    if (I > 1.2) add('fxMix', 100, -30, 16, 'sine');
+  }
+  return { genre, sub: sub[0], eq, gain, balance, fx, loops, bpm: a.tempo.bpm, sure: a.tempo.sure, explore };
+}
+function agLoopPts(base, amp, dur, shape) {
+  const pts = [];
+  for (let i = 0; i <= 48; i++) {
+    const ph = i / 48, w = shape === 'tri' ? (ph < 0.5 ? ph * 4 - 1 : 3 - ph * 4) : Math.sin(ph * 2 * Math.PI);
+    pts.push([Math.round(ph * dur), base + (shape === 'tri' ? (w + 1) / 2 : (1 - Math.cos(ph * 2 * Math.PI)) / 2) * amp]);
+  }
+  return pts;
+}
+function agApply(pl) {
+  const set = (k, v) => allKnobs[k] && allKnobs[k].setValue(v);
+  ['L', 'R'].forEach(ch => EQ_BANDS.forEach((b, i) => set(b + ch, pl.eq[i])));
+  set('gain', pl.gain); set('balance', pl.balance); set('spatial', 0); set('fxMix', 100); set('dimension', 100); set('dimSpeed', 100);
+  fxMasterOn = true; try { localStorage.setItem('core_fx_master', '1'); } catch (e) {}
+  if (!dimOn) document.getElementById('dimOnOff').click();
+  [['xenodrive', pl.fx.drv], ['nightverb', pl.fx.rvb], ['echolocator', pl.fx.ech], ['chorus', pl.fx.chor]].forEach(([n, f]) => {
+    if (f) Object.entries(f).forEach(([k, v]) => set(k, v));
+    setToggle(n, !!f);
+  });
+  pl.loops.forEach(L => { set(L.key, L.base); allKnobs[L.key].startLoop(agLoopPts(L.base, L.amp, L.dur, L.shape), L.dur); });
+  paintFxQuick(); paintAutoMarks(); applyAll();
+  pl.applied = agSnapshot();
+}
+function agSnapshot() {
+  const v = {}; Object.keys(allKnobs).forEach(k => v[k] = allKnobs[k].getValue());
+  return { v, on: { xenodrive: xenodriveOn, nightverb: nightverbOn, echolocator: echolocatorOn, chorus: chorusOn },
+           loops: JSON.parse(JSON.stringify(savedLoops)) };
+}
+function agReport(a, pl) {
+  const dev = a.rel.map((v, i) => v - AG_BASE[i]);
+  const words = dev.map((v, i) => Math.abs(v) < 2 ? 'équilibré' : (v > 0 ? 'trop présent' : 'en retrait'));
+  const bands = pl.eq.map((v, i) => '<span>' + AG_BAND_NAMES[i] + '<b>' + (v > 0 ? '+' : '') + v + '</b></span>').join('');
+  const fxl = [];
+  if (pl.fx.drv) fxl.push('Hyperdrive léger (mix ' + pl.fx.drv.drvMix + ')');
+  fxl.push('Flightverb taille ' + pl.fx.rvb.rvbSize + ', mix ' + pl.fx.rvb.rvbMix);
+  if (pl.fx.ech) fxl.push('Echominator ' + pl.fx.ech.echTime + ' ms (croche pointée), mix ' + pl.fx.ech.echMix);
+  if (pl.fx.chor) fxl.push('Chichorus ' + WAVES[pl.fx.chor.chorWave].n.toLowerCase() + ', mix ' + pl.fx.chor.chorMix);
+  const lp = { rvbMix: 'réverb qui respire', spatial: 'son qui voyage', echMix: 'écho qui pulse', highL: 'brillance L', highR: 'brillance R', fxMix: 'respiration brut ↔ effets' };
+  const el = document.getElementById('agReport'); el.classList.add('show');
+  el.innerHTML = '<h5>🎧 Ce que j\'ai entendu</h5><ul>'
+    + '<li>Style : <b>' + pl.genre + '</b> → sous-genre le plus proche : <b>' + pl.sub + '</b></li>'
+    + '<li>Tempo : <b>' + pl.bpm + ' BPM</b>' + (pl.sure ? '' : ' (incertain)') + ' · dynamique ' + a.crest.toFixed(1) + ' dB · niveau ' + a.rmsDb.toFixed(1) + ' dBFS</li>'
+    + '<li>Graves ' + words[0] + ', bas-médium ' + words[1] + ', aigus ' + words[3] + ' / ' + words[4] + '</li>'
+    + '<li>Stéréo : ' + (a.corr > 0.97 ? 'presque mono' : a.corr > 0.7 ? 'normale' : 'très large') + (pl.balance ? ' · balance corrigée ' + pl.balance : '') + '</li></ul>'
+    + '<h5 style="margin-top:10px">🎚 Ce que j\'ai réglé</h5><div class="ag-bands">' + bands + '</div><ul>'
+    + '<li>Volume ' + (pl.gain > 0 ? '+' : '') + pl.gain + ' dB · ' + fxl.join(' · ') + '</li>'
+    + (pl.loops.length ? '<li>Automatisations (étoile allumée) : ' + pl.loops.map(L => lp[L.key] + ' ' + Math.round(L.dur / (240000 / pl.bpm)) + ' mes.').join(', ') + '</li>' : '')
+    + '</ul>';
+}
+function agExplore(strength) {
+  const r = () => (Math.random() * 2 - 1) * strength;
+  return { eq: [r(), r(), r(), r(), r()].map(v => v * 1.2), fx: 1 + r() * 0.25, motion: 1 + r() * 0.35 };
+}
+async function agRun(strength) {
+  if (agBusy) return;
+  if (!graphBuilt || !agAna || !isPlaying) { showMemoToast('🤖 Lance d\'abord la radio : l\'agent doit écouter la musique', '#FFC23D', true); return; }
+  agBusy = true; const go = document.getElementById('agGo'); go.disabled = true;
+  if (audioCtx.state === 'suspended') await audioCtx.resume();
+  const a = await agListen(8000);
+  if (a.rmsDb < -60) { agSt('silence : rien entendu'); showMemoToast('🤖 Je n\'entends rien : monte le son de la source', '#FFC23D', true); go.disabled = false; agBusy = false; return; }
+  const sel = document.getElementById('agGenre').value, genre = sel === 'auto' ? agGuessGenre(a) : sel;
+  const pl = agPlan(a, genre, agExplore(strength));
+  agApply(pl); agReport(a, pl);
+  agLast = { a, pl };
+  document.getElementById('agFb').classList.add('show');
+  agSt('preset créé : ' + genre + ' · ' + pl.sub + ' · ' + pl.bpm + ' BPM');
+  showMemoToast('🤖 Preset ' + genre + ' créé — écoute, puis dis-moi 👍 ou 👎', '#FFC23D', true);
+  go.disabled = false; agBusy = false; go.textContent = '🎧 Réécouter et recréer (8 s)';
+}
+function agTaste(g) { return agMem.taste[g] || (agMem.taste[g] = { eq: [0, 0, 0, 0, 0], fx: 1, motion: 1 }); }
+function agLearnPaint() {
+  const t = Object.entries(agMem.taste).map(([g, v]) => g + ' : ' + v.eq.map(x => (x > 0 ? '+' : '') + x.toFixed(1)).join('/') + ' · effets ×' + v.fx.toFixed(2) + ' · mouvement ×' + v.motion.toFixed(2));
+  document.getElementById('agLearn').innerHTML = '🧠 Appris de <b>' + agMem.votes + '</b> avis' + (t.length ? ' — goûts : ' + t.join(' | ') : '');
+}
+function agPresetsPaint() {
+  const box = document.getElementById('agList'); box.innerHTML = '';
+  agMem.presets.forEach((pr, i) => {
+    const it = document.createElement('div'); it.className = 'it';
+    it.innerHTML = '<span>⭐ ' + pr.name + ' <small>' + new Date(pr.at).toLocaleDateString() + '</small></span>';
+    const ld = document.createElement('button'); ld.textContent = 'Charger'; ld.onclick = () => agLoadPreset(pr);
+    const rm = document.createElement('button'); rm.textContent = '✕'; rm.title = 'Supprimer';
+    rm.onclick = () => { if (confirm('Supprimer le preset « ' + pr.name + ' » ?')) { agMem.presets.splice(i, 1); agSave(); agPresetsPaint(); } };
+    it.append(ld, rm); box.appendChild(it);
+  });
+}
+function agLoadPreset(pr) {
+  Object.values(allKnobs).forEach(k => k.parkLoop());
+  Object.keys(savedLoops).forEach(k => delete savedLoops[k]);
+  Object.entries(pr.snap.v).forEach(([k, v]) => allKnobs[k] && allKnobs[k].setValue(v));
+  Object.entries(pr.snap.on).forEach(([n, on]) => setToggle(n, on));
+  Object.entries(pr.snap.loops).forEach(([k, L]) => { if (allKnobs[k] && L.pts && L.pts.length > 1) { savedLoops[k] = { rate: L.rate || 0, rateLoop: L.rateLoop }; allKnobs[k].startLoop(L.pts, L.dur); } });
+  saveLoops(); paintFxQuick(); paintAutoMarks(); applyAll();
+  showMemoToast('⭐ Preset « ' + pr.name + ' » chargé', '#FFC23D', true);
+}
+document.getElementById('agYes').onclick = () => {
+  if (!agLast) return; const t = agTaste(agLast.pl.genre), ex = agLast.pl.explore;
+  t.eq = t.eq.map((v, i) => clamp(v + 0.5 * ex.eq[i], -4, 4)); t.fx = clamp(t.fx * (1 + 0.5 * (ex.fx - 1)), 0.4, 2); t.motion = clamp(t.motion * (1 + 0.5 * (ex.motion - 1)), 0.3, 2.5);
+  agMem.votes++; agSave(); agLearnPaint();
+  showMemoToast('👍 Retenu : je ferai plus souvent comme ça en ' + agLast.pl.genre, '#B9FF45', true);
+};
+document.getElementById('agNo').onclick = async () => {
+  if (!agLast || agBusy) return; const t = agTaste(agLast.pl.genre), ex = agLast.pl.explore;
+  t.eq = t.eq.map((v, i) => clamp(v - 0.5 * ex.eq[i], -4, 4)); t.fx = clamp(t.fx * (1 - 0.5 * (ex.fx - 1)), 0.4, 2); t.motion = clamp(t.motion * (1 - 0.5 * (ex.motion - 1)), 0.3, 2.5);
+  agMem.votes++; agSave(); agLearnPaint();
+  const pl = agPlan(agLast.a, agLast.pl.genre, agExplore(1.3));
+  agApply(pl); agReport(agLast.a, pl); agLast = { a: agLast.a, pl };
+  showMemoToast('👎 Noté. Voici une autre version', '#FF6B78', true);
+};
+document.getElementById('agTweak').onclick = () => {
+  if (!agLast || !agLast.pl.applied) return;
+  const t = agTaste(agLast.pl.genre), now = agSnapshot().v, was = agLast.pl.applied.v;
+  EQ_BANDS.forEach((b, i) => { const d = ((now[b + 'L'] - was[b + 'L']) + (now[b + 'R'] - was[b + 'R'])) / 2; t.eq[i] = clamp(t.eq[i] + 0.6 * d, -4, 4); });
+  const mixes = ['rvbMix', 'echMix', 'drvMix', 'chorMix'].filter(k => was[k] > 0);
+  if (mixes.length) { const ratio = mixes.reduce((s, k) => s + (now[k] + 1) / (was[k] + 1), 0) / mixes.length; t.fx = clamp(t.fx * (1 + 0.6 * (ratio - 1)), 0.4, 2); }
+  agMem.votes++; agSave(); agLearnPaint(); agLast.pl.applied = agSnapshot();
+  showMemoToast('✍ J\'ai appris tes retouches pour le style ' + agLast.pl.genre, '#B9FF45', true);
+};
+document.getElementById('agKeep').onclick = () => {
+  if (!agLast) return;
+  const def = agLast.pl.genre + ' · ' + agLast.pl.sub + ' · ' + agLast.pl.bpm + ' BPM';
+  const name = prompt('Nom du preset :', def); if (name === null) return;
+  agMem.presets.unshift({ name: name || def, at: Date.now(), snap: agSnapshot() }); agMem.presets = agMem.presets.slice(0, 30);
+  agSave(); agPresetsPaint();
+  showMemoToast('💾 Preset « ' + (name || def) + ' » gardé (toutes les valeurs + automatisations)', '#FFC23D', true);
+};
+document.getElementById('agGo').onclick = () => agRun(0.35);
+document.querySelectorAll('#agChar button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#agChar button').forEach(x => x.classList.toggle('on', x === b)); agChar = +b.dataset.v;
+});
+agLearnPaint(); agPresetsPaint();
+
+let agPopMode = null, agPopTimer = null, agManualAt = 0, agManualDirty = false, agLastAsk = 0;
+const agPop = document.getElementById('agPop');
+function agAsk(mode, txt) {
+  if (agPop.classList.contains('show')) return;
+  agPopMode = mode; agLastAsk = Date.now();
+  document.getElementById('agPopTxt').textContent = txt;
+  agPop.classList.add('show');
+}
+function agPopClose() { agPop.classList.remove('show'); agPopMode = null; }
+function agSaveAuto(name) {
+  agMem.presets.unshift({ name, at: Date.now(), snap: agSnapshot() }); agMem.presets = agMem.presets.slice(0, 30);
+  agSave(); agPresetsPaint();
+}
+document.getElementById('agPopYes').onclick = () => {
+  const mode = agPopMode; agPopClose();
+  if (mode === 'agent' && agLast) {
+    document.getElementById('agYes').click();
+    agSaveAuto(agLast.pl.genre + ' · ' + agLast.pl.sub + ' · ' + agLast.pl.bpm + ' BPM');
+    showMemoToast('✔ Enregistré dans les presets de l'agent, et appris 👍', '#B9FF45', true);
+  } else if (mode === 'manual') {
+    const g = agLast ? agLast.pl.genre : (document.getElementById('agGenre').value !== 'auto' ? document.getElementById('agGenre').value : null);
+    const now = agSnapshot().v;
+    if (g) {
+      const t = agTaste(g), ref = agLast ? agLast.pl.eq : [0, 0, 0, 0, 0];
+      EQ_BANDS.forEach((b, i) => { const cur = (now[b + 'L'] + now[b + 'R']) / 2; t.eq[i] = clamp(t.eq[i] + 0.35 * (cur - ref[i]), -4, 4); });
+      agMem.votes++; agSave(); agLearnPaint();
+    }
+    agSaveAuto('Mon réglage' + (g ? ' · ' + g : '') + ' · ' + new Date().toLocaleTimeString().slice(0, 5));
+    showMemoToast('✔ Ton réglage est enregistré' + (g ? ' et appris pour ' + g : ''), '#B9FF45', true);
+  }
+};
+document.getElementById('agPopNo').onclick = () => {
+  const mode = agPopMode; agPopClose();
+  if (mode === 'agent') document.getElementById('agNo').click();
+  else showMemoToast('OK, je ne le garde pas', '#FF6B78', true);
+};
+document.getElementById('agPopX').onclick = agPopClose;
+const agApplyOrig = agApply;
+agApply = function (pl) {
+  agApplyOrig(pl); agManualDirty = false; agPopClose(); clearTimeout(agPopTimer);
+  agPopTimer = setTimeout(() => { if (isPlaying) agAsk('agent', 'Preset ' + pl.genre + ' · ' + pl.sub + '. Oui = je l'enregistre et je retiens. Non = je te propose une autre version.'); }, 15000);
+};
+document.addEventListener('pointerup', e => {
+  if (e.target.closest && e.target.closest('.knob') && !e.target.closest('.dim-stack .loop-rate')) { agManualDirty = true; agManualAt = Date.now(); }
+}, true);
+setInterval(() => {
+  if (!agManualDirty || !isPlaying || agBusy) return;
+  if (Date.now() - agManualAt < 25000 || Date.now() - agLastAsk < 120000) return;
+  agManualDirty = false;
+  agAsk('manual', 'Tu viens de régler les boutons. Oui = j'enregistre ce réglage et j'apprends tes goûts.');
+}, 5000);
+
+let recorder = null, recChunks = [], recT0 = 0, recTick = null;
+const recWrap = document.getElementById('recWrap'), recTimeEl = document.getElementById('recTime');
+function recPaint() {
+  const t = Math.floor((performance.now() - recT0) / 1000);
+  recTimeEl.textContent = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+}
+function recName() {
+  const n = new Date(), z = x => String(x).padStart(2, '0');
+  return 'CORE_' + n.getFullYear() + '-' + z(n.getMonth() + 1) + '-' + z(n.getDate()) + '_' + z(n.getHours()) + 'h' + z(n.getMinutes()) + 'm' + z(n.getSeconds()) + 's';
+}
+async function recSave(blob, ext) {
+  const name = recName() + '.' + ext;
+  try {
+    const r = await fetch('/save-recording?name=' + encodeURIComponent(name), { method: 'POST', body: blob });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    showMemoToast('💾 Enregistré sur le disque : ' + j.path, '#FF2D3F', true);
+    setStatus('💾 ' + j.path);
+  } catch (e) {
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    showMemoToast('💾 Enregistré dans Téléchargements : ' + name, '#FF2D3F', true);
+  }
+}
+function recStart() {
+  if (!window.MediaRecorder) { showMemoToast('Enregistrement impossible avec ce navigateur (utilise Chrome ou Edge)', '#FF2D3F', true); return; }
+  buildGraph();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+  try { recorder = new MediaRecorder(recDest.stream, mime ? { mimeType: mime, audioBitsPerSecond: 256000 } : {}); }
+  catch (e) { showMemoToast('Enregistrement impossible : ' + e.message, '#FF2D3F', true); recorder = null; return; }
+  recChunks = [];
+  recorder.ondataavailable = e => { if (e.data && e.data.size) recChunks.push(e.data); };
+  recorder.onstop = () => {
+    const type = recorder.mimeType || mime || 'audio/webm';
+    recSave(new Blob(recChunks, { type }), /ogg/.test(type) ? 'ogg' : 'webm');
+    recorder = null; recChunks = [];
+  };
+  recorder.start(1000);
+  recT0 = performance.now(); recPaint(); recTick = setInterval(recPaint, 500);
+  recWrap.classList.add('on');
+  document.getElementById('recBtn').title = 'Arrêter l'enregistrement et l'écrire sur le disque dur';
+  showMemoToast('● Enregistrement… appuie sur ⏸ pour arrêter et sauvegarder', '#FF2D3F', true);
+}
+function recStop() {
+  if (!recorder) return;
+  clearInterval(recTick); recTick = null;
+  recWrap.classList.remove('on');
+  document.getElementById('recBtn').title = 'Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur';
+  try { recorder.stop(); } catch (e) {}
+}
+document.getElementById('recBtn').addEventListener('click', () => recorder ? recStop() : recStart());
+window.addEventListener('beforeunload', e => { if (recorder) { e.preventDefault(); e.returnValue = ''; } });
 
 initFxFavButtons();
 paintFxFavButtons();
