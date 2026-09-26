@@ -61,7 +61,10 @@
   .sub{font-size:18px;color:var(--muted);min-height:24px;margin-top:3px}
   .sub.live{color:var(--lime)}
 
-  .tb-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .tb-btns{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
+  .tb-btns .pill{grid-column:span 2}
+  .tb-btns #power{grid-column:span 3}
+  .tb-btns #openAgent{grid-column:span 3}
   .pill{display:inline-flex;align-items:center;justify-content:center;border-radius:100px;
         min-height:56px;padding:0 20px;font-size:19px;font-weight:600;
         background:linear-gradient(135deg,var(--cyan),#0E8BDD);color:#03121A;
@@ -70,6 +73,7 @@
   .pill.ghost{background:rgba(234,241,255,.06);color:var(--ice);border:1px solid var(--edge2)}
   .pill.stop{background:linear-gradient(135deg,#FF3D9E,#B01E75);color:#fff}
   .pill.fav-btn{background:linear-gradient(135deg,#FF3D9E,#B01E75);color:#fff}
+  .pill.agent-btn{background:linear-gradient(135deg,#FFC23D,#FF8A2F);color:#1a0f00}
 
   .wavewrap{padding:0 18px 12px;flex:0 0 auto}
   .wave{display:flex;align-items:flex-end;gap:3px;height:64px;width:100%;padding-top:10px}
@@ -196,6 +200,10 @@
     border-top-left-radius:24px;border-bottom-left-radius:24px;border-left:1px solid var(--edge2);
     transform:translateX(101%);box-shadow:-20px 0 60px rgba(0,0,0,.6)}
   .drawer-right.open{transform:translateX(0)}
+  .drawer-top{left:0;right:0;top:0;max-height:94vh;max-height:94dvh;overflow-y:auto;
+    border-bottom-left-radius:24px;border-bottom-right-radius:24px;border-bottom:1px solid var(--edge2);
+    transform:translateY(-101%);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .drawer-top.open{transform:translateY(0)}
 
   .drawer-handle{display:flex;align-items:center;justify-content:center;padding:14px 0 10px;flex:0 0 auto;cursor:grab}
   .drawer-handle i{width:64px;height:6px;border-radius:99px;background:rgba(140,190,255,.35)}
@@ -208,6 +216,15 @@
   .dhead button:active{transform:scale(.92)}
   .dcontent{flex:1 1 auto;display:flex;flex-direction:column;
     padding:0 22px calc(env(safe-area-inset-bottom) + 22px) 22px;min-height:0;overflow:hidden}
+
+  .agent-close{position:absolute;top:16px;right:18px;z-index:3;width:48px;height:48px;border-radius:50%;
+    border:1px solid var(--edge2);background:rgba(234,241,255,.06);font-size:22px;display:flex;align-items:center;justify-content:center}
+  .agent-close:active{transform:scale(.92)}
+  .drawer-top .agent{margin:0;border:0;border-radius:0;background:transparent}
+  .drawer-top .ag-body{padding:0 28px 28px;max-width:900px;margin:0 auto;width:100%}
+  .drawer-top .dhead{padding:20px 28px 12px;max-width:900px;margin:0 auto;width:100%}
+  .drawer-top .dhead h2{color:#FFC23D;font-size:24px}
+  .drawer-top .agent > summary{display:none}
 
   .addtop{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;flex:0 0 auto}
   .addtop .row2{display:flex;gap:8px}
@@ -354,6 +371,7 @@
     .fx-fav-btn{min-width:44px;height:44px;font-size:22px}
     .pill{min-height:50px;font-size:17px}
     .dcontent{padding:0 16px calc(env(safe-area-inset-bottom) + 16px) 16px}
+    .drawer-top .ag-body,.drawer-top .dhead{padding-left:16px;padding-right:16px}
   }
   @media (max-height:600px){.wavewrap{display:none}}
   @media (max-width:700px){.wave{height:48px;gap:2px}}
@@ -686,6 +704,8 @@
     .fxquick .fxsw{min-width:40px;height:22px}
     .pedal-name{font-size:18px;letter-spacing:.12em}
     .toggle-btn{min-width:78px}
+    .tb-btns .pill{font-size:15px;padding:0 8px;white-space:nowrap;min-height:48px}
+    .tb-btns #power,.tb-btns #openAgent{font-size:16px}
   }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -706,6 +726,7 @@
 
     <div class="tb-btns">
       <button class="pill" id="power">▶ Écouter</button>
+      <button class="pill agent-btn" id="openAgent">🤖 Agent IA</button>
       <button class="pill fav-btn" id="openFavs">★ Favoris</button>
       <button class="pill ghost" id="openFx">✦ Effets <span class="fx-master on" id="fxMaster" role="switch" aria-checked="true" title="Activer / couper tous les effets">ON</span></button>
       <button class="pill ghost" id="openDrawer">☰ Stations</button>
@@ -717,36 +738,6 @@
   </div>
 
   <div class="card console" id="console">
-    <div class="ag-pop" id="agPop" role="dialog" aria-live="polite">
-      <button class="x" type="button" id="agPopX" title="Plus tard">✕</button>
-      <h4>🤖 T'aimes bien ce réglage ?</h4>
-      <p id="agPopTxt">Si tu dis oui, je l'enregistre et j'apprends ce que tu aimes.</p>
-      <div class="b"><button class="yes" type="button" id="agPopYes">✔ Oui</button><button class="no" type="button" id="agPopNo">✖ Non</button></div>
-    </div>
-    <details class="agent" id="agentBox">
-      <summary>🤖 AGENT PRESET <span class="ag-st" id="agSt">prêt · écoute puis crée un preset</span></summary>
-      <div class="ag-body">
-        <div class="ag-row">
-          <span>Style</span>
-          <select id="agGenre"><option value="auto">Auto (l'agent devine)</option><option>Rock</option><option>Jazz</option>
-            <option>Classique</option><option>Électronique</option><option>Vocal / Acoustique</option></select>
-          <span>Caractère</span>
-          <span class="ag-seg" id="agChar"><button type="button" data-v="0.55">Subtil</button><button type="button" data-v="1" class="on">Équilibré</button><button type="button" data-v="1.6">Créatif</button></span>
-          <label><input type="checkbox" id="agMotion" checked> Automatisations</label>
-        </div>
-        <button class="ag-go" id="agGo" type="button">🎧 Écouter la musique et créer un preset (8 s)</button>
-        <div class="ag-meter"><i id="agBar"></i></div>
-        <div class="ag-report" id="agReport"></div>
-        <div class="ag-fb" id="agFb">
-          <button type="button" id="agYes">👍 J'aime</button>
-          <button type="button" id="agNo">👎 Autre version</button>
-          <button type="button" id="agTweak" title="Retouche les boutons à ton oreille, puis clique : l'agent retient tes corrections">✍ Apprendre de mes retouches</button>
-          <button type="button" id="agKeep">💾 Garder ce preset</button>
-        </div>
-        <div class="ag-list" id="agList"></div>
-        <div class="ag-learn" id="agLearn"></div>
-      </div>
-    </details>
     <div class="auto-all" id="autoAll"><span>AUTOMATISATION · TOUS LES BLOCS</span>
       <button class="site-reset" id="siteReset" type="button" title="Remet TOUT le site comme au premier lancement"><span class="l">⟲ RESET TOUT LE SITE</span><span class="s">⟲ SITE</span></button></div>
     <div class="xfade-wrap">
@@ -880,6 +871,13 @@
     </div>
 
   </div>
+</div>
+
+<div class="ag-pop" id="agPop" role="dialog" aria-live="polite">
+  <button class="x" type="button" id="agPopX" title="Plus tard">✕</button>
+  <h4>🤖 T'aimes bien ce réglage ?</h4>
+  <p id="agPopTxt">Si tu dis oui, je l'enregistre et j'apprends ce que tu aimes.</p>
+  <div class="b"><button class="yes" type="button" id="agPopYes">✔ Oui</button><button class="no" type="button" id="agPopNo">✖ Non</button></div>
 </div>
 
 <div class="scrim" id="scrim"></div>
@@ -1073,6 +1071,35 @@
         </div>
       </div>
     </div>
+  </div>
+</aside>
+
+<aside class="drawer drawer-top" id="agentDrawer" aria-modal="true" aria-label="Agent IA">
+  <button class="agent-close" id="closeAgent" aria-label="Fermer">✕</button>
+  <div class="dhead">
+    <h2>🤖 AGENT IA</h2>
+    <span class="ag-st" id="agSt" style="margin-left:auto;margin-right:60px;font-size:13px;color:var(--muted);font-weight:700">prêt · écoute puis crée un preset</span>
+  </div>
+  <div class="ag-body">
+    <div class="ag-row">
+      <span>Style</span>
+      <select id="agGenre"><option value="auto">Auto (l'agent devine)</option><option>Rock</option><option>Jazz</option>
+        <option>Classique</option><option>Électronique</option><option>Vocal / Acoustique</option></select>
+      <span>Caractère</span>
+      <span class="ag-seg" id="agChar"><button type="button" data-v="0.55">Subtil</button><button type="button" data-v="1" class="on">Équilibré</button><button type="button" data-v="1.6">Créatif</button></span>
+      <label><input type="checkbox" id="agMotion" checked> Automatisations</label>
+    </div>
+    <button class="ag-go" id="agGo" type="button">🎧 Écouter la musique et créer un preset (8 s)</button>
+    <div class="ag-meter"><i id="agBar"></i></div>
+    <div class="ag-report" id="agReport"></div>
+    <div class="ag-fb" id="agFb">
+      <button type="button" id="agYes">👍 J'aime</button>
+      <button type="button" id="agNo">👎 Autre version</button>
+      <button type="button" id="agTweak" title="Retouche les boutons à ton oreille, puis clique : l'agent retient tes corrections">✍ Apprendre de mes retouches</button>
+      <button type="button" id="agKeep">💾 Garder ce preset</button>
+    </div>
+    <div class="ag-list" id="agList"></div>
+    <div class="ag-learn" id="agLearn"></div>
   </div>
 </aside>
 
@@ -2051,17 +2078,26 @@ const drawer = document.getElementById('drawer');
 const scrim = document.getElementById('scrim');
 const fxDrawer = document.getElementById('fxDrawer');
 const favsDrawer = document.getElementById('favsDrawer');
+const agentDrawer = document.getElementById('agentDrawer');
 
 function closeAllDrawers() {
   drawer.classList.remove('open');
   fxDrawer.classList.remove('open');
   favsDrawer.classList.remove('open');
+  agentDrawer.classList.remove('open');
   scrim.classList.remove('open');
 }
 function openDrawer(o) {
   closeAllDrawers();
   if (o) {
     drawer.classList.add('open');
+    scrim.classList.add('open');
+  }
+}
+function openAgentDrawer(o) {
+  closeAllDrawers();
+  if (o) {
+    agentDrawer.classList.add('open');
     scrim.classList.add('open');
   }
 }
@@ -2097,6 +2133,8 @@ document.getElementById('fxAll').addEventListener('click', () => openFxDrawer(tr
 document.getElementById('closeFxDrawer').addEventListener('click', () => openFxDrawer(false));
 document.getElementById('openFavs').addEventListener('click', () => openFavsDrawer(true));
 document.getElementById('closeFavsDrawer').addEventListener('click', () => openFavsDrawer(false));
+document.getElementById('openAgent').addEventListener('click', () => openAgentDrawer(true));
+document.getElementById('closeAgent').addEventListener('click', () => openAgentDrawer(false));
 scrim.addEventListener('click', closeAllDrawers);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllDrawers(); });
 
@@ -2786,6 +2824,32 @@ document.querySelectorAll('#fxQuick button').forEach(b => {
     };
     z.addEventListener('pointerup', end); z.addEventListener('pointercancel', end);
   });
+})();
+
+// geste de fermeture pour le tiroir Agent IA : on glisse vers le haut
+(function () {
+  const dr = agentDrawer;
+  let y0 = null, dy = 0, t0 = 0;
+  dr.addEventListener('pointerdown', e => {
+    if (e.target.closest('button, input, select, label, .ag-go, .ag-seg')) return;
+    if (dr.scrollTop > 2) return;
+    y0 = e.clientY; dy = 0; t0 = performance.now();
+    dr.style.transition = 'none';
+  });
+  dr.addEventListener('pointermove', e => {
+    if (y0 === null) return;
+    dy = Math.min(0, e.clientY - y0);
+    dr.style.transform = 'translateY(' + dy + 'px)';
+  });
+  const end = () => {
+    if (y0 === null) return;
+    const fast = Math.abs(dy) / Math.max(1, performance.now() - t0) > 0.6;
+    y0 = null; dr.style.transition = ''; dr.style.transform = '';
+    if (dy < -90 || (fast && dy < -30)) openAgentDrawer(false);
+  };
+  dr.addEventListener('pointerup', end);
+  dr.addEventListener('pointercancel', end);
+  dr.addEventListener('pointerleave', end);
 })();
 
 document.querySelectorAll('.toggle-btn').forEach(btn => {
