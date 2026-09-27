@@ -70,6 +70,37 @@
   .sub{font-size:18px;color:var(--muted);min-height:24px;margin-top:3px}
   .sub.live{color:var(--lime)}
 
+  .now-row{display:flex;align-items:center;gap:14px;min-width:0}
+  .now-row .now{flex:1 1 auto;min-width:0;margin:0}
+  .stream-q-wrap{
+    display:flex;align-items:center;gap:8px;flex:none;
+    padding:6px 12px;border-radius:14px;
+    background:rgba(0,0,0,.28);border:1px solid rgba(140,170,255,.14);
+  }
+  .stream-q-label{
+    font:900 11px/1 -apple-system,"SF Pro Display","Segoe UI",sans-serif;
+    letter-spacing:.14em;color:var(--muted);user-select:none;
+  }
+  .stream-q{
+    -webkit-appearance:none;appearance:none;
+    width:120px;height:6px;border-radius:3px;outline:none;cursor:pointer;
+    background:linear-gradient(90deg,#2FE7FF 0%,#FFC24B 50%,#FF3D9E 100%);
+    box-shadow:inset 0 0 4px rgba(0,0,0,.5);
+  }
+  .stream-q::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:22px;height:22px;border-radius:50%;
+    background:#fff;border:3px solid #05060C;
+    box-shadow:0 0 10px rgba(47,231,255,.85),0 0 4px #fff;
+    transition:transform .12s var(--e);
+  }
+  .stream-q::-webkit-slider-thumb:active{transform:scale(1.15)}
+  .stream-q::-moz-range-thumb{
+    width:22px;height:22px;border-radius:50%;
+    background:#fff;border:3px solid #05060C;
+    box-shadow:0 0 10px rgba(47,231,255,.85);
+  }
+
   .tb-btns{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
   .tb-btns .pill{grid-column:span 2}
   .tb-btns #power{grid-column:span 3}
@@ -381,6 +412,10 @@
     .pill{min-height:50px;font-size:17px}
     .dcontent{padding:0 16px calc(env(safe-area-inset-bottom) + 16px) 16px}
     .drawer-top .ag-body,.drawer-top .dhead{padding-left:16px;padding-right:16px}
+    .stream-q-wrap{padding:4px 8px;gap:5px}
+    .stream-q{width:74px}
+    .stream-q-label{font-size:9px;letter-spacing:.08em}
+    .stream-q::-webkit-slider-thumb{width:18px;height:18px;border-width:2px}
   }
   @media (max-height:600px){.wavewrap{display:none}}
   @media (max-width:700px){.wave{height:48px;gap:2px}}
@@ -733,7 +768,14 @@
         <button class="rec-btn" id="recBtn" type="button" title="Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur"><i></i><i></i></button>
       </div>
     </div>
-    <div class="now" id="npName">Rien en lecture</div>
+    <div class="now-row">
+      <div class="stream-q-wrap" title="Stabilité ↔ Qualité · glisse à gauche = plus stable, à droite = meilleure qualité">
+        <span class="stream-q-label">STAB</span>
+        <input type="range" class="stream-q" id="streamQ" min="0" max="100" step="1" value="50">
+        <span class="stream-q-label">HQ</span>
+      </div>
+      <div class="now" id="npName"><span id="bufDot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#444;margin-right:10px;vertical-align:middle;transition:background .25s,box-shadow .25s"></span><span id="npTitle">Rien en lecture</span></div>
+    </div>
     <div class="sub" id="npState">Ouvre les stations pour choisir</div>
 
     <div class="tb-btns">
@@ -927,6 +969,9 @@
     <div class="searchbox">
       <input type="text" class="txtin" id="search" placeholder="Chercher une station…"
              autocapitalize="off" autocorrect="off">
+      <p style="margin:10px 4px 0;font-size:13px;color:var(--muted);line-height:1.4">
+        💡 La barre <b>STAB ↔ HQ</b> dans la barre du haut règle la priorité de qualité et la patience de reconnexion pour toutes les stations.
+      </p>
     </div>
     <div class="tabs" id="tabs"></div>
     <div class="listwrap">
@@ -1121,24 +1166,31 @@
 
 const CORS_PROXY = 'https://soft-brook-0e52.stefikare.workers.dev/?url=';
 
-function proxify(u) {
+// Curseur Qualité ↔ Stabilité : 0 = max stable, 50 = auto, 100 = max qualité.
+// Dérive safeMode pour compatibilité (proxy forcé sous 33).
+let streamQuality = 50;
+try {
+  const sq = localStorage.getItem('core_stream_q');
+  if (sq !== null) streamQuality = Math.max(0, Math.min(100, parseInt(sq) || 50));
+  else if (localStorage.getItem('core_safe_mode') === '1') streamQuality = 0;
+} catch(e){}
+let safeMode = streamQuality < 33;
+
+function proxify(u, force) {
   if (!u) return u;
   u = u.trim();
   if (u.indexOf(CORS_PROXY) === 0) return u;
   if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
-  if (u.indexOf('http://') === 0) return CORS_PROXY + encodeURIComponent(u);
+  if (u.indexOf('http://') === 0 || force) return CORS_PROXY + encodeURIComponent(u);
   return u;
 }
 
 let audioCtx = null;
 let mixEl = null, player = null;
-let mseObjectUrl = null;  // URL blob MSE en cours (à révoquer à chaque arrêt)
 let srcNode = null;
 let pannerNode = null;
 let spatialNode = null;
 let masterGain = null;
-let fadeGain = null;      // fondu enchaîné dédié (indépendant du réglage P.gain)
-let fadeRAF = null;       // id requestAnimationFrame du fondu en cours
 let inBus = null, fxDry = null, fxWet = null;
 let agAna = null, agAnaL = null, agAnaR = null;
 let eqSplitter = null, eqMerger = null;
@@ -1147,6 +1199,7 @@ let gainL = null, gainR = null;
 let limiterNode = null, softLimiter = null;
 let recDest = null;
 let recCapture = null;
+let recSink = null;
 let recChunksL = [], recChunksR = [];
 let recActive = false;
 let recFormat = 'wav';
@@ -1185,6 +1238,7 @@ const P = {
 const RETRY_BASE = 800;
 const RETRY_MAX = 20000;
 const GOOD_PLAYBACK_MS = 15000;
+const SAFE_PLAYBACK_MS = 45000;
 
 const FX_FAV_KEY = 'core_fx_favs';
 let fxFavs = {};
@@ -1340,13 +1394,11 @@ function buildGraph() {
   mixEl = new Audio();
   mixEl.crossOrigin = 'anonymous';
   mixEl.setAttribute('playsinline', '');
-  mixEl.preload = 'none';
+  mixEl.preload = safeMode ? 'auto' : 'none';
 
   srcNode = audioCtx.createMediaElementSource(mixEl);
   pannerNode = audioCtx.createStereoPanner(); pannerNode.pan.value = 0;
   masterGain = audioCtx.createGain(); masterGain.gain.value = 1;
-
-  fadeGain = audioCtx.createGain(); fadeGain.gain.value = 0;
 
   spatialNode = audioCtx.createPanner();
   spatialNode.panningModel = 'equalpower';
@@ -1472,14 +1524,13 @@ function buildGraph() {
   fxDry.gain.value = 0; fxWet.gain.value = 1;
   srcNode.connect(inBus);
   inBus.connect(pannerNode);
-  agAna = audioCtx.createAnalyser(); agAna.fftSize = 8192; agAna.smoothingTimeConstant = 0.2; inBus.connect(agAna);
+  agAna = audioCtx.createAnalyser(); agAna.fftSize = 4096; agAna.smoothingTimeConstant = 0.2; inBus.connect(agAna);
   { const sp = audioCtx.createChannelSplitter(2); inBus.connect(sp);
-    agAnaL = audioCtx.createAnalyser(); agAnaR = audioCtx.createAnalyser(); agAnaL.fftSize = agAnaR.fftSize = 2048;
+    agAnaL = audioCtx.createAnalyser(); agAnaR = audioCtx.createAnalyser(); agAnaL.fftSize = agAnaR.fftSize = 1024;
     sp.connect(agAnaL, 0); sp.connect(agAnaR, 1); }
   inBus.connect(fxDry); fxDry.connect(limiterNode);
   pannerNode.connect(spatialNode);
-  spatialNode.connect(fadeGain);
-  fadeGain.connect(masterGain);
+  spatialNode.connect(masterGain);
   masterGain.connect(eqSplitter);
 
   eqSplitter.connect(eqL.sub, 0);
@@ -1510,9 +1561,11 @@ function buildGraph() {
   analyser.connect(audioCtx.destination);
 
   // --- capture PCM pour l'encodeur WAV / MP3 ---
+  // NOTE : le ScriptProcessorNode tourne sur le thread principal et peut
+  // faire glisser le rendu audio. On ne le BRANCHE que pendant un
+  // enregistrement (voir recStart / recStop).
   recCapture = audioCtx.createScriptProcessor(4096, 2, 2);
-  const recSink = audioCtx.createGain(); recSink.gain.value = 0;
-  softLimiter.connect(recCapture);
+  recSink = audioCtx.createGain(); recSink.gain.value = 0;
   recCapture.connect(recSink);
   recSink.connect(audioCtx.destination);
   recCapture.onaudioprocess = e => {
@@ -1534,7 +1587,7 @@ function buildGraph() {
 
   player = new Audio();
   player.setAttribute('playsinline', '');
-  player.preload = 'none';
+  player.preload = safeMode ? 'auto' : 'none';
 
   graphBuilt = true;
   applyAll();
@@ -1547,43 +1600,6 @@ function setParam(param, value, time) {
     param.setValueAtTime(param.value, time);
     param.linearRampToValueAtTime(value, time + 0.03);
   } catch (e) { param.value = value; }
-}
-
-/* ============================================================
-   FONDU ENCHAÎNÉ (fade in/out) — inspiré de LLViewerAudio (Firestorm) :
-   évite les "pops" au démarrage, à l'arrêt et lors des reconnexions.
-   fadeGain gère le chemin mixEl (avec EQ) ; player.volume gère le
-   chemin fallback sans EQ.
-   ============================================================ */
-const FADE_IN_MS = 700, FADE_OUT_MS = 350;
-
-function fadeTo(target, ms) {
-  return new Promise(resolve => {
-    if (fadeRAF) cancelAnimationFrame(fadeRAF);
-    const useMix = usingMix;
-    const getVol = () => useMix ? fadeGain.gain.value : (player ? player.volume : 0);
-    const setVol = v => {
-      if (useMix && fadeGain) fadeGain.gain.value = v;
-      if (player) player.volume = useMix ? 1 : v; // sans EQ : le fondu se fait sur .volume
-    };
-    const from = getVol();
-    const t0 = performance.now();
-    const step = now => {
-      const t = Math.min(1, (now - t0) / ms);
-      setVol(from + (target - from) * t);
-      if (t < 1) {
-        fadeRAF = requestAnimationFrame(step);
-      } else {
-        fadeRAF = null;
-        resolve();
-      }
-    };
-    fadeRAF = requestAnimationFrame(step);
-  });
-}
-function muteBeforeStart() {
-  if (fadeGain) fadeGain.gain.value = 0;
-  if (player) player.volume = 0;
 }
 
 function applyAll() {
@@ -1701,15 +1717,32 @@ function tryPlay(url, useMix, mySession) {
       usingMix = useMix;
       setStatus(useMix ? '▶ En direct · EQ + pédales' : '▶ En direct · sans EQ');
       render();
-      fadeTo(1, FADE_IN_MS);
     };
     el.onerror = () => finish(false);
-    el.onended = () => finish(started);
+    el.onended = () => {
+      if (!started) { finish(false); return; }
+      // Sur un flux live, 'ended' survient parfois quand le buffer local
+      // touche à zéro, même si la connexion réseau est saine. On essaie
+      // de reprendre la lecture pendant 4 s avant d'abandonner le flux.
+      const t0 = Date.now();
+      const tryResume = () => {
+        if (done) return;
+        if (Date.now() - t0 > 4000) { finish(true); return; }
+        try {
+          const p = el.play();
+          if (p && p.catch) p.catch(() => {});
+          setTimeout(() => {
+            if (done) return;
+            if (!el.paused && !el.ended && el.currentTime > 0 && el.readyState >= 2) return;
+            tryResume();
+          }, 400);
+        } catch (e) { setTimeout(tryResume, 400); }
+      };
+      setTimeout(tryResume, 200);
+    };
     startupTimer = setTimeout(() => { if (!started) finish(false); }, 15000);
 
     try {
-      usingMix = useMix;
-      muteBeforeStart(); // silence tant que le flux n'est pas vraiment audible
       el.src = url;
       el.load();
       const p = el.play();
@@ -1718,139 +1751,81 @@ function tryPlay(url, useMix, mySession) {
   });
 }
 
-/* ============================================================
-   TAMPON ANTI-JITTER (MSE) — équivalent maison du
-   LLStreamingAudioInterface::setBufferSizes() de Firestorm.
-   Un <audio src="url"> HTML5 ne permet pas de régler la profondeur
-   du buffer réseau ; on la reconstruit nous-mêmes en téléchargeant
-   le flux via fetch() et en l'injectant dans un SourceBuffer, avec
-   quelques secondes d'avance avant de lancer la lecture. Ne couvre
-   que le chemin "mix" (EQ) en MP3 ; se désactive proprement (renvoie
-   null) si le navigateur ou le flux ne s'y prête pas, auquel cas
-   runAttempt() se rabat sur tryPlay() (comportement inchangé).
-   ============================================================ */
-const MSE_MIME = 'audio/mpeg';
-const STREAM_BUFFER_S = 6;   // secondes d'avance visées avant lecture
-const STREAM_BUFFER_MAX_S = 18; // au-delà, on ralentit le téléchargement
-
-function mseSupported() {
-  return typeof window.MediaSource !== 'undefined'
-      && typeof MediaSource.isTypeSupported === 'function'
-      && MediaSource.isTypeSupported(MSE_MIME);
-}
-
-function appendAsync(sb, data) {
-  return new Promise((resolve, reject) => {
-    const onUp = () => { sb.removeEventListener('updateend', onUp); sb.removeEventListener('error', onErr); resolve(); };
-    const onErr = (e) => { sb.removeEventListener('updateend', onUp); sb.removeEventListener('error', onErr); reject(e); };
-    sb.addEventListener('updateend', onUp);
-    sb.addEventListener('error', onErr);
-    try { sb.appendBuffer(data); } catch (e) { reject(e); }
-  });
-}
-
-function tryPlayBuffered(url, mySession) {
-  if (!mseSupported()) return Promise.resolve(null); // pas de tampon dispo : appelant doit se rabattre sur tryPlay()
-
-  return new Promise((resolve) => {
-    let resolved = false, started = false, abortCtrl = null;
-    const finish = (ok) => {
-      if (resolved) return;
-      resolved = true;
-      if (abortCtrl) { try { abortCtrl.abort(); } catch (e) {} }
-      resolve(ok);
-    };
-
-    const ms = new MediaSource();
-    mseObjectUrl = URL.createObjectURL(ms);
-    mixEl.src = mseObjectUrl;
-
-    const startupTimer = setTimeout(() => { if (!started) finish(false); }, 15000);
-
-    ms.addEventListener('sourceopen', async () => {
-      if (sessionId !== mySession || !isPlaying) { finish(false); return; }
-      let sb;
-      try { sb = ms.addSourceBuffer(MSE_MIME); sb.mode = 'sequence'; }
-      catch (e) { finish(false); return; }
-
-      try {
-        abortCtrl = new AbortController();
-        const resp = await fetch(url, { signal: abortCtrl.signal });
-        if (!resp.ok || !resp.body) { finish(false); return; }
-        const reader = resp.body.getReader();
-
-        while (true) {
-          if (sessionId !== mySession || !isPlaying) { finish(started); return; }
-          const { value, done } = await reader.read();
-          if (done) { finish(started); return; }
-
-          try { await appendAsync(sb, value); } catch (e) { finish(false); return; }
-          if (sessionId !== mySession || !isPlaying) { finish(started); return; }
-
-          const ahead = mixEl.buffered.length ? mixEl.buffered.end(0) - mixEl.currentTime : 0;
-
-          if (!started && ahead >= STREAM_BUFFER_S) {
-            started = true;
-            clearTimeout(startupTimer);
-            usingMix = true;
-            muteBeforeStart();
-            try {
-              await mixEl.play();
-              setStatus('▶ En direct · EQ + pédales (buffer ' + STREAM_BUFFER_S + 's)');
-              render();
-              fadeTo(1, FADE_IN_MS);
-            } catch (e) { finish(false); return; }
-          } else if (started && ahead > STREAM_BUFFER_MAX_S) {
-            await new Promise(r => setTimeout(r, 500)); // freine le téléchargement, le buffer est déjà large
-          }
-        }
-      } catch (e) { finish(false); }
-    }, { once: true });
-
-    mixEl.addEventListener('error', () => finish(started), { once: true });
-  });
-}
-
-async function runAttempt(step, mySession) {
-  if (step.mix) {
-    const bufOk = await tryPlayBuffered(step.url, mySession);
-    if (bufOk !== null) return bufOk;
-  }
-  return tryPlay(step.url, step.mix, mySession);
-}
-
 async function streamSession(station, mySession) {
   const rawUrls = [station.u].concat(station.alts || []).filter(Boolean);
   const plan = [];
-  rawUrls.forEach(u => {
-    const proxied = proxify(u);
-    if (proxied !== u) plan.push({ url: proxied, mix: true });
-    plan.push({ url: u, mix: true });
-    plan.push({ url: u, mix: false });
-    if (proxied !== u) plan.push({ url: proxied, mix: false });
+
+  // Extrait un bitrate depuis l'URL ou les métadonnées de la station.
+  const kbpsOf = u => {
+    const m = u.match(/(\d{2,3})\s*k/i);
+    if (m) return parseInt(m[1]);
+    if (station.q) {
+      const qm = station.q.match(/(\d{2,3})/);
+      if (qm) return parseInt(qm[1]);
+    }
+    return 128;
+  };
+
+  // Tri des URLs selon la position du curseur.
+  const sorted = rawUrls.slice().sort((a, b) => {
+    const da = kbpsOf(a), db = kbpsOf(b);
+    if (streamQuality < 40) return da - db;   // stable → petit bitrate d'abord
+    if (streamQuality > 60) return db - da;   // qualité → gros bitrate d'abord
+    return 0;                                  // équilibré → ordre d'origine
   });
+
+  if (streamQuality < 40) {
+    // Zone stable : proxy forcé, mix prioritaire
+    sorted.forEach(u => {
+      plan.push({ url: proxify(u, true), mix: true });
+      plan.push({ url: proxify(u, true), mix: false });
+    });
+  } else if (streamQuality > 60) {
+    // Zone qualité : direct d'abord, proxy seulement en secours
+    sorted.forEach(u => {
+      plan.push({ url: u, mix: true });
+      plan.push({ url: u, mix: false });
+      const p = proxify(u, true);
+      if (p !== u) plan.push({ url: p, mix: true });
+    });
+  } else {
+    // Zone équilibrée : proxy auto, alternance direct/proxy
+    sorted.forEach(u => {
+      const proxied = proxify(u);
+      if (proxied !== u) plan.push({ url: proxied, mix: true });
+      plan.push({ url: u, mix: true });
+      plan.push({ url: u, mix: false });
+      if (proxied !== u) plan.push({ url: proxied, mix: false });
+    });
+  }
 
   let idx = 0, attempt = 0;
   while (isPlaying && sessionId === mySession) {
     const step = plan[idx % plan.length];
-    setStatus('⏳ Essai ' + ((idx % plan.length) + 1) + '/' + plan.length);
+    const zone = streamQuality < 40 ? '🛡 stable' : streamQuality > 60 ? '✦ qualité' : '⚖ équilibré';
+    setStatus('⏳ Essai ' + ((idx % plan.length) + 1) + '/' + plan.length + ' · ' + zone);
 
     const startTs = Date.now();
-    const ok = await runAttempt(step, mySession);
+    const ok = await tryPlay(step.url, step.mix, mySession);
     const playedFor = Date.now() - startTs;
 
     if (!isPlaying || sessionId !== mySession) return;
 
-    if (ok && playedFor >= GOOD_PLAYBACK_MS) {
+    // Patience : 60 s à 0, 30 s à 50, 15 s à 100.
+    const successMs = 60000 - streamQuality * 450;
+    if (ok && playedFor >= successMs) {
       attempt = 0;
       const winner = plan[idx % plan.length];
       plan.length = 0;
       plan.push(winner);
-      rawUrls.forEach(u => {
-        const proxied = proxify(u);
-        if (proxied !== u) plan.push({ url: proxied, mix: winner.mix });
-        plan.push({ url: u, mix: winner.mix });
-      });
+      if (streamQuality >= 40 && streamQuality <= 60) {
+        // En mode équilibré, on garde l'alternance pour absorber les coupures
+        rawUrls.forEach(u => {
+          const proxied = proxify(u);
+          if (proxied !== u) plan.push({ url: proxied, mix: winner.mix });
+          plan.push({ url: u, mix: winner.mix });
+        });
+      }
       idx = 0;
       setStatus('🔄 Reconnexion...');
     } else {
@@ -1862,8 +1837,6 @@ async function streamSession(station, mySession) {
         attempt = 0; idx = 0;
       }
     }
-    if (ok) { try { await fadeTo(0, FADE_OUT_MS); } catch(e) {} } // évite le "cut" audible en reconnexion
-    if (mseObjectUrl) { try { URL.revokeObjectURL(mseObjectUrl); } catch(e){} mseObjectUrl = null; }
     try { mixEl.pause(); } catch(e) {}
     try { mixEl.removeAttribute('src'); mixEl.load(); } catch(e) {}
     try { player.pause(); } catch(e) {}
@@ -1878,8 +1851,6 @@ async function togglePlay(station) {
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
-    if (fadeGain || player) { try { await fadeTo(0, FADE_OUT_MS); } catch(e) {} }
-    if (mseObjectUrl) { try { URL.revokeObjectURL(mseObjectUrl); } catch(e){} mseObjectUrl = null; }
     try { mixEl.pause(); } catch(e) {}
     try { mixEl.removeAttribute('src'); mixEl.load(); } catch(e) {}
     try { player.pause(); } catch(e) {}
@@ -1967,7 +1938,8 @@ function saveCustomStations(){
   try{ localStorage.setItem('core_custom_stations', JSON.stringify(customStations)); }catch(e){}
 }
 
-const npName = document.getElementById('npName');
+const npName = document.getElementById('npTitle') || document.getElementById('npName');
+const bufDot = document.getElementById('bufDot');
 const npState = document.getElementById('npState');
 const statusMini = document.getElementById('statusMini');
 const waveEl = document.getElementById('wave');
@@ -1978,13 +1950,32 @@ const favsList = document.getElementById('favsList');
 const favsMsg = document.getElementById('favsMsg');
 
 function setStatus(msg) { npState.textContent = msg; statusMini.textContent = msg; }
-function title(t) { npName.textContent = t; }
+function title(t) { if (npName) npName.textContent = t; }
 function render() {
   const p = isPlaying;
   waveEl.classList.toggle('on', p);
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
   if (btn) { btn.textContent = p ? '⏹ Stop' : '▶ Écouter'; btn.classList.toggle('stop', p); }
+}
+
+function setStreamQuality(v) {
+  streamQuality = Math.max(0, Math.min(100, Math.round(v)));
+  safeMode = streamQuality < 33;
+  try {
+    localStorage.setItem('core_stream_q', String(streamQuality));
+    localStorage.setItem('core_safe_mode', safeMode ? '1' : '0');
+  } catch(e){}
+  if (mixEl) mixEl.preload = safeMode ? 'auto' : 'none';
+  if (player) player.preload = safeMode ? 'auto' : 'none';
+  const lbl = streamQuality < 20 ? '🛡 max stable'
+            : streamQuality < 40 ? '🛡 stable'
+            : streamQuality > 80 ? '✦ max qualité'
+            : streamQuality > 60 ? '✦ qualité'
+            : '⚖ équilibré';
+  setStatus(safeMode
+    ? 'Curseur ' + streamQuality + ' · ' + lbl + ' (proxy forcé, basse qualité prioritaire)'
+    : 'Curseur ' + streamQuality + ' · ' + lbl);
 }
 
 function paintFavsList() {
@@ -2042,7 +2033,6 @@ function playStation(st) {
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
-    if (mseObjectUrl) { try { URL.revokeObjectURL(mseObjectUrl); } catch(e){} mseObjectUrl = null; }
     try { mixEl.pause(); } catch(e) {}
     try { mixEl.removeAttribute('src'); mixEl.load(); } catch(e) {}
     try { player.pause(); } catch(e) {}
@@ -2326,6 +2316,57 @@ document.getElementById('power').addEventListener('click', () => {
   const st = (currentStation && !/^capture:/.test(currentStation.u)) ? currentStation : (lastRadio || CORE[0]);
   togglePlay(st);
 });
+
+// --- Curseur Qualité ↔ Stabilité ---
+{
+  const sq = document.getElementById('streamQ');
+  if (sq) {
+    sq.value = streamQuality;
+    let sqTimer = null;
+    sq.addEventListener('input', e => {
+      setStreamQuality(parseInt(e.target.value));
+      clearTimeout(sqTimer);
+      sqTimer = setTimeout(() => {
+        if (isPlaying && currentStation) {
+          const st = currentStation;
+          isPlaying = false; sessionId++;
+          try { mixEl.pause(); } catch(err){}
+          try { mixEl.removeAttribute('src'); mixEl.load(); } catch(err){}
+          try { player.pause(); } catch(err){}
+          try { player.removeAttribute('src'); player.load(); } catch(err){}
+          setTimeout(() => { isPlaying = true; togglePlay(st); }, 350);
+        }
+      }, 600);
+    });
+  }
+}
+
+// --- Indicateur de santé du buffer ---
+function bufferAhead() {
+  if (!isPlaying) return -1;
+  const el = usingMix ? mixEl : player;
+  if (!el || !el.buffered || el.buffered.length === 0) return 0;
+  try {
+    const end = el.buffered.end(el.buffered.length - 1);
+    return Math.max(0, end - el.currentTime);
+  } catch(e) { return 0; }
+}
+function paintBufferHealth() {
+  if (!bufDot) return;
+  const s = bufferAhead();
+  if (s < 0) {
+    bufDot.style.background = '#444';
+    bufDot.style.boxShadow = 'none';
+    return;
+  }
+  let color, glow;
+  if (s >= 2)       { color = '#B9FF45'; glow = '0 0 8px #B9FF45'; }
+  else if (s >= 0.5){ color = '#FFC24B'; glow = '0 0 8px #FFC24B'; }
+  else              { color = '#FF2D3F'; glow = '0 0 8px #FF2D3F'; }
+  bufDot.style.background = color;
+  bufDot.style.boxShadow = glow;
+}
+setInterval(paintBufferHealth, 400);
 
 const EQ_MEMO_KEY = 'core_eq_memo';
 let eqMemo = {};
@@ -3356,7 +3397,7 @@ function buildChorus(ctx) {
   }
   c.treble.connect(c.level); c.level.connect(c.wet); c.wet.connect(c.merger);
   c.input.connect(c.dry); c.dry.connect(c.merger);
-  c.merger.connect(c.analyser);
+  c._pitchInConnected = true;
   return c;
 }
 
@@ -3364,6 +3405,14 @@ function applyChorus(t) {
   const c = chorusChain; if (!c) return;
   const on = chorusOn && fxMasterOn, ratio = P.chorRef / 440;
   const g = on ? (1 - ratio) * CHOR_T : 0;
+
+  // Bypass complet du transpositeur quand inutile : économie CPU énorme.
+  if (on && !c._pitchInConnected) {
+    try { c.input.connect(c.pitchIn); c._pitchInConnected = true; } catch(e){}
+  } else if (!on && c._pitchInConnected) {
+    try { c.input.disconnect(c.pitchIn); c._pitchInConnected = false; } catch(e){}
+  }
+
   if (c.pv) {
     c.shiftGains.forEach(sg => setParam(sg.gain, 0, t));
     const rp = c.pv.parameters.get('ratio'); rp.cancelScheduledValues(t); rp.setValueAtTime(on ? ratio : 1, t);
@@ -3917,6 +3966,8 @@ function recStart() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
   recChunksL = []; recChunksR = [];
   recActive = true;
+  // Branchement du ScriptProcessor pour capturer le signal de sortie
+  try { softLimiter.connect(recCapture); } catch(e){}
   recT0 = performance.now(); recPaint();
   recTick = setInterval(recPaint, 500);
   recWrap.classList.add('on');
@@ -3927,6 +3978,8 @@ function recStart() {
 async function recStop() {
   if (!recActive) return;
   recActive = false;
+  // Débranchement du ScriptProcessor pour ne plus consommer de CPU
+  try { softLimiter.disconnect(recCapture); } catch(e){}
   clearInterval(recTick); recTick = null;
   recWrap.classList.remove('on');
   if (!recChunksL.length) { showMemoToast('Rien capturé', '#FF2D3F', true); return; }
@@ -3964,6 +4017,11 @@ window.addEventListener('beforeunload', e => {
   if (recActive) { e.preventDefault(); e.returnValue = ''; }
 });
 
+// Init curseur qualité
+{
+  const sq = document.getElementById('streamQ');
+  if (sq) sq.value = streamQuality;
+}
 initFxFavButtons();
 paintFxFavButtons();
 paintFxQuick();
