@@ -1132,10 +1132,13 @@ function proxify(u) {
 
 let audioCtx = null;
 let mixEl = null, player = null;
+let mseObjectUrl = null;  // URL blob MSE en cours (à révoquer à chaque arrêt)
 let srcNode = null;
 let pannerNode = null;
 let spatialNode = null;
 let masterGain = null;
+let fadeGain = null;      // fondu enchaîné dédié (indépendant du réglage P.gain)
+let fadeRAF = null;       // id requestAnimationFrame du fondu en cours
 let inBus = null, fxDry = null, fxWet = null;
 let agAna = null, agAnaL = null, agAnaR = null;
 let eqSplitter = null, eqMerger = null;
@@ -1343,6 +1346,8 @@ function buildGraph() {
   pannerNode = audioCtx.createStereoPanner(); pannerNode.pan.value = 0;
   masterGain = audioCtx.createGain(); masterGain.gain.value = 1;
 
+  fadeGain = audioCtx.createGain(); fadeGain.gain.value = 0;
+
   spatialNode = audioCtx.createPanner();
   spatialNode.panningModel = 'equalpower';
   spatialNode.distanceModel = 'inverse';
@@ -1473,7 +1478,8 @@ function buildGraph() {
     sp.connect(agAnaL, 0); sp.connect(agAnaR, 1); }
   inBus.connect(fxDry); fxDry.connect(limiterNode);
   pannerNode.connect(spatialNode);
-  spatialNode.connect(masterGain);
+  spatialNode.connect(fadeGain);
+  fadeGain.connect(masterGain);
   masterGain.connect(eqSplitter);
 
   eqSplitter.connect(eqL.sub, 0);
@@ -1541,6 +1547,43 @@ function setParam(param, value, time) {
     param.setValueAtTime(param.value, time);
     param.linearRampToValueAtTime(value, time + 0.03);
   } catch (e) { param.value = value; }
+}
+
+/* ============================================================
+   FONDU ENCHAÎNÉ (fade in/out) — inspiré de LLViewerAudio (Firestorm) :
+   évite les "pops" au démarrage, à l'arrêt et lors des reconnexions.
+   fadeGain gère le chemin mixEl (avec EQ) ; player.volume gère le
+   chemin fallback sans EQ.
+   ============================================================ */
+const FADE_IN_MS = 700, FADE_OUT_MS = 350;
+
+function fadeTo(target, ms) {
+  return new Promise(resolve => {
+    if (fadeRAF) cancelAnimationFrame(fadeRAF);
+    const useMix = usingMix;
+    const getVol = () => useMix ? fadeGain.gain.value : (player ? player.volume : 0);
+    const setVol = v => {
+      if (useMix && fadeGain) fadeGain.gain.value = v;
+      if (player) player.volume = useMix ? 1 : v; // sans EQ : le fondu se fait sur .volume
+    };
+    const from = getVol();
+    const t0 = performance.now();
+    const step = now => {
+      const t = Math.min(1, (now - t0) / ms);
+      setVol(from + (target - from) * t);
+      if (t < 1) {
+        fadeRAF = requestAnimationFrame(step);
+      } else {
+        fadeRAF = null;
+        resolve();
+      }
+    };
+    fadeRAF = requestAnimationFrame(step);
+  });
+}
+function muteBeforeStart() {
+  if (fadeGain) fadeGain.gain.value = 0;
+  if (player) player.volume = 0;
 }
 
 function applyAll() {
@@ -1658,18 +1701,122 @@ function tryPlay(url, useMix, mySession) {
       usingMix = useMix;
       setStatus(useMix ? '▶ En direct · EQ + pédales' : '▶ En direct · sans EQ');
       render();
+      fadeTo(1, FADE_IN_MS);
     };
     el.onerror = () => finish(false);
     el.onended = () => finish(started);
     startupTimer = setTimeout(() => { if (!started) finish(false); }, 15000);
 
     try {
+      usingMix = useMix;
+      muteBeforeStart(); // silence tant que le flux n'est pas vraiment audible
       el.src = url;
       el.load();
       const p = el.play();
       if (p && p.catch) p.catch(() => { if (!started) finish(false); });
     } catch (e) { finish(false); }
   });
+}
+
+/* ============================================================
+   TAMPON ANTI-JITTER (MSE) — équivalent maison du
+   LLStreamingAudioInterface::setBufferSizes() de Firestorm.
+   Un <audio src="url"> HTML5 ne permet pas de régler la profondeur
+   du buffer réseau ; on la reconstruit nous-mêmes en téléchargeant
+   le flux via fetch() et en l'injectant dans un SourceBuffer, avec
+   quelques secondes d'avance avant de lancer la lecture. Ne couvre
+   que le chemin "mix" (EQ) en MP3 ; se désactive proprement (renvoie
+   null) si le navigateur ou le flux ne s'y prête pas, auquel cas
+   runAttempt() se rabat sur tryPlay() (comportement inchangé).
+   ============================================================ */
+const MSE_MIME = 'audio/mpeg';
+const STREAM_BUFFER_S = 6;   // secondes d'avance visées avant lecture
+const STREAM_BUFFER_MAX_S = 18; // au-delà, on ralentit le téléchargement
+
+function mseSupported() {
+  return typeof window.MediaSource !== 'undefined'
+      && typeof MediaSource.isTypeSupported === 'function'
+      && MediaSource.isTypeSupported(MSE_MIME);
+}
+
+function appendAsync(sb, data) {
+  return new Promise((resolve, reject) => {
+    const onUp = () => { sb.removeEventListener('updateend', onUp); sb.removeEventListener('error', onErr); resolve(); };
+    const onErr = (e) => { sb.removeEventListener('updateend', onUp); sb.removeEventListener('error', onErr); reject(e); };
+    sb.addEventListener('updateend', onUp);
+    sb.addEventListener('error', onErr);
+    try { sb.appendBuffer(data); } catch (e) { reject(e); }
+  });
+}
+
+function tryPlayBuffered(url, mySession) {
+  if (!mseSupported()) return Promise.resolve(null); // pas de tampon dispo : appelant doit se rabattre sur tryPlay()
+
+  return new Promise((resolve) => {
+    let resolved = false, started = false, abortCtrl = null;
+    const finish = (ok) => {
+      if (resolved) return;
+      resolved = true;
+      if (abortCtrl) { try { abortCtrl.abort(); } catch (e) {} }
+      resolve(ok);
+    };
+
+    const ms = new MediaSource();
+    mseObjectUrl = URL.createObjectURL(ms);
+    mixEl.src = mseObjectUrl;
+
+    const startupTimer = setTimeout(() => { if (!started) finish(false); }, 15000);
+
+    ms.addEventListener('sourceopen', async () => {
+      if (sessionId !== mySession || !isPlaying) { finish(false); return; }
+      let sb;
+      try { sb = ms.addSourceBuffer(MSE_MIME); sb.mode = 'sequence'; }
+      catch (e) { finish(false); return; }
+
+      try {
+        abortCtrl = new AbortController();
+        const resp = await fetch(url, { signal: abortCtrl.signal });
+        if (!resp.ok || !resp.body) { finish(false); return; }
+        const reader = resp.body.getReader();
+
+        while (true) {
+          if (sessionId !== mySession || !isPlaying) { finish(started); return; }
+          const { value, done } = await reader.read();
+          if (done) { finish(started); return; }
+
+          try { await appendAsync(sb, value); } catch (e) { finish(false); return; }
+          if (sessionId !== mySession || !isPlaying) { finish(started); return; }
+
+          const ahead = mixEl.buffered.length ? mixEl.buffered.end(0) - mixEl.currentTime : 0;
+
+          if (!started && ahead >= STREAM_BUFFER_S) {
+            started = true;
+            clearTimeout(startupTimer);
+            usingMix = true;
+            muteBeforeStart();
+            try {
+              await mixEl.play();
+              setStatus('▶ En direct · EQ + pédales (buffer ' + STREAM_BUFFER_S + 's)');
+              render();
+              fadeTo(1, FADE_IN_MS);
+            } catch (e) { finish(false); return; }
+          } else if (started && ahead > STREAM_BUFFER_MAX_S) {
+            await new Promise(r => setTimeout(r, 500)); // freine le téléchargement, le buffer est déjà large
+          }
+        }
+      } catch (e) { finish(false); }
+    }, { once: true });
+
+    mixEl.addEventListener('error', () => finish(started), { once: true });
+  });
+}
+
+async function runAttempt(step, mySession) {
+  if (step.mix) {
+    const bufOk = await tryPlayBuffered(step.url, mySession);
+    if (bufOk !== null) return bufOk;
+  }
+  return tryPlay(step.url, step.mix, mySession);
 }
 
 async function streamSession(station, mySession) {
@@ -1689,7 +1836,7 @@ async function streamSession(station, mySession) {
     setStatus('⏳ Essai ' + ((idx % plan.length) + 1) + '/' + plan.length);
 
     const startTs = Date.now();
-    const ok = await tryPlay(step.url, step.mix, mySession);
+    const ok = await runAttempt(step, mySession);
     const playedFor = Date.now() - startTs;
 
     if (!isPlaying || sessionId !== mySession) return;
@@ -1715,6 +1862,8 @@ async function streamSession(station, mySession) {
         attempt = 0; idx = 0;
       }
     }
+    if (ok) { try { await fadeTo(0, FADE_OUT_MS); } catch(e) {} } // évite le "cut" audible en reconnexion
+    if (mseObjectUrl) { try { URL.revokeObjectURL(mseObjectUrl); } catch(e){} mseObjectUrl = null; }
     try { mixEl.pause(); } catch(e) {}
     try { mixEl.removeAttribute('src'); mixEl.load(); } catch(e) {}
     try { player.pause(); } catch(e) {}
@@ -1729,6 +1878,8 @@ async function togglePlay(station) {
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
+    if (fadeGain || player) { try { await fadeTo(0, FADE_OUT_MS); } catch(e) {} }
+    if (mseObjectUrl) { try { URL.revokeObjectURL(mseObjectUrl); } catch(e){} mseObjectUrl = null; }
     try { mixEl.pause(); } catch(e) {}
     try { mixEl.removeAttribute('src'); mixEl.load(); } catch(e) {}
     try { player.pause(); } catch(e) {}
@@ -1891,6 +2042,7 @@ function playStation(st) {
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
+    if (mseObjectUrl) { try { URL.revokeObjectURL(mseObjectUrl); } catch(e){} mseObjectUrl = null; }
     try { mixEl.pause(); } catch(e) {}
     try { mixEl.removeAttribute('src'); mixEl.load(); } catch(e) {}
     try { player.pause(); } catch(e) {}
