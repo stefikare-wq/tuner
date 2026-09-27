@@ -46,6 +46,15 @@
   .rec-wrap{margin-left:auto;display:flex;align-items:center;gap:10px;flex:none}
   .rec-time{font:800 14px/1 ui-monospace,Consolas,monospace;color:#FF6B78;letter-spacing:.06em;display:none}
   .rec-wrap.on .rec-time{display:inline}
+  .rec-format{
+    height:28px;padding:0 10px;border-radius:14px;
+    border:1.5px solid rgba(234,241,255,.28);
+    background:rgba(0,0,0,.35);color:#EAF1FF;
+    font:800 12px/1 -apple-system,"SF Pro Display","Segoe UI",sans-serif;
+    letter-spacing:.06em;cursor:pointer;transition:transform .12s var(--e)
+  }
+  .rec-format:active{transform:scale(.92)}
+  .rec-wrap.on .rec-format{opacity:.4;pointer-events:none}
   .rec-btn{position:relative;width:40px;height:40px;border-radius:50%;border:3px solid #FF2D3F;background:#0b0f1a;cursor:pointer;
     padding:0;flex:none;box-shadow:0 0 12px rgba(255,45,63,.35);transition:transform .12s}
   .rec-btn::before{content:'';position:absolute;inset:7px;border-radius:50%;background:#FF2D3F;box-shadow:0 0 10px #FF2D3F}
@@ -597,6 +606,7 @@
     .dim-vals{gap:4px} .knob-grid.master5 .dim-vals .knob-value{font-size:14px}
     .knob-grid.master5 .dimbox > .knob-label{font-size:12px;letter-spacing:.06em}
     #statusMini{display:none}
+    .rec-format{height:24px;padding:0 8px;font-size:11px}
   }
   .knob-rec{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none;overflow:visible}
   .knob-rec path{fill:none;stroke:#FF2D3F;stroke-width:5;stroke-linecap:round;opacity:.55}
@@ -709,6 +719,7 @@
   }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js" defer></script>
 </head>
 <body>
 <div class="app">
@@ -718,6 +729,7 @@
       <span class="brand">RADIO THE CORE <small>• ESSAI · V45</small></span>
       <div class="rec-wrap" id="recWrap">
         <span class="rec-time" id="recTime">00:00</span>
+        <button class="rec-format" id="recFormat" type="button" title="Changer le format d'enregistrement (WAV ou MP3)">WAV</button>
         <button class="rec-btn" id="recBtn" type="button" title="Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur"><i></i><i></i></button>
       </div>
     </div>
@@ -1131,6 +1143,11 @@ let eqL = {}, eqR = {};
 let gainL = null, gainR = null;
 let limiterNode = null, softLimiter = null;
 let recDest = null;
+let recCapture = null;
+let recChunksL = [], recChunksR = [];
+let recActive = false;
+let recFormat = 'wav';
+try { recFormat = localStorage.getItem('core_rec_format') || 'wav'; } catch(e){}
 let analyser = null;
 let splitterVU = null, anaL = null, anaR = null;
 let _waveData = null, _dataL = null, _dataR = null;
@@ -1485,6 +1502,20 @@ function buildGraph() {
   softLimiter.connect(analyser);
   recDest = audioCtx.createMediaStreamDestination(); softLimiter.connect(recDest);
   analyser.connect(audioCtx.destination);
+
+  // --- capture PCM pour l'encodeur WAV / MP3 ---
+  recCapture = audioCtx.createScriptProcessor(4096, 2, 2);
+  const recSink = audioCtx.createGain(); recSink.gain.value = 0;
+  softLimiter.connect(recCapture);
+  recCapture.connect(recSink);
+  recSink.connect(audioCtx.destination);
+  recCapture.onaudioprocess = e => {
+    if (!recActive) return;
+    const l = e.inputBuffer.getChannelData(0);
+    const r = e.inputBuffer.numberOfChannels > 1 ? e.inputBuffer.getChannelData(1) : l;
+    recChunksL.push(new Float32Array(l));
+    recChunksR.push(new Float32Array(r));
+  };
 
   limiterNode.connect(splitterVU);
   splitterVU.connect(anaL, 0);
@@ -3642,59 +3673,144 @@ setInterval(() => {
   agAsk('manual', 'Tu viens de régler les boutons. Oui = j\'enregistre ce réglage et j\'apprends tes goûts.');
 }, 5000);
 
-let recorder = null, recChunks = [], recT0 = 0, recTick = null;
+/* ============================================================
+   ENREGISTREMENT : WAV (natif) ou MP3 (lamejs)
+   ============================================================ */
+let recTick = null, recT0 = 0;
 const recWrap = document.getElementById('recWrap'), recTimeEl = document.getElementById('recTime');
+
 function recPaint() {
   const t = Math.floor((performance.now() - recT0) / 1000);
-  recTimeEl.textContent = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+  recTimeEl.textContent = String(Math.floor(t / 60)).padStart(2,'0')
+                        + ':' + String(t % 60).padStart(2,'0');
 }
 function recName() {
-  const n = new Date(), z = x => String(x).padStart(2, '0');
-  return 'CORE_' + n.getFullYear() + '-' + z(n.getMonth() + 1) + '-' + z(n.getDate()) + '_' + z(n.getHours()) + 'h' + z(n.getMinutes()) + 'm' + z(n.getSeconds()) + 's';
+  const n = new Date(), z = x => String(x).padStart(2,'0');
+  return 'CORE_' + n.getFullYear() + '-' + z(n.getMonth()+1) + '-' + z(n.getDate())
+       + '_' + z(n.getHours()) + 'h' + z(n.getMinutes()) + 'm' + z(n.getSeconds()) + 's';
 }
 async function recSave(blob, ext) {
   const name = recName() + '.' + ext;
   try {
-    const r = await fetch('/save-recording?name=' + encodeURIComponent(name), { method: 'POST', body: blob });
+    const r = await fetch('/save-recording?name=' + encodeURIComponent(name),
+                         { method:'POST', body: blob });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const j = await r.json();
-    showMemoToast('💾 Enregistré sur le disque : ' + j.path, '#FF2D3F', true);
+    showMemoToast('💾 Enregistré : ' + j.path, '#FF2D3F', true);
     setStatus('💾 ' + j.path);
   } catch (e) {
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
-    showMemoToast('💾 Enregistré dans Téléchargements : ' + name, '#FF2D3F', true);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    showMemoToast('💾 Téléchargé : ' + name, '#FF2D3F', true);
   }
 }
+
+/* ---------- Encodage WAV (PCM 16 bit, sans dépendance) ---------- */
+function encodeWAV(chL, chR, sampleRate) {
+  const frames = chL.reduce((s, c) => s + c.length, 0);
+  const nCh = 2, bps = 2, blockAlign = nCh * bps;
+  const dataSize = frames * blockAlign;
+  const buf = new ArrayBuffer(44 + dataSize);
+  const v = new DataView(buf);
+  const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o+i, s.charCodeAt(i)); };
+  str(0,'RIFF'); v.setUint32(4, 36 + dataSize, true); str(8,'WAVE');
+  str(12,'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
+  v.setUint16(22, nCh, true); v.setUint32(24, sampleRate, true);
+  v.setUint32(28, sampleRate * blockAlign, true);
+  v.setUint16(32, blockAlign, true); v.setUint16(34, 16, true);
+  str(36,'data'); v.setUint32(40, dataSize, true);
+  let off = 44;
+  for (let c = 0; c < chL.length; c++) {
+    const L = chL[c], R = chR[c];
+    for (let i = 0; i < L.length; i++) {
+      v.setInt16(off, Math.max(-1, Math.min(1, L[i])) * 0x7FFF, true); off += 2;
+      v.setInt16(off, Math.max(-1, Math.min(1, R[i])) * 0x7FFF, true); off += 2;
+    }
+  }
+  return new Blob([buf], { type: 'audio/wav' });
+}
+
+/* ---------- Encodage MP3 via lamejs ---------- */
+async function encodeMP3(chL, chR, sampleRate, kbps) {
+  if (typeof lamejs === 'undefined') throw new Error('lamejs non chargé');
+  const enc = new lamejs.Mp3Encoder(2, sampleRate, kbps || 192);
+  const total = chL.reduce((s, c) => s + c.length, 0);
+  const L = new Int16Array(total), R = new Int16Array(total);
+  let p = 0;
+  for (let c = 0; c < chL.length; c++) {
+    const a = chL[c], b = chR[c];
+    for (let i = 0; i < a.length; i++) {
+      L[p] = Math.max(-1, Math.min(1, a[i])) * 0x7FFF;
+      R[p] = Math.max(-1, Math.min(1, b[i])) * 0x7FFF;
+      p++;
+    }
+  }
+  const parts = [], BLOCK = 1152;
+  for (let i = 0; i < total; i += BLOCK) {
+    const l = L.subarray(i, Math.min(i+BLOCK, total));
+    const r = R.subarray(i, Math.min(i+BLOCK, total));
+    const b = enc.encodeBuffer(l, r);
+    if (b.length) parts.push(b);
+    if ((i / BLOCK) % 200 === 199) await new Promise(r => setTimeout(r, 0));
+  }
+  const end = enc.flush();
+  if (end.length) parts.push(end);
+  return new Blob(parts, { type: 'audio/mpeg' });
+}
+
 function recStart() {
-  if (!window.MediaRecorder) { showMemoToast('Enregistrement impossible avec ce navigateur (utilise Chrome ou Edge)', '#FF2D3F', true); return; }
   buildGraph();
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find(m => MediaRecorder.isTypeSupported(m)) || '';
-  try { recorder = new MediaRecorder(recDest.stream, mime ? { mimeType: mime, audioBitsPerSecond: 256000 } : {}); }
-  catch (e) { showMemoToast('Enregistrement impossible : ' + e.message, '#FF2D3F', true); recorder = null; return; }
-  recChunks = [];
-  recorder.ondataavailable = e => { if (e.data && e.data.size) recChunks.push(e.data); };
-  recorder.onstop = () => {
-    const type = recorder.mimeType || mime || 'audio/webm';
-    recSave(new Blob(recChunks, { type }), /ogg/.test(type) ? 'ogg' : 'webm');
-    recorder = null; recChunks = [];
-  };
-  recorder.start(1000);
-  recT0 = performance.now(); recPaint(); recTick = setInterval(recPaint, 500);
+  recChunksL = []; recChunksR = [];
+  recActive = true;
+  recT0 = performance.now(); recPaint();
+  recTick = setInterval(recPaint, 500);
   recWrap.classList.add('on');
-  document.getElementById('recBtn').title = 'Arrêter l\'enregistrement et l\'écrire sur le disque dur';
-  showMemoToast('● Enregistrement… appuie sur ⏸ pour arrêter et sauvegarder', '#FF2D3F', true);
+  showMemoToast('● Enregistrement ' + recFormat.toUpperCase()
+              + '… clique ⏸ pour arrêter et sauvegarder', '#FF2D3F', true);
 }
-function recStop() {
-  if (!recorder) return;
+
+async function recStop() {
+  if (!recActive) return;
+  recActive = false;
   clearInterval(recTick); recTick = null;
   recWrap.classList.remove('on');
-  document.getElementById('recBtn').title = 'Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur';
-  try { recorder.stop(); } catch (e) {}
+  if (!recChunksL.length) { showMemoToast('Rien capturé', '#FF2D3F', true); return; }
+  try {
+    setStatus('Encodage ' + recFormat.toUpperCase() + '…');
+    let blob;
+    if (recFormat === 'mp3') {
+      blob = await encodeMP3(recChunksL, recChunksR, audioCtx.sampleRate, 192);
+      await recSave(blob, 'mp3');
+    } else {
+      blob = encodeWAV(recChunksL, recChunksR, audioCtx.sampleRate);
+      await recSave(blob, 'wav');
+    }
+  } catch (e) {
+    showMemoToast('Erreur encodage : ' + e.message, '#FF2D3F', true);
+  }
+  recChunksL = []; recChunksR = [];
 }
-document.getElementById('recBtn').addEventListener('click', () => recorder ? recStop() : recStart());
-window.addEventListener('beforeunload', e => { if (recorder) { e.preventDefault(); e.returnValue = ''; } });
+
+/* --- bouton REC --- */
+document.getElementById('recBtn').addEventListener('click',
+  () => recActive ? recStop() : recStart());
+
+/* --- bouton format --- */
+const recFormatBtn = document.getElementById('recFormat');
+recFormatBtn.textContent = recFormat.toUpperCase();
+recFormatBtn.addEventListener('click', () => {
+  recFormat = recFormat === 'wav' ? 'mp3' : 'wav';
+  try { localStorage.setItem('core_rec_format', recFormat); } catch(e){}
+  recFormatBtn.textContent = recFormat.toUpperCase();
+  showMemoToast('Format : ' + recFormat.toUpperCase(), '#FF2D3F', true);
+});
+
+window.addEventListener('beforeunload', e => {
+  if (recActive) { e.preventDefault(); e.returnValue = ''; }
+});
 
 initFxFavButtons();
 paintFxFavButtons();
