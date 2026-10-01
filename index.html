@@ -43,18 +43,10 @@
   .orb::after{content:'';position:absolute;inset:7px;border-radius:50%;background:var(--cyan)}
   .brand{font-weight:900;letter-spacing:.12em;color:#bff8ff;font-size:20px}
   .brand small{opacity:.5;font-size:12px;letter-spacing:.1em;margin-left:5px}
+  /* bouton d'enregistrement : rond rouge ; pendant l'enregistrement = deux traits (⏸) pour arrêter */
   .rec-wrap{margin-left:auto;display:flex;align-items:center;gap:10px;flex:none}
   .rec-time{font:800 14px/1 ui-monospace,Consolas,monospace;color:#FF6B78;letter-spacing:.06em;display:none}
   .rec-wrap.on .rec-time{display:inline}
-  .rec-format{
-    height:28px;padding:0 10px;border-radius:14px;
-    border:1.5px solid rgba(234,241,255,.28);
-    background:rgba(0,0,0,.35);color:#EAF1FF;
-    font:800 12px/1 -apple-system,"SF Pro Display","Segoe UI",sans-serif;
-    letter-spacing:.06em;cursor:pointer;transition:transform .12s var(--e)
-  }
-  .rec-format:active{transform:scale(.92)}
-  .rec-wrap.on .rec-format{opacity:.4;pointer-events:none}
   .rec-btn{position:relative;width:40px;height:40px;border-radius:50%;border:3px solid #FF2D3F;background:#0b0f1a;cursor:pointer;
     padding:0;flex:none;box-shadow:0 0 12px rgba(255,45,63,.35);transition:transform .12s}
   .rec-btn::before{content:'';position:absolute;inset:7px;border-radius:50%;background:#FF2D3F;box-shadow:0 0 10px #FF2D3F}
@@ -70,10 +62,7 @@
   .sub{font-size:18px;color:var(--muted);min-height:24px;margin-top:3px}
   .sub.live{color:var(--lime)}
 
-  .tb-btns{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
-  .tb-btns .pill{grid-column:span 2}
-  .tb-btns #power{grid-column:span 3}
-  .tb-btns #openAgent{grid-column:span 3}
+  .tb-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
   .pill{display:inline-flex;align-items:center;justify-content:center;border-radius:100px;
         min-height:56px;padding:0 20px;font-size:19px;font-weight:600;
         background:linear-gradient(135deg,var(--cyan),#0E8BDD);color:#03121A;
@@ -82,7 +71,6 @@
   .pill.ghost{background:rgba(234,241,255,.06);color:var(--ice);border:1px solid var(--edge2)}
   .pill.stop{background:linear-gradient(135deg,#FF3D9E,#B01E75);color:#fff}
   .pill.fav-btn{background:linear-gradient(135deg,#FF3D9E,#B01E75);color:#fff}
-  .pill.agent-btn{background:linear-gradient(135deg,#FFC23D,#FF8A2F);color:#1a0f00}
 
   .wavewrap{padding:0 18px 12px;flex:0 0 auto}
   .wave{display:flex;align-items:flex-end;gap:3px;height:64px;width:100%;padding-top:10px}
@@ -103,6 +91,7 @@
     font-size:19px;letter-spacing:.14em;color:var(--cyan);font-weight:800;
     margin:0 0 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 
+  /* ⭐ Étiquette de canal EQ centrée au-dessus de chaque rangée */
   .eq-channel-label{
     display:flex;align-items:center;justify-content:center;
     font-size:22px;font-weight:900;letter-spacing:.4em;
@@ -194,6 +183,7 @@
     border-color:transparent;box-shadow:0 0 16px rgba(47,231,255,.35)}
   .presets button:active{transform:scale(.96)}
 
+  /* DRAWERS */
   .drawer{position:fixed;z-index:40;background:linear-gradient(180deg,#0B1020,#06080F);
     transition:transform .32s var(--e);display:flex;flex-direction:column;overflow:hidden;
     box-shadow:0 -20px 60px rgba(0,0,0,.6)}
@@ -209,10 +199,6 @@
     border-top-left-radius:24px;border-bottom-left-radius:24px;border-left:1px solid var(--edge2);
     transform:translateX(101%);box-shadow:-20px 0 60px rgba(0,0,0,.6)}
   .drawer-right.open{transform:translateX(0)}
-  .drawer-top{left:0;right:0;top:0;max-height:94vh;max-height:94dvh;overflow-y:auto;
-    border-bottom-left-radius:24px;border-bottom-right-radius:24px;border-bottom:1px solid var(--edge2);
-    transform:translateY(-101%);box-shadow:0 20px 60px rgba(0,0,0,.6)}
-  .drawer-top.open{transform:translateY(0)}
 
   .drawer-handle{display:flex;align-items:center;justify-content:center;padding:14px 0 10px;flex:0 0 auto;cursor:grab}
   .drawer-handle i{width:64px;height:6px;border-radius:99px;background:rgba(140,190,255,.35)}
@@ -225,15 +211,6 @@
   .dhead button:active{transform:scale(.92)}
   .dcontent{flex:1 1 auto;display:flex;flex-direction:column;
     padding:0 22px calc(env(safe-area-inset-bottom) + 22px) 22px;min-height:0;overflow:hidden}
-
-  .agent-close{position:absolute;top:16px;right:18px;z-index:3;width:48px;height:48px;border-radius:50%;
-    border:1px solid var(--edge2);background:rgba(234,241,255,.06);font-size:22px;display:flex;align-items:center;justify-content:center}
-  .agent-close:active{transform:scale(.92)}
-  .drawer-top .agent{margin:0;border:0;border-radius:0;background:transparent}
-  .drawer-top .ag-body{padding:0 28px 28px;max-width:900px;margin:0 auto;width:100%}
-  .drawer-top .dhead{padding:20px 28px 12px;max-width:900px;margin:0 auto;width:100%}
-  .drawer-top .dhead h2{color:#FFC23D;font-size:24px}
-  .drawer-top .agent > summary{display:none}
 
   .addtop{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;flex:0 0 auto}
   .addtop .row2{display:flex;gap:8px}
@@ -380,11 +357,11 @@
     .fx-fav-btn{min-width:44px;height:44px;font-size:22px}
     .pill{min-height:50px;font-size:17px}
     .dcontent{padding:0 16px calc(env(safe-area-inset-bottom) + 16px) 16px}
-    .drawer-top .ag-body,.drawer-top .dhead{padding-left:16px;padding-right:16px}
   }
   @media (max-height:600px){.wavewrap{display:none}}
   @media (max-width:700px){.wave{height:48px;gap:2px}}
 
+  /* ===== Mémoire d'équilibre des égaliseurs (appui 3 s) ===== */
   .knob-dial::after{transition:background .35s var(--e),box-shadow .35s var(--e)}
   .knob.memo .knob-dial::after{
     background:radial-gradient(circle at 35% 30%,#fff 0%,var(--k-color) 38%,color-mix(in srgb,var(--k-color) 55%,#000) 100%);
@@ -399,15 +376,19 @@
   @keyframes recBlink{50%{box-shadow:inset 0 0 12px rgba(0,0,0,.7),0 0 8px rgba(255,45,63,.3)}}
   .knob.looping .knob-dial{box-shadow:inset 0 0 12px rgba(0,0,0,.7),0 0 16px rgba(255,45,63,.35)}
   .knob.rec-armed .knob-value,.knob.recording .knob-value{color:#FF2D3F}
+  /* ===== 11 graduations : 1 centrale plus grosse + 5 de chaque côté ===== */
   .knob-dial::before{display:none}
   .knob-tick{position:absolute;inset:0;pointer-events:none}
+  /* graduations = bulles creuses ; --tc couleur, --tf remplissage (0 → 1 quand l'aiguille s'approche) */
   .knob-tick::before{content:'';position:absolute;left:50%;top:-15%;width:3px;height:9%;transform:translateX(-50%);
     border-radius:2px;background:rgba(234,241,255,.22);transition:background .12s,box-shadow .12s}
   .knob-tick.major::before{width:5px;height:12%;top:-18%;background:rgba(234,241,255,.4)}
   .knob-tick.lit::before{background:var(--k-color,var(--cyan));box-shadow:0 0 6px var(--k-color,var(--cyan))}
   .knob-tick.here::before{background:#fff;box-shadow:0 0 6px #fff,0 0 12px var(--k-color,var(--cyan))}
   .knob.on-tick .knob-indicator::before{background:#fff;box-shadow:0 0 10px #fff,0 0 20px var(--k-color,var(--cyan))}
-  .knob-grid.master5{grid-template-columns:1fr 1fr 1.7fr 1fr 1fr;align-items:center}
+  /* ===== Dimension : gros bouton central ===== */
+  .knob-grid.master5{grid-template-columns:1fr 1fr 1.7fr 1fr 1fr;align-items:center}   /* noms alignés sur la même ligne */
+  /* double bouton : rond central = % de Dimension, anneau externe = vitesse des boucles */
   .dimbox{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
   .dim-stack{position:relative;width:100%;max-width:160px;aspect-ratio:1 / 1;margin-top:4%}
   .dim-stack .knob{position:absolute;gap:0}
@@ -423,10 +404,12 @@
   .dim-vals{display:flex;gap:12px;justify-content:center;align-items:baseline}
   .dim-vals .knob-value{font-size:24px}
   .dimbox > .knob-label{font-size:18px;letter-spacing:.12em;color:#FF6B78}
+  /* interrupteur Dimension : OFF = écoute sans les boucles (rien n'est effacé) */
   .dim-onoff{min-width:44px;height:24px;padding:0 8px;border-radius:12px;font-size:12px;font-weight:900;letter-spacing:.06em;
     border:2px solid #FF2D3F;background:#FF2D3F;color:#fff;box-shadow:0 0 12px rgba(255,45,63,.55);cursor:pointer}
   .dim-onoff[aria-pressed="false"]{background:rgba(0,0,0,.4);color:var(--muted);border-color:var(--muted);box-shadow:none}
   .dimbox.dim-off .dim-stack{opacity:.45;filter:saturate(.4)}
+  /* temps de la boucle de chaque bouton : −10 (très lent) · 0 (normal) · +10 (très rapide) */
   .loop-rate{position:absolute;left:50%;top:84%;transform:translateX(-50%);z-index:3;display:none;
     min-width:30px;height:20px;padding:0 5px;border-radius:10px;box-sizing:border-box;
     font-size:12px;font-weight:900;line-height:16px;text-align:center;font-variant-numeric:tabular-nums;
@@ -435,14 +418,16 @@
   .loop-rate.rec{border-color:#FF2D3F!important;color:#FF2D3F!important;animation:recBlink .8s ease-in-out infinite}
   .loop-rate.rloop{border-style:dashed;box-shadow:0 0 8px currentColor}
   .loop-rate.rloop span::before{content:'↻ ';font-size:10px}
+  /* petites boules : au-dessus = +10, en dessous = −10 */
   .lr-b{position:absolute;left:50%;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;cursor:pointer;
     background:#050810;border:2px solid currentColor;box-sizing:border-box;box-shadow:0 0 6px currentColor}
-  .lr-b::after{content:'';position:absolute;inset:-7px}
+  .lr-b::after{content:'';position:absolute;inset:-7px}              /* zone de clic plus large au doigt */
   .lr-b.up{top:-17px} .lr-b.dn{bottom:-17px}
   .lr-b:hover{background:currentColor}
   .lr-b:active{transform:scale(.8)}
   .loop-rate.slow{border-color:#2FE7FF;color:#2FE7FF}
   .loop-rate.fast{border-color:#FFC23D;color:#FFC23D}
+  /* barre BRUT ↔ EFFETS (mélange global de toute la chaîne) */
   .xfade-wrap{padding:2px 0 30px;margin-bottom:14px;border-bottom:1px solid rgba(234,241,255,.08)}
   .knob.hbar{gap:20px;align-items:stretch;cursor:ew-resize}
   .xf-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
@@ -465,6 +450,7 @@
   .hbar .knob-memo{inset:auto;top:-9px;bottom:auto;height:0;transform:none!important}
   .hbar .knob-memo::before{top:0}
   .hbar .loop-rate{left:50%;top:50%;transform:translate(-50%,-50%)}
+  /* repère d'automatisation + remise à zéro du temps, sur chaque conteneur */
   .auto-mark{display:inline-flex;align-items:center;gap:6px;margin-right:auto;flex:none;
     font:800 13px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.02em;color:var(--muted)}
   .auto-mark b{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:13px;
@@ -477,6 +463,7 @@
   .auto-mark button:not(:disabled):active{transform:scale(.92)}
   .pedal-actions .auto-mark{margin-right:8px}
   .xf-head .auto-mark{margin-right:0}
+  /* menu de choix du reset + barre « tout reset » */
   .auto-all{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-4px 0 14px;padding-bottom:12px;
     border-bottom:1px solid rgba(234,241,255,.08);font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--muted)}
   .auto-all .auto-mark{margin-right:0}
@@ -496,6 +483,7 @@
   .reset-menu button i{font-style:normal;width:22px;text-align:center;font-size:16px}
   .reset-menu button small{display:block;color:var(--muted);font-weight:600;font-size:12px;margin-top:2px}
   .reset-menu button.danger{color:#ffb3bc}
+  /* bibliothèque de presets d'égaliseur */
   .eq-presets{margin:0 0 18px;padding:14px;border:1px solid rgba(234,241,255,.1);border-radius:16px;background:rgba(0,0,0,.22)}
   .eqp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
   .eqp-title{font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--muted)}
@@ -519,6 +507,7 @@
     color:var(--ink,#EAF1FF);font:800 12px/1 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
   .eqp-target button.on{background:#EAF1FF;color:#050810;border-color:#EAF1FF}
   .eqp-flat:hover{border-color:#fff}
+  /* ===== AGENT PRESET ===== */
   .agent{margin:0 0 16px;border:1.5px solid rgba(255,194,61,.35);border-radius:18px;background:linear-gradient(160deg,rgba(255,194,61,.07),rgba(0,0,0,.25))}
   .agent > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 16px;
     font-size:15px;font-weight:900;letter-spacing:.14em;color:#FFC23D}
@@ -566,12 +555,14 @@
   .ag-pop .yes{background:#B9FF45;color:#0a1400}
   .ag-pop .no{background:#FF2D3F;color:#fff}
   .ag-pop .x{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer}
+  /* 5 favoris d'automatisation : une étoile = un jeu de boucles */
   .loop-stars{display:flex;gap:4px;justify-content:center}
   .lstar{width:28px;height:28px;padding:0;border:0;background:none;cursor:pointer;font-size:22px;line-height:28px;
     color:var(--s-color);opacity:.45;transition:transform .15s,opacity .15s,text-shadow .15s}
   .lstar.full{opacity:.7}
   .lstar.on{opacity:1;transform:scale(1.25);text-shadow:0 0 8px var(--s-color),0 0 16px var(--s-color)}
   .lstar:active{transform:scale(.9)}
+  /* graduations collées (segments contigus) */
   .knob-seg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
   .knob-seg path{fill:none;stroke-linecap:butt}
   .knob-seg .sg-bg{stroke:color-mix(in srgb,var(--k-color) 22%,#1a2033)}
@@ -606,7 +597,6 @@
     .dim-vals{gap:4px} .knob-grid.master5 .dim-vals .knob-value{font-size:14px}
     .knob-grid.master5 .dimbox > .knob-label{font-size:12px;letter-spacing:.06em}
     #statusMini{display:none}
-    .rec-format{height:24px;padding:0 8px;font-size:11px}
   }
   .knob-rec{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none;overflow:visible}
   .knob-rec path{fill:none;stroke:#FF2D3F;stroke-width:5;stroke-linecap:round;opacity:.55}
@@ -618,6 +608,7 @@
     100%{box-shadow:0 0 20px var(--k-color),0 0 40px var(--k-color);background:var(--k-color)}}
   .knob.memo-flash .knob-dial{animation:memoFlash .6s ease-out}
   @keyframes memoFlash{0%{box-shadow:0 0 0 0 var(--k-color)}40%{box-shadow:0 0 0 10px color-mix(in srgb,var(--k-color) 40%,transparent),0 0 30px var(--k-color)}100%{box-shadow:inset 0 0 12px rgba(0,0,0,.7)}}
+  /* repère de la position mémorisée sur la couronne */
   .knob-memo{position:absolute;inset:0;pointer-events:none;display:none}
   .knob.memo .knob-memo{display:block}
   .knob-memo::before{content:'';position:absolute;left:50%;top:1px;width:7px;height:7px;border-radius:50%;
@@ -641,6 +632,7 @@
   .eq-hint.live{color:#fff}
   @media (max-width:700px){.eq-hint{font-size:11.5px;max-width:60%}}
 
+  /* ===== Interrupteur général des effets (bouton Effets) ===== */
   #openFx{gap:10px}
   .fx-master{display:inline-flex;align-items:center;justify-content:center;min-width:52px;height:30px;padding:0 10px;
     border-radius:99px;font-size:13px;font-weight:900;letter-spacing:.08em;line-height:1;
@@ -648,6 +640,7 @@
   .fx-master.on{color:#03121A;background:var(--lime);border-color:transparent;box-shadow:0 0 14px rgba(185,255,69,.55)}
   .fx-master:active{transform:scale(.92)}
 
+  /* ===== Les 4 effets en accès rapide (à la place des presets) ===== */
   .fxquick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--edge2)}
   .fxquick button{position:relative;min-height:54px;padding:6px 8px;border-radius:12px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
@@ -665,7 +658,142 @@
   .fxquick.bypass button.on{opacity:.4;box-shadow:none}
   .pedal.bypass{opacity:.45}
   @media (max-width:700px){.fxquick button{font-size:12px;letter-spacing:.02em;min-height:50px}}
+/* ===== ON AIR — module YouTube (style éditorial radio) ===== */
+.onair{--red:#FF2D3F;--ink:#EAF1FF;--dim:rgba(234,241,255,.46);--line:rgba(234,241,255,.12);
+  position:relative;overflow:hidden;padding:26px 28px 22px!important}
+.onair:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:radial-gradient(80% 120% at 100% 0%,rgba(255,45,63,.07),transparent 55%)}
+.onair>*{position:relative}
+.oa-mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.oa-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.oa-top>div:first-child{min-width:0}
+.oa-kicker{display:flex;gap:14px;align-items:center;white-space:nowrap}
+.oa-kicker b{color:var(--ink);font-weight:600}
+.oa-title{white-space:nowrap;margin:10px 0 0;font-weight:900;font-size:clamp(40px,6.2vw,84px);line-height:.86;
+  letter-spacing:-.045em;color:var(--ink)}
+.oa-title em{font-family:"Instrument Serif",Georgia,"Times New Roman",serif;font-style:italic;
+  font-weight:400;letter-spacing:-.02em;color:transparent;-webkit-text-stroke:1px rgba(234,241,255,.55);
+  transition:color .5s,-webkit-text-stroke-color .5s}
+.onair.is-live .oa-title em{color:var(--red);-webkit-text-stroke-color:var(--red);
+  text-shadow:0 0 38px rgba(255,45,63,.35)}
+/* voyant ON AIR */
+.oa-lamp{flex:none;display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border-radius:6px;
+  border:1px solid rgba(255,45,63,.35);color:rgba(255,45,63,.5);background:rgba(255,45,63,.04);
+  font:800 12px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.22em;transition:all .35s}
+.oa-lamp i{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.6}
+.oa-lamp.live{color:#fff;background:var(--red);border-color:var(--red);
+  box-shadow:0 0 0 4px rgba(255,45,63,.12),0 0 34px rgba(255,45,63,.55)}
+.oa-lamp.live i{opacity:1;animation:oaBlink 1.2s steps(2) infinite}
+@keyframes oaBlink{50%{opacity:.25}}
+.oa-lamp #ytOutputState{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+/* champ + bouton */
+.oa-input{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:end;margin-top:26px}
+.oa-field{position:relative;display:block}
+.oa-field .oa-mono{display:block;margin-bottom:8px}
+.oa-field input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);
+  color:var(--ink);font:500 20px/1.2 -apple-system,"Segoe UI",sans-serif;padding:6px 0 12px;outline:none;
+  letter-spacing:-.01em;border-radius:0}
+.oa-field input::placeholder{color:rgba(234,241,255,.25)}
+.oa-field:after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--ink);
+  transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.32,.72,0,1)}
+.oa-field:focus-within:after{transform:scaleX(1)}
+.oa-go{display:inline-flex;align-items:center;gap:14px;border:0;cursor:pointer;border-radius:999px;
+  padding:8px 8px 8px 24px;background:var(--ink);color:#07101f;font:800 14px/1 -apple-system,"Segoe UI",sans-serif;
+  letter-spacing:-.01em;transition:transform .2s,background .3s,color .3s;white-space:nowrap}
+.oa-go .ic{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#07101f;color:var(--ink);
+  font-size:13px;transition:transform .45s cubic-bezier(.32,.72,0,1)}
+.oa-go:hover .ic{transform:rotate(-45deg)}
+.oa-go:active{transform:scale(.97)}
+.oa-go.active{background:var(--red);color:#fff}
+.oa-go.active .ic{background:#fff;color:var(--red);transform:none}
+.oa-go:disabled{opacity:.7;cursor:wait}
+.oa-go:disabled .ic{animation:oaSpin 1s linear infinite}
+@keyframes oaSpin{to{transform:rotate(360deg)}}
+/* cadran de fréquence = progression */
+.oa-dial{position:relative;margin-top:30px;height:74px;--needle:12.5%}
+.oa-scale{position:absolute;left:0;right:0;top:0;height:22px;
+  background:
+    repeating-linear-gradient(90deg,rgba(234,241,255,.16) 0 1px,transparent 1px 2.5%);
+  background-size:100% 55%;background-repeat:no-repeat;
+  border-top:1px solid var(--line)}
+.oa-needle{position:absolute;top:-6px;left:var(--needle);width:2px;height:36px;background:var(--red);
+  box-shadow:0 0 14px var(--red);transform:translateX(-1px);transition:left .9s cubic-bezier(.32,.72,0,1)}
+.oa-needle:after{content:"";position:absolute;top:-4px;left:-3px;width:8px;height:8px;border-radius:50%;background:var(--red)}
+.onair.is-wait .oa-needle{animation:oaHunt 1.6s ease-in-out infinite}
+@keyframes oaHunt{50%{transform:translateX(-7px)}}
+.oa-stations{position:absolute;left:0;right:0;top:36px;display:grid;grid-template-columns:repeat(4,1fr)}
+.oa-stations .yt-step{position:relative;text-align:center;padding:0 6px;color:rgba(234,241,255,.3);transition:color .4s}
+.oa-stations .yt-step:before{content:"";position:absolute;left:50%;top:-36px;width:1px;height:22px;background:rgba(234,241,255,.38)}
+.oa-stations .yt-step.done:before,.oa-stations .yt-step.active:before{background:rgba(234,241,255,.8)}
+.oa-stations .yt-step b{display:block;font:800 13px/1.2 -apple-system,"Segoe UI",sans-serif;letter-spacing:-.01em;color:inherit}
+.oa-stations .yt-step .oa-mono{display:block;margin-bottom:3px;color:inherit;font-size:9.5px}
+.oa-stations .yt-step.done{color:rgba(234,241,255,.62)}
+.oa-stations .yt-step.active{color:var(--ink)}
+.oa-stations .yt-step.active .oa-mono{color:var(--red)}
+/* ligne d'état + VU */
+.oa-foot{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,300px);gap:24px;align-items:end;
+  margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+/* plusieurs onglets partagés en même temps */
+.yt-tabs{display:none;flex-direction:column;gap:8px;margin-top:14px}
+.onair.is-live .yt-tabs{display:flex}
+.yt-tab{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.25)}
+.yt-tab i{width:8px;height:8px;border-radius:50%;background:#B9FF45;box-shadow:0 0 8px #B9FF45;flex:none}
+.yt-tab.muted i{background:rgba(234,241,255,.3);box-shadow:none}
+.yt-tab span{flex:1;font-weight:700;color:var(--ink);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yt-tab.muted span{color:var(--dim);text-decoration:line-through}
+.yt-tab button{height:34px;min-width:34px;padding:0 12px;border-radius:17px;border:1px solid var(--line);background:#07101f;color:var(--ink);font:800 13px/1 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
+.yt-tab button.x{color:#ffb3bc}
+.yt-add{align-self:flex-start;height:40px;padding:0 18px;border-radius:20px;border:1px dashed rgba(234,241,255,.45);
+  background:none;color:var(--ink);font-weight:800;font-size:14px;cursor:pointer}
+.yt-add:hover{border-color:#B9FF45;color:#B9FF45}
+.yt-status{font-size:13px;line-height:1.5;color:var(--dim);padding-left:16px;position:relative;min-height:20px}
+.yt-status:before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:rgba(234,241,255,.35)}
+.yt-status strong{color:var(--ink);font-weight:700}
+.yt-status b{color:var(--ink);font-weight:600}
+.yt-status code{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink)}
+.yt-status.live:before{background:#B9FF45;box-shadow:0 0 10px #B9FF45}
+.yt-status.bad{color:#ffb3bc}.yt-status.bad:before{background:var(--red);box-shadow:0 0 10px var(--red)}
+.oa-vu-head{display:flex;justify-content:space-between;margin-bottom:8px}
+.oa-vu-head strong{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink);font-weight:500}
+.oa-vu{height:12px;position:relative;background:rgba(234,241,255,.06);
+  -webkit-mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px);
+          mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px)}
+.oa-vu .yt-meter-fill{height:100%;width:0;background:linear-gradient(90deg,#B9FF45 0 62%,#FFC24B 62% 84%,#FF2D3F 84%);
+  background-size:300px 100%;transition:width .09s linear}
+.oa-chain{margin-top:14px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.oa-chain span:not(:last-child):after{content:"/";margin-left:10px;color:rgba(234,241,255,.2)}
+@media(max-width:760px){
+  .onair{padding:20px 16px 18px!important}
+  .oa-kicker span:first-child{display:none}.oa-title{font-size:clamp(34px,11vw,48px)}
+  .oa-top{display:block;position:relative}.oa-top>div:first-child{min-width:0}
+  .oa-lamp{position:absolute;top:-4px;right:0;padding:6px 9px;font-size:10px;letter-spacing:.16em}
+  .oa-input{grid-template-columns:1fr}.oa-go{justify-content:space-between}
+  .oa-foot{grid-template-columns:1fr}
+  .oa-stations .yt-step b{font-size:11px}.oa-stations .yt-step .oa-mono{letter-spacing:.1em}
+}
 
+  /* ===== Bouton YouTube dans la barre du haut ===== */
+  .tb-btns{grid-template-columns:repeat(6,1fr)!important}
+  .tb-btns .pill{grid-column:span 2}
+  .tb-btns #power,.tb-btns #openYT{grid-column:span 3}
+  .pill.yt-btn{background:linear-gradient(135deg,#FF2D3F,#A3122A);color:#fff}
+  .pill.yt-btn.live{box-shadow:0 0 0 3px rgba(255,45,63,.25),0 0 26px rgba(255,45,63,.6)}
+  @media (min-width:900px){ .tb-btns{grid-template-columns:repeat(5,1fr)!important} .tb-btns .pill,.tb-btns #power,.tb-btns #openYT{grid-column:auto} }
+  @media (max-width:700px){ .tb-btns .pill{font-size:15px;padding:0 8px;white-space:nowrap;min-height:48px} .tb-btns #power,.tb-btns #openYT{font-size:17px} }
+
+  /* ===== Tiroir YouTube (depuis le haut) ===== */
+  .drawer-top{left:0;right:0;top:0;max-height:94vh;max-height:94dvh;overflow-y:auto;
+    border-bottom-left-radius:24px;border-bottom-right-radius:24px;border-bottom:1px solid var(--edge2);
+    transform:translateY(-101%);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .drawer-top.open{transform:translateY(0)}
+  .drawer-top .onair{border:0;border-radius:0;background:transparent;display:block}
+  .drawer-top .yt-status{font-size:17px}
+  .drawer-top .oa-lamp{margin-right:60px}
+  .yt-close{position:absolute;top:16px;right:18px;z-index:3;width:48px;height:48px;border-radius:50%;
+    border:1px solid var(--edge2);background:rgba(234,241,255,.06);font-size:22px;display:flex;align-items:center;justify-content:center}
+
+  /* ===== Pédale CHORUS ===== */
   .chor-display{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
     min-height:74px;padding:8px 12px;border-radius:12px;margin:0 0 12px;gap:3px;
     background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.3));border:1px solid var(--edge2);transition:all .2s var(--e)}
@@ -694,6 +822,7 @@
     box-shadow:0 0 0 4px rgba(47,231,255,.18),0 2px 8px rgba(0,0,0,.5)}
   .chor-ref input::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff}
   #pedalChorus .knob-label{font-size:13px}
+  /* ===== V25 : corrections d'alignement ===== */
   .brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .brand-row{min-width:0}
   .pedal-head{min-width:0}
@@ -714,14 +843,36 @@
     .fxquick .fxsw{min-width:40px;height:22px}
     .pedal-name{font-size:18px;letter-spacing:.12em}
     .toggle-btn{min-width:78px}
-    .tb-btns .pill{font-size:15px;padding:0 8px;white-space:nowrap;min-height:48px}
-    .tb-btns #power,.tb-btns #openAgent{font-size:16px}
   }
+
+/* ===== JULIA BACKGROUND ===== */
+#julia{position:fixed;inset:0;width:100%;height:100%;z-index:-2;pointer-events:none;background:#000}
+html.julia-on body{background:transparent}
+html.julia-on{background:#000}
+html.julia-on .card{background:linear-gradient(180deg,rgba(10,14,28,.86),rgba(6,9,18,.90))!important}
+html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(safe-area-inset-bottom) + 22px) 22px}
+
+/* ===== ONGLET IA : interrupteur ON/OFF ===== */
+.ag-onoff{flex:none;min-width:58px;height:30px;padding:0 12px;border-radius:15px;border:1.5px solid #FFC23D;
+  background:#FFC23D;color:#1a0f00;font:900 13px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.08em;cursor:pointer;
+  box-shadow:0 0 14px rgba(255,194,61,.45)}
+.agent.off .ag-onoff{background:rgba(0,0,0,.4);color:var(--muted);border-color:var(--muted);box-shadow:none}
+.agent.off > summary{color:var(--muted);cursor:default}
+.agent.off{border-color:rgba(234,241,255,.16);background:rgba(0,0,0,.18)}
+.agent.off .ag-st{display:none}
+.agent > summary .ag-onoff{margin-left:10px}
+.agent.off > summary .ag-onoff{margin-left:auto}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js" defer></script>
 </head>
 <body>
+<canvas id="julia" aria-hidden="true"></canvas>
+    <div class="ag-pop" id="agPop" role="dialog" aria-live="polite">
+      <button class="x" type="button" id="agPopX" title="Plus tard">✕</button>
+      <h4>🤖 T'aimes bien ce réglage ?</h4>
+      <p id="agPopTxt">Si tu dis oui, je l'enregistre et j'apprends ce que tu aimes.</p>
+      <div class="b"><button class="yes" type="button" id="agPopYes">✔ Oui</button><button class="no" type="button" id="agPopNo">✖ Non</button></div>
+    </div>
 <div class="app">
   <div class="card topbar">
     <div class="brand-row">
@@ -729,7 +880,6 @@
       <span class="brand">RADIO THE CORE <small>• ESSAI · V45</small></span>
       <div class="rec-wrap" id="recWrap">
         <span class="rec-time" id="recTime">00:00</span>
-        <button class="rec-format" id="recFormat" type="button" title="Changer le format d'enregistrement (WAV ou MP3)">WAV</button>
         <button class="rec-btn" id="recBtn" type="button" title="Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur"><i></i><i></i></button>
       </div>
     </div>
@@ -738,7 +888,7 @@
 
     <div class="tb-btns">
       <button class="pill" id="power">▶ Écouter</button>
-      <button class="pill agent-btn" id="openAgent">🤖 Agent IA</button>
+      <button class="pill yt-btn" id="openYT">▶ YouTube</button>
       <button class="pill fav-btn" id="openFavs">★ Favoris</button>
       <button class="pill ghost" id="openFx">✦ Effets <span class="fx-master on" id="fxMaster" role="switch" aria-checked="true" title="Activer / couper tous les effets">ON</span></button>
       <button class="pill ghost" id="openDrawer">☰ Stations</button>
@@ -750,6 +900,30 @@
   </div>
 
   <div class="card console" id="console">
+    <details class="agent" id="agentBox">
+      <summary>🤖 AGENT IA <span class="ag-st" id="agSt">prêt · écoute puis crée un preset</span><button type="button" class="ag-onoff" id="agOnOff" aria-pressed="false" title="Activer / couper l'agent IA et ses messages">OFF</button></summary>
+      <div class="ag-body">
+        <div class="ag-row">
+          <span>Style</span>
+          <select id="agGenre"><option value="auto">Auto (l'agent devine)</option><option>Rock</option><option>Jazz</option>
+            <option>Classique</option><option>Électronique</option><option>Vocal / Acoustique</option></select>
+          <span>Caractère</span>
+          <span class="ag-seg" id="agChar"><button type="button" data-v="0.55">Subtil</button><button type="button" data-v="1" class="on">Équilibré</button><button type="button" data-v="1.6">Créatif</button></span>
+          <label><input type="checkbox" id="agMotion" checked> Automatisations</label>
+        </div>
+        <button class="ag-go" id="agGo" type="button">🎧 Écouter la musique et créer un preset (8 s)</button>
+        <div class="ag-meter"><i id="agBar"></i></div>
+        <div class="ag-report" id="agReport"></div>
+        <div class="ag-fb" id="agFb">
+          <button type="button" id="agYes">👍 J'aime</button>
+          <button type="button" id="agNo">👎 Autre version</button>
+          <button type="button" id="agTweak" title="Retouche les boutons à ton oreille, puis clique : l'agent retient tes corrections">✍ Apprendre de mes retouches</button>
+          <button type="button" id="agKeep">💾 Garder ce preset</button>
+        </div>
+        <div class="ag-list" id="agList"></div>
+        <div class="ag-learn" id="agLearn"></div>
+      </div>
+    </details>
     <div class="auto-all" id="autoAll"><span>AUTOMATISATION · TOUS LES BLOCS</span>
       <button class="site-reset" id="siteReset" type="button" title="Remet TOUT le site comme au premier lancement"><span class="l">⟲ RESET TOUT LE SITE</span><span class="s">⟲ SITE</span></button></div>
     <div class="xfade-wrap">
@@ -772,9 +946,11 @@
         </div>
         <div class="dimbox">
           <div class="dim-stack">
+            <!-- anneau externe : vitesse de toutes les boucles (0 à x2) -->
             <div class="knob knob-dimspeed seg-ticks" data-key="dimSpeed" data-label="Vitesse Dimension" data-seg-r="41" data-seg-w="8" data-min="0" data-max="200" data-step="5" data-value="100" style="--k-color:#FFC23D">
               <div class="knob-dial"><div class="knob-indicator"></div></div>
             </div>
+            <!-- rond central : pourcentage de Dimension (amplitude des boucles) -->
             <div class="knob knob-dim seg-ticks" data-key="dimension" data-seg-r="60" data-seg-w="9" data-min="0" data-max="100" data-step="1" data-value="100" style="--k-color:#FF2D3F">
               <div class="knob-dial"><div class="knob-indicator"></div></div>
             </div>
@@ -814,6 +990,7 @@
     <div class="section">
       <h3 class="section-title">ÉGALISEUR <span class="eq-hint" id="eqHint"><span class="long">● Appui 1 s sur un bouton → cercle rouge : bouge = boucle enregistrée · lâche sans bouger = mémoriser</span><span class="short">● Appui 1 s = REC / mémoire</span></span></h3>
 
+      <!-- bibliothèque de presets -->
       <div class="eq-presets" id="eqPresets">
         <div class="eqp-head"><span class="eqp-title">PRESETS D'ÉGALISEUR</span><span class="eqp-now" id="eqpNow">Aucun preset</span></div>
         <div class="eqp-themes" id="eqpThemes"></div>
@@ -826,6 +1003,7 @@
         </div>
       </div>
 
+      <!-- ⭐ Rangée L -->
       <div class="eq-channel-label" style="--ch-color:#FF3D9E">L</div>
       <div class="knob-grid cols5">
         <div class="knob" data-key="subL" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#FF3D9E">
@@ -850,6 +1028,7 @@
         </div>
       </div>
 
+      <!-- ⭐ Rangée R -->
       <div class="eq-channel-label" style="--ch-color:#2FE7FF">R</div>
       <div class="knob-grid cols5">
         <div class="knob" data-key="subR" data-min="-24" data-max="24" data-step="0.5" data-value="0" style="--k-color:#2FE7FF">
@@ -883,13 +1062,6 @@
     </div>
 
   </div>
-</div>
-
-<div class="ag-pop" id="agPop" role="dialog" aria-live="polite">
-  <button class="x" type="button" id="agPopX" title="Plus tard">✕</button>
-  <h4>🤖 T'aimes bien ce réglage ?</h4>
-  <p id="agPopTxt">Si tu dis oui, je l'enregistre et j'apprends ce que tu aimes.</p>
-  <div class="b"><button class="yes" type="button" id="agPopYes">✔ Oui</button><button class="no" type="button" id="agPopNo">✖ Non</button></div>
 </div>
 
 <div class="scrim" id="scrim"></div>
@@ -1029,6 +1201,7 @@
         </div>
       </div>
 
+
       <div class="pedal off" id="pedalChorus" style="--k-color:#B9FF45">
         <div class="pedal-head">
           <span class="pedal-name"><span class="icon">♫</span>CHICHORUS</span>
@@ -1086,35 +1259,208 @@
   </div>
 </aside>
 
-<aside class="drawer drawer-top" id="agentDrawer" aria-modal="true" aria-label="Agent IA">
-  <button class="agent-close" id="closeAgent" aria-label="Fermer">✕</button>
-  <div class="dhead">
-    <h2>🤖 AGENT IA</h2>
-    <span class="ag-st" id="agSt" style="margin-left:auto;margin-right:60px;font-size:13px;color:var(--muted);font-weight:700">prêt · écoute puis crée un preset</span>
-  </div>
-  <div class="ag-body">
-    <div class="ag-row">
-      <span>Style</span>
-      <select id="agGenre"><option value="auto">Auto (l'agent devine)</option><option>Rock</option><option>Jazz</option>
-        <option>Classique</option><option>Électronique</option><option>Vocal / Acoustique</option></select>
-      <span>Caractère</span>
-      <span class="ag-seg" id="agChar"><button type="button" data-v="0.55">Subtil</button><button type="button" data-v="1" class="on">Équilibré</button><button type="button" data-v="1.6">Créatif</button></span>
-      <label><input type="checkbox" id="agMotion" checked> Automatisations</label>
+<aside class="drawer drawer-top" id="ytDrawer" aria-modal="true" aria-label="YouTube vers les effets">
+  <button class="yt-close" id="closeYT" aria-label="Fermer">✕</button>
+  <section class="onair" id="ytCard">
+    <div class="oa-top">
+      <div>
+        <div class="oa-kicker oa-mono"><span>Entrée 02</span><b>YouTube</b><span id="ytFlowState">Prêt</span></div>
+        <h2 class="oa-title">YouTube <em>on air</em></h2>
+      </div>
+      <div class="oa-lamp" id="ytOutputBadge"><i></i>ON AIR<span id="ytOutputState">OFF</span></div>
     </div>
-    <button class="ag-go" id="agGo" type="button">🎧 Écouter la musique et créer un preset (8 s)</button>
-    <div class="ag-meter"><i id="agBar"></i></div>
-    <div class="ag-report" id="agReport"></div>
-    <div class="ag-fb" id="agFb">
-      <button type="button" id="agYes">👍 J'aime</button>
-      <button type="button" id="agNo">👎 Autre version</button>
-      <button type="button" id="agTweak" title="Retouche les boutons à ton oreille, puis clique : l'agent retient tes corrections">✍ Apprendre de mes retouches</button>
-      <button type="button" id="agKeep">💾 Garder ce preset</button>
+    <div class="oa-input">
+      <label class="oa-field"><span class="oa-mono">Lien de la vidéo</span>
+        <input id="ytUrl" type="text" inputmode="url" autocomplete="off" placeholder="youtube.com/watch?v=…"></label>
+      <button class="oa-go" id="ytMainButton" type="button"><span class="lb">Passer à l’antenne</span><span class="ic">↗</span></button>
     </div>
-    <div class="ag-list" id="agList"></div>
-    <div class="ag-learn" id="agLearn"></div>
-  </div>
+    <div class="oa-dial" id="ytDial">
+      <div class="oa-scale"></div>
+      <div class="oa-needle"></div>
+      <div class="oa-stations">
+        <div class="yt-step" data-step="1"><span class="oa-mono">01</span><b>Lien</b></div>
+        <div class="yt-step" data-step="2"><span class="oa-mono">02</span><b>Onglet</b></div>
+        <div class="yt-step" data-step="3"><span class="oa-mono">03</span><b>Partage audio</b></div>
+        <div class="yt-step" data-step="4"><span class="oa-mono">04</span><b>À l’antenne</b></div>
+      </div>
+    </div>
+    <div class="oa-foot">
+      <div>
+        <div id="ytStatus" class="yt-status">Colle un lien, puis <b>Passer à l’antenne</b>. Choisis l’onglet YouTube et coche <b>Partager l’audio</b>.</div>
+        <div class="yt-tabs"><div id="ytTabList" style="display:contents"></div>
+          <button class="yt-add" id="ytAddTab" type="button" title="Colle un autre lien (ou laisse le même) puis choisis un autre onglet : tous les onglets jouent ensemble, au même volume">＋ Ajouter un onglet</button></div>
+      </div>
+      <div><div class="oa-vu-head oa-mono"><span>Signal</span><strong id="ytMeterDb">−∞ dB</strong></div>
+        <div class="oa-vu"><div id="ytMeterFill" class="yt-meter-fill"></div></div></div>
+    </div>
+    <div class="oa-chain oa-mono"><span>Balance</span><span>Spatial</span><span>EQ L/R</span><span>Drive</span><span>Reverb</span><span>Écho</span><span>Chichorus</span><span>Limiter</span></div>
+  </section>
 </aside>
 
+<script id="julia-fs" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform vec2 u_lv;      // niveau vu-mètre gauche / droite (0..1)
+uniform float u_bass;   // énergie des graves (0..1)
+out vec4 fragColor;
+
+float hash21(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
+
+vec4 finish(vec3 c){
+  c=max(c,0.0);
+  c=c/(c+0.5)*1.5;
+  c=pow(c,vec3(0.4545));
+  c+=(hash21(gl_FragCoord.xy+fract(u_time))-0.5)/255.0;
+  return vec4(c,1.0);
+}
+
+mat2 rot(float a){ float s=sin(a), c=cos(a); return mat2(c,-s,s,c); }
+
+vec3 layer(vec2 uv, vec2 c, vec3 phase, float speed){
+  vec2 z = uv;
+  float it = 0.0;
+  float trapC = 1e9;
+  float trapX = 1e9;
+  for(int i = 0; i < 100; i++){
+    z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
+    trapC = min(trapC, abs(length(z) - 0.55));
+    trapX = min(trapX, min(abs(z.x), abs(z.y)));
+    if(dot(z,z) > 16.0) break;
+    it += 1.0;
+  }
+  float glow = exp(-trapC*26.0) + 0.6*exp(-trapX*34.0);
+  vec3 col;
+  if(it > 99.5){
+    col = (0.5 + 0.5*cos(6.2831*(trapC*1.5 + phase) + u_time*speed)) * glow * 0.7;
+  } else {
+    float sm = it + 1.0 - log2(max(log2(dot(z,z))*0.5, 1e-3));
+    float f = clamp(sm / 100.0, 0.0, 1.0);
+    vec3 hue = 0.5 + 0.5*cos(6.2831*(f*2.2 + phase) + u_time*speed);
+    col = hue * pow(f, 4.5) * 8.5;
+    col += 0.12*glow*hue*f;
+  }
+  return col;
+}
+
+void main(){
+  vec2 q  = (gl_FragCoord.xy - 0.5*u_resolution) / u_resolution.y;
+  float t = u_time;
+  float r = length(q);
+
+  // Niveau local : le côté gauche suit le vu-mètre L, le côté droit le vu-mètre R
+  float lv = mix(u_lv.x, u_lv.y, smoothstep(-0.25, 0.25, q.x));
+  float lvm = 0.5*(u_lv.x + u_lv.y);
+
+  vec2 half_ = vec2(0.5*u_resolution.x/u_resolution.y, 0.5);
+  vec2 d = abs(q) / half_;
+  float rim = max(d.x, d.y);
+  // Bords fins au repos ; à fond, la fractale envahit presque tout l'écran
+  float edge = smoothstep(0.88 - 0.46*pow(lv, 1.15), 1.0, rim);   // à fond : s'arrête à ~40 % du centre, les côtés ne se touchent jamais
+  float wave = 0.5 + 0.5*sin(t*0.9 - r*5.0 - lvm*3.0);
+
+  float squeeze = 1.0 - 0.7*edge*(0.65 + 0.35*wave);
+  vec2 p = q * 2.1 * squeeze;
+  p *= 1.0 + 0.08*sin(t*0.17) - 0.07*u_bass;   // les graves « respirent »
+
+  // Le niveau déforme la fractale
+  vec2 c0 = vec2(-0.745, 0.186)
+          + 0.05*vec2(cos(t*0.31), sin(t*0.23))
+          + 0.012*vec2(cos(t*1.3), sin(t*1.7))
+          + 0.035*lv*vec2(cos(t*2.1), sin(t*1.7));
+  vec2 c1 = vec2(-0.800, 0.156)
+          + 0.04*vec2(cos(t*0.21 + 1.0), sin(t*0.37))
+          + 0.025*lv*vec2(sin(t*1.9), cos(t*2.3));
+  vec2 c2 = vec2(-0.702, -0.384)
+          + 0.03*vec2(sin(t*0.27), cos(t*0.19 + 2.0))
+          + 0.020*lv*vec2(cos(t*2.7), sin(t*1.5));
+
+  // Le niveau décale aussi les couleurs
+  vec3 sh = vec3(0.45, 0.30, 0.60) * smoothstep(0.0, 1.0, lv);
+  vec3 col = layer(rot( t*0.04) * p,                c0, vec3(0.00, 0.15, 0.30) + sh, 0.10);
+  col     += 0.55 * layer(rot(-t*0.07) * p * 1.35,  c1, vec3(0.45, 0.60, 0.75) + sh, 0.17);
+  col     += 0.35 * layer(rot( t*0.11 + 1.0) * p * 0.8, c2, vec3(0.70, 0.85, 0.20) + sh, 0.23);
+
+  float gain = pow(lv, 1.35) * 2.0;                      // 0 = noir (volume faible) -> couleur pleine
+  float mask = pow(edge, 1.2) * (1.2 + 1.2*wave) * gain;
+  col *= mask;
+  col = max(col - 0.06, 0.0) * 1.3;
+  col /= (1.0 + 0.55*max(max(col.r, col.g), col.b));   // garde les couleurs au lieu de virer au blanc
+  fragColor = finish(col);
+}
+</script>
+<script>
+(function () {
+  var canvas = document.getElementById('julia');
+  var gl = canvas.getContext('webgl2', { antialias: false, alpha: false });
+  window.juliaFx = { level: function () {} };
+  if (!gl) return;
+  var fsSrc = document.getElementById('julia-fs').textContent;
+  var vsSrc = '#version 300 es\nin vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  function compile(type, src) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  var prog;
+  try {
+    prog = gl.createProgram();
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, vsSrc));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fsSrc));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  } catch (e) { console.warn('Julia shader:', e.message); return; }
+  document.documentElement.classList.add('julia-on');
+  gl.useProgram(prog);
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var uRes = gl.getUniformLocation(prog, 'u_resolution');
+  var uTime = gl.getUniformLocation(prog, 'u_time');
+  var uLv = gl.getUniformLocation(prog, 'u_lv');
+  var uBass = gl.getUniformLocation(prog, 'u_bass');
+
+  // Niveaux cibles envoyés par le vu-mètre ; on lisse (attaque rapide, retombée douce)
+  var tgt = [0, 0, 0], cur = [0, 0, 0];
+  window.juliaFx = {
+    level: function (l, r, bass) {
+      tgt[0] = Math.tanh((l || 0) * 3.4 * 1.1);
+      tgt[1] = Math.tanh((r || 0) * 3.4 * 1.1);
+      tgt[2] = Math.min(1, (bass || 0));
+    }
+  };
+
+  // Résolution réduite : la fractale est douce, ça économise la batterie/GPU
+  var RES = 0.6;
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2) * RES;
+    var w = Math.max(2, Math.floor(canvas.clientWidth * dpr));
+    var h = Math.max(2, Math.floor(canvas.clientHeight * dpr));
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h);
+    }
+  }
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t0 = performance.now(), last = t0;
+  function frame(now) {
+    resize();
+    var dt = Math.min(0.1, (now - last) / 1000); last = now;
+    var up = 1 - Math.exp(-dt * 10), down = 1 - Math.exp(-dt * 3);
+    for (var i = 0; i < 3; i++) cur[i] += (tgt[i] - cur[i]) * (tgt[i] > cur[i] ? up : down);
+    gl.uniform2f(uLv, cur[0], cur[1]);
+    gl.uniform1f(uBass, cur[2]);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uTime, reduce ? 0 : (now - t0) / 1000);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
 <script>
 (function(){
 "use strict";
@@ -1136,18 +1482,13 @@ let srcNode = null;
 let pannerNode = null;
 let spatialNode = null;
 let masterGain = null;
-let inBus = null, fxDry = null, fxWet = null;
-let agAna = null, agAnaL = null, agAnaR = null;
+let inBus = null, fxDry = null, fxWet = null;   // barre Brut ↔ Effets
+let agAna = null, agAnaL = null, agAnaR = null;   // oreilles de l'Agent Preset (son brut)
 let eqSplitter = null, eqMerger = null;
 let eqL = {}, eqR = {};
 let gainL = null, gainR = null;
 let limiterNode = null, softLimiter = null;
-let recDest = null;
-let recCapture = null;
-let recChunksL = [], recChunksR = [];
-let recActive = false;
-let recFormat = 'wav';
-try { recFormat = localStorage.getItem('core_rec_format') || 'wav'; } catch(e){}
+let recDest = null;   // copie de la sortie finale pour l'enregistrement
 let analyser = null;
 let splitterVU = null, anaL = null, anaR = null;
 let _waveData = null, _dataL = null, _dataR = null;
@@ -1156,8 +1497,8 @@ let driveChain = null;
 let reverbChain = null;
 let echoChain = null;
 let chorusChain = null, chorusOn = false;
-let fxMasterOn = true;
-let lastRadio = null;
+let fxMasterOn = true;   // interrupteur général du bouton Effets
+let ytCaptureActive = false, lastRadio = null;
 
 let graphBuilt = false;
 let isPlaying = false;
@@ -1183,6 +1524,7 @@ const RETRY_BASE = 800;
 const RETRY_MAX = 20000;
 const GOOD_PLAYBACK_MS = 15000;
 
+/* FAVORIS D'EFFETS */
 const FX_FAV_KEY = 'core_fx_favs';
 let fxFavs = {};
 try {
@@ -1315,7 +1657,7 @@ function makeDistortionCurve(amount) {
   const n = 4096;
   const curve = new Float32Array(n);
   const a = amount / 100;
-  const k = a * a * 10;
+  const k = a * a * 10;                     // progressif : doux au début, fort seulement tout en haut
   for (let i = 0; i < n; i++) {
     const x = (i * 2) / n - 1;
     curve[i] = (1 + k) * x / (1 + k * Math.abs(x));
@@ -1388,7 +1730,7 @@ function buildGraph() {
   driveChain.wet.gain.value = 1;
   driveChain.preGain.gain.value = 1;
   driveChain.shaper.curve = makeDistortionCurve(30);
-  driveChain.shaper.oversample = '4x';
+  driveChain.shaper.oversample = '4x';     // moins de grésillement
   driveChain.tone.type = 'lowpass';
   driveChain.tone.frequency.value = 8000;
   driveChain.tone.Q.value = 0.7;
@@ -1463,6 +1805,7 @@ function buildGraph() {
   anaL = audioCtx.createAnalyser(); anaL.fftSize = 256;
   anaR = audioCtx.createAnalyser(); anaR.fftSize = 256;
 
+  // entrée commune (radio + onglets) : une voie traitée par toute la chaîne, une voie brute
   inBus = audioCtx.createGain(); fxDry = audioCtx.createGain(); fxWet = audioCtx.createGain();
   fxDry.gain.value = 0; fxWet.gain.value = 1;
   srcNode.connect(inBus);
@@ -1500,22 +1843,8 @@ function buildGraph() {
 
   limiterNode.connect(softLimiter);
   softLimiter.connect(analyser);
-  recDest = audioCtx.createMediaStreamDestination(); softLimiter.connect(recDest);
+  recDest = audioCtx.createMediaStreamDestination(); softLimiter.connect(recDest);   // ce qu'on entend = ce qu'on enregistre
   analyser.connect(audioCtx.destination);
-
-  // --- capture PCM pour l'encodeur WAV / MP3 ---
-  recCapture = audioCtx.createScriptProcessor(4096, 2, 2);
-  const recSink = audioCtx.createGain(); recSink.gain.value = 0;
-  softLimiter.connect(recCapture);
-  recCapture.connect(recSink);
-  recSink.connect(audioCtx.destination);
-  recCapture.onaudioprocess = e => {
-    if (!recActive) return;
-    const l = e.inputBuffer.getChannelData(0);
-    const r = e.inputBuffer.numberOfChannels > 1 ? e.inputBuffer.getChannelData(1) : l;
-    recChunksL.push(new Float32Array(l));
-    recChunksR.push(new Float32Array(r));
-  };
 
   limiterNode.connect(splitterVU);
   splitterVU.connect(anaL, 0);
@@ -1544,11 +1873,12 @@ function setParam(param, value, time) {
 }
 
 function applyAll() {
-  if (P.chorPitch !== undefined) P.chorRef = 440 * Math.pow(2, P.chorPitch / 1200);
+  if (P.chorPitch !== undefined) P.chorRef = 440 * Math.pow(2, P.chorPitch / 1200);   // barre Tonalité (automatisable)
   if (!audioCtx || !graphBuilt) return;
   const t = audioCtx.currentTime;
 
   setParam(masterGain.gain, Math.pow(10, P.gain / 20), t);
+  // Brut ↔ Effets : fondu à puissance constante ; la voie brute garde le Volume
   const xf = Math.max(0, Math.min(1, (P.fxMix !== undefined ? P.fxMix : 100) / 100));
   setParam(fxWet.gain, Math.sin(xf * Math.PI / 2), t);
   setParam(fxDry.gain, Math.cos(xf * Math.PI / 2) * Math.pow(10, P.gain / 20), t);
@@ -1580,12 +1910,13 @@ function applyAll() {
   setParam(eqR.high.gain, P.highR, t);
 
   if (xenodriveOn && fxMasterOn) {
-    const da = P.drvAmount / 100;
+    const da = P.drvAmount / 100, dk = da * da * 10;
     setParam(driveChain.preGain.gain, 1 + da * 0.5, t);
     if (driveChain._lastAmt !== P.drvAmount) { driveChain._lastAmt = P.drvAmount; driveChain.shaper.curve = makeDistortionCurve(P.drvAmount); }
     const toneFreq = 500 * Math.pow(36, P.drvTone / 100);
     setParam(driveChain.tone.frequency, toneFreq, t);
-    setParam(driveChain.outLevel.gain, (P.drvLevel / 60) / (1 + 1.8 * Math.pow(da, 0.8)), t);
+    // compense la montée de volume due à la saturation
+    setParam(driveChain.outLevel.gain, (P.drvLevel / 60) / (1 + 1.8 * Math.pow(da, 0.8)), t);   // volume stable quel que soit le Drive
     const mix = P.drvMix / 100;
     setParam(driveChain.dry.gain, 1 - mix, t);
     setParam(driveChain.wet.gain, mix, t);
@@ -1726,6 +2057,7 @@ async function streamSession(station, mySession) {
 }
 
 async function togglePlay(station) {
+  if (ytCaptureActive) { await stopYT(true); return; }
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
@@ -1830,6 +2162,8 @@ function setStatus(msg) { npState.textContent = msg; statusMini.textContent = ms
 function title(t) { npName.textContent = t; }
 function render() {
   const p = isPlaying;
+  const yb = document.getElementById('openYT');
+  if (yb) { yb.classList.toggle('live', ytCaptureActive); yb.textContent = ytCaptureActive ? '● On air' : '▶ YouTube'; }
   waveEl.classList.toggle('on', p);
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
@@ -1879,6 +2213,7 @@ function paintFavsList() {
 }
 
 function playStation(st) {
+  if (ytCaptureActive) { stopYT(false).then(() => playStation(st)); return; }
   lastRadio = st;
   currentStation = st;
   title(st.n);
@@ -2109,26 +2444,19 @@ const drawer = document.getElementById('drawer');
 const scrim = document.getElementById('scrim');
 const fxDrawer = document.getElementById('fxDrawer');
 const favsDrawer = document.getElementById('favsDrawer');
-const agentDrawer = document.getElementById('agentDrawer');
 
+const ytDrawer = document.getElementById('ytDrawer');
 function closeAllDrawers() {
+  ytDrawer.classList.remove('open');
   drawer.classList.remove('open');
   fxDrawer.classList.remove('open');
   favsDrawer.classList.remove('open');
-  agentDrawer.classList.remove('open');
   scrim.classList.remove('open');
 }
 function openDrawer(o) {
   closeAllDrawers();
   if (o) {
     drawer.classList.add('open');
-    scrim.classList.add('open');
-  }
-}
-function openAgentDrawer(o) {
-  closeAllDrawers();
-  if (o) {
-    agentDrawer.classList.add('open');
     scrim.classList.add('open');
   }
 }
@@ -2164,17 +2492,23 @@ document.getElementById('fxAll').addEventListener('click', () => openFxDrawer(tr
 document.getElementById('closeFxDrawer').addEventListener('click', () => openFxDrawer(false));
 document.getElementById('openFavs').addEventListener('click', () => openFavsDrawer(true));
 document.getElementById('closeFavsDrawer').addEventListener('click', () => openFavsDrawer(false));
-document.getElementById('openAgent').addEventListener('click', () => openAgentDrawer(true));
-document.getElementById('closeAgent').addEventListener('click', () => openAgentDrawer(false));
+function openYTDrawer(o) {
+  closeAllDrawers();
+  if (o) { ytDrawer.classList.add('open'); scrim.classList.add('open');
+    setTimeout(() => { const i = document.getElementById('ytUrl'); if (i && !ytCaptureActive) i.focus(); }, 350); }
+}
+document.getElementById('openYT').addEventListener('click', () => openYTDrawer(true));
+document.getElementById('closeYT').addEventListener('click', () => openYTDrawer(false));
 scrim.addEventListener('click', closeAllDrawers);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllDrawers(); });
 
 document.getElementById('power').addEventListener('click', () => {
-  if (isPlaying) { togglePlay(); return; }
+  if (ytCaptureActive || isPlaying) { togglePlay(); return; }
   const st = (currentStation && !/^capture:/.test(currentStation.u)) ? currentStation : (lastRadio || CORE[0]);
   togglePlay(st);
 });
 
+/* Mémoire d'équilibre : positions retenues pour les boutons de l'égaliseur */
 const EQ_MEMO_KEY = 'core_eq_memo';
 let eqMemo = {};
 try { eqMemo = JSON.parse(localStorage.getItem(EQ_MEMO_KEY) || '{}') || {}; } catch (e) { eqMemo = {}; }
@@ -2191,25 +2525,27 @@ function showMemoToast(txt, color, autoHide) {
 }
 function hideMemoToast() { if (memoToast.textContent.includes('maintiens')) memoToast.classList.remove('show'); }
 
-const LOOP_KEY = 'core_knob_loops';
-const SLOT_KEY = 'core_loop_slots';
+/* ===== Boucles d'automation : mouvements enregistrés et rejoués en boucle ===== */
+const LOOP_KEY = 'core_knob_loops';          // ancien stockage (une seule série de boucles)
+const SLOT_KEY = 'core_loop_slots';           // 5 favoris d'automatisation (étoiles)
 let loopSlots = null;
 try { loopSlots = JSON.parse(localStorage.getItem(SLOT_KEY) || 'null'); } catch (e) { loopSlots = null; }
 if (!loopSlots || !Array.isArray(loopSlots.slots) || loopSlots.slots.length !== 5) {
   let old = {};
   try { old = JSON.parse(localStorage.getItem(LOOP_KEY) || '{}') || {}; } catch (e) { old = {}; }
-  loopSlots = { active: 0, slots: [0, 1, 2, 3, 4].map(i => ({ loops: i === 0 ? old : {} })) };
+  loopSlots = { active: 0, slots: [0, 1, 2, 3, 4].map(i => ({ loops: i === 0 ? old : {} })) };   // les boucles d'avant vont dans l'étoile 1
 }
+// temps des boucles : l'ancienne échelle −10…+10 devient −100…+100 (même vitesse : ancien +10 = nouveau +50)
 try {
   if (localStorage.getItem('core_rate_x100') !== '1') {
     loopSlots.slots.forEach(sl => Object.values(sl.loops).forEach(L => { if (L && L.rate) L.rate = Math.round(L.rate * 5); }));
     localStorage.setItem('core_rate_x100', '1');
   }
 } catch (e) {}
-let savedLoops = loopSlots.slots[loopSlots.active].loops;
+let savedLoops = loopSlots.slots[loopSlots.active].loops;     // boucles de l'étoile allumée
 function saveLoops() { try { localStorage.setItem(SLOT_KEY, JSON.stringify(loopSlots)); } catch (e) {} }
-const KnobLoops = new Map();
-const autoMarks = [];
+const KnobLoops = new Map();      // clé → { pts:[[t,v]], dur, t0, api }
+const autoMarks = [];             // repères d'automatisation des blocs (remplis plus bas)
 let loopTimer = null;
 function sampleLoop(pts, tt) {
   if (tt <= pts[0][0]) return pts[0][1];
@@ -2222,21 +2558,22 @@ function sampleLoop(pts, tt) {
   return pts[pts.length - 1][1];
 }
 let loopLast = 0;
-let dimOn = true;
+let dimOn = true;   // interrupteur Dimension : OFF = boucles en pause, boutons à leur point de départ
 function loopTick() {
   if (!KnobLoops.size) { clearInterval(loopTimer); loopTimer = null; loopLast = 0; return; }
   const now = performance.now(); let changed = false;
   const dt = loopLast ? Math.min(200, now - loopLast) : 0; loopLast = now;
-  const dim = (P.dimension !== undefined ? P.dimension : 100) / 100;
-  const spd = (P.dimSpeed !== undefined ? P.dimSpeed : 100) / 100;
+  const dim = (P.dimension !== undefined ? P.dimension : 100) / 100;   // rond central : amplitude
+  const spd = (P.dimSpeed !== undefined ? P.dimSpeed : 100) / 100;     // anneau externe : vitesse
   KnobLoops.forEach(L => {
     if (!dimOn) { if (L.api.setLoopValue(L.base, 0)) changed = true; return; }
-    if (L.rateLoop) {
+    if (L.rateLoop) {                                                       // le temps lui-même est automatisé
       L.rph = ((L.rph || 0) + dt) % L.rateLoop.dur;
       const r = Math.round(sampleLoop(L.rateLoop.pts, L.rph));
       if (r !== L.rate) { L.rate = r; if (L.onRate) L.onRate(r); }
     }
-    const own = Math.pow(2, (L.rate || 0) / 25);
+    const own = Math.pow(2, (L.rate || 0) / 25);                           // −100 = ÷16, −50 = ÷4, 0 = normal, +50 = ×4, +100 = ×16
+    // Dimension réduit le trajet ET la durée : même allure, donc 10 % de Dimension = boucle 10 fois plus rapide
     const scaled = L.key !== 'dimension' && L.key !== 'dimSpeed';
     const byDim = scaled ? 1 / Math.max(0.02, dim) : 1;
     L.ph = ((L.ph || 0) + dt * own * byDim * (L.key === 'dimSpeed' ? 1 : spd)) % L.dur;
@@ -2246,8 +2583,10 @@ function loopTick() {
   });
   if (changed) applyAll();
 }
+// un minuteur (et non l'affichage) : les boucles continuent même si tu es sur l'onglet YouTube
 function ensureLoopTimer() { if (!loopTimer) loopTimer = setInterval(loopTick, 30); }
 
+/* couleur « chaleur » : 0 = vert, 0,45 = jaune, 0,75 = orange, 1 = rouge */
 function heatColor(t) {
   const stops = [[0, [185, 255, 69]], [0.45, [255, 214, 72]], [0.75, [255, 130, 47]], [1, [255, 45, 63]]];
   t = Math.max(0, Math.min(1, t));
@@ -2266,8 +2605,8 @@ function createKnob(knobEl, format) {
   const indicator = knobEl.querySelector('.knob-indicator');
   const valueEl = knobEl.querySelector('.knob-value') || document.querySelector('.knob-value[data-for="' + key + '"]');
   const labelEl = knobEl.querySelector('.knob-label') || document.querySelector('.knob-label[data-for="' + key + '"]');
-  const seg = knobEl.classList.contains('seg-ticks');
-  const hbar = knobEl.classList.contains('hbar');
+  const seg = knobEl.classList.contains('seg-ticks');   // graduations collées (Dimension)
+  const hbar = knobEl.classList.contains('hbar');       // barre horizontale (Brut ↔ Effets)
 
   const min = parseFloat(knobEl.dataset.min);
   const max = parseFloat(knobEl.dataset.max);
@@ -2276,10 +2615,11 @@ function createKnob(knobEl, format) {
   const angleOf = v => -135 + ((v - min) / range) * 270;
 
   const memoEl = document.createElement('div'); memoEl.className = 'knob-memo'; dial.appendChild(memoEl);
-  const tickRef = (min < 0 && max > 0) ? 0 : min;
+  // graduations : la grosse est sur le ZÉRO de l'aiguille, les autres tous les 27° autour
+  const tickRef = (min < 0 && max > 0) ? 0 : min;   // bipolaire : depuis 0 ; sinon depuis le minimum
   const refAngle = angleOf(tickRef);
   const ticks = [];
-  const nT = range / step <= 10 ? Math.round(range / step) : 10;
+  const nT = range / step <= 10 ? Math.round(range / step) : 10;   // bouton à crans (Signal) : 1 graduation par position
   for (let i = 0; i <= nT && !seg && !hbar; i++) {
     const ang = -135 + i * 270 / nT;
     const tk = document.createElement('i'); tk.className = 'knob-tick' + (i * 2 === nT ? ' major' : '');
@@ -2291,7 +2631,7 @@ function createKnob(knobEl, format) {
   const segBounds = [];
   const pctOf = v => ((v - min) / range) * 100;
   const xfFill = hbar ? knobEl.querySelector('.xf-fill') : null;
-  if (hbar) for (let i = 1; i < 10; i++) {
+  if (hbar) for (let i = 1; i < 10; i++) {            // 9 repères, celui du milieu plus marqué
     const c = document.createElement('i'); c.className = 'xf-cut' + (i === 5 ? ' mid' : ''); c.style.left = i * 10 + '%';
     dial.insertBefore(c, dial.firstChild);
   }
@@ -2320,6 +2660,7 @@ function createKnob(knobEl, format) {
     knobEl.classList.toggle('on-tick', onTick);
   }
 
+  // tracé rouge de la boucle (de où à où) + point rouge qui suit la lecture
   const NS = 'http://www.w3.org/2000/svg';
   const recSvg = document.createElementNS(NS, 'svg'); recSvg.setAttribute('viewBox', '0 0 100 100'); recSvg.setAttribute('class', 'knob-rec');
   const arcP = document.createElementNS(NS, 'path'); const dotC = document.createElementNS(NS, 'circle'); dotC.setAttribute('r', '5');
@@ -2328,7 +2669,7 @@ function createKnob(knobEl, format) {
   const xfRec = document.createElement('div'); xfRec.className = 'xf-rec'; xfRec.appendChild(document.createElement('i'));
   if (hbar) dial.appendChild(xfRec);
   function drawRec(vMin, vMax, vNow) {
-    if (hbar) {
+    if (hbar) {                                       // zone parcourue = bande rouge, point = lecture
       if (vMin === null) { xfRec.style.display = 'none'; return; }
       const a = pctOf(vMin), b = pctOf(vMax);
       xfRec.style.display = 'block'; xfRec.style.left = a + '%'; xfRec.style.width = Math.max(0, b - a) + '%';
@@ -2342,6 +2683,7 @@ function createKnob(knobEl, format) {
     const d = polar(angleOf(vNow), R); dotC.setAttribute('cx', d[0]); dotC.setAttribute('cy', d[1]);
   }
   drawRec(null);
+  // graduations collées : 10 segments contigus sur 270°, séparés par un fin trait
   const SEG_R = parseFloat(knobEl.dataset.segR) || 58, SEG_W = parseFloat(knobEl.dataset.segW) || 8;
   function arcD(a0, a1, R) {
     if (a1 - a0 < 0.2) return 'M 0 0';
@@ -2364,9 +2706,9 @@ function createKnob(knobEl, format) {
   let value = parseFloat(knobEl.dataset.value) || 0;
   const defValue = value;
   let dragging = false, moved = false, startY = 0, startValue = 0, holdTimer = null, armed = false;
-  let rec = null;
-  const DEAD = 6;
-  const HOLD_MS = 1000;
+  let rec = null;            // enregistrement en cours : { t0, pts, lo, hi }
+  const DEAD = 6;            // px : en dessous, un doigt immobile ne bouge pas le réglage
+  const HOLD_MS = 1000;      // appui 1 s = cercle rouge
 
   function paintMemo() {
     const has = eqMemo[key] !== undefined;
@@ -2411,7 +2753,7 @@ function createKnob(knobEl, format) {
   }
   function disarm() { armed = false; knobEl.classList.remove('rec-armed'); }
   function memorize() {
-    if (eqMemo[key] === value) {
+    if (eqMemo[key] === value) {                 // même position déjà retenue → on l'efface
       delete eqMemo[key];
       showMemoToast('○ ' + lbl + ' : mémoire effacée', color, true);
     } else {
@@ -2422,10 +2764,11 @@ function createKnob(knobEl, format) {
     knobEl.classList.remove('memo-flash'); void knobEl.offsetWidth; knobEl.classList.add('memo-flash');
   }
 
+  // ---- temps de la boucle (pastille sous le bouton) ----
   const rateEl = document.createElement('div'); rateEl.className = 'loop-rate';
   rateEl.title = 'Temps de la boucle (−100 à +100) : boule du haut = +10, boule du bas = −10 · glisse = réglage fin · molette = ±5 · double-clic = 0 · appui 1 s puis glisse = enregistrer le temps en boucle';
   const rateV = document.createElement('span'); rateEl.appendChild(rateV);
-  [['up', 10], ['dn', -10]].forEach(([c, n]) => {
+  [['up', 10], ['dn', -10]].forEach(([c, n]) => {           // boule au-dessus = +10, en dessous = −10
     const b = document.createElement('i'); b.className = 'lr-b ' + c; b.title = (n > 0 ? '+' : '−') + '10';
     b.addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); });
     b.addEventListener('pointerup', e => e.stopPropagation());
@@ -2459,7 +2802,7 @@ function createKnob(knobEl, format) {
     rateDrag = { y: e.clientY, r: L.rate || 0, moved: false };
     try { rateEl.setPointerCapture(e.pointerId); } catch (err) {}
     clearTimeout(rateHold);
-    rateHold = setTimeout(() => {
+    rateHold = setTimeout(() => {                         // appui 1 s = prêt à enregistrer le temps
       rateHold = null; rateArmed = true; rateEl.classList.add('rec');
       showMemoToast('● REC temps ' + lbl + ' : glisse haut / bas pour enregistrer · lâche pour boucler', '#FF2D3F', false);
       if (navigator.vibrate) try { navigator.vibrate(30); } catch (err) {}
@@ -2475,14 +2818,14 @@ function createKnob(knobEl, format) {
       stopRateLoop(L);
       if (rateArmed) rateRec = { t0: performance.now(), pts: [[0, L.rate || 0]] };
     }
-    setRate(rateDrag.r + dy / 3, !!rateRec);
+    setRate(rateDrag.r + dy / 3, !!rateRec);              // 3 px = 1 cran
     if (rateRec) rateRec.pts.push([performance.now() - rateRec.t0, L.rate || 0]);
     e.preventDefault();
   });
   function rateEnd(e) {
     e.stopPropagation(); clearTimeout(rateHold); rateHold = null;
     const L = KnobLoops.get(key);
-    if (rateRec && L) {
+    if (rateRec && L) {                                   // fin d'enregistrement → le temps tourne en boucle
       const t = performance.now() - rateRec.t0; rateRec.pts.push([t, L.rate || 0]);
       const vals = rateRec.pts.map(q => q[1]);
       if (t < 150 || Math.min(...vals) === Math.max(...vals)) showMemoToast('○ Mouvement de temps trop court', '#FF2D3F', true);
@@ -2491,10 +2834,10 @@ function createKnob(knobEl, format) {
         L.rateLoop = { pts: pts.map(q => [Math.round(q[0]), q[1]]), dur: Math.max(150, Math.round(t)) }; L.rph = 0;
         if (savedLoops[key]) savedLoops[key].rateLoop = L.rateLoop;
         rateEl.classList.add('rloop'); paintAutoMarks();
-        showMemoToast('↻ ' + lbl + ' : temps en boucle (' + (t / 1000).toFixed(1) + ' s) · touche la pastille pour l\'arrêter', '#FF2D3F', true);
+        showMemoToast('↻ ' + lbl + ' : temps en boucle (' + (t / 1000).toFixed(1) + ' s) · touche la pastille pour l’arrêter', '#FF2D3F', true);
       }
       saveLoops();
-    } else if (rateDrag && !rateDrag.moved && L && L.rateLoop) stopRateLoop(L, true);
+    } else if (rateDrag && !rateDrag.moved && L && L.rateLoop) stopRateLoop(L, true);   // simple touche = arrêter
     else if (rateDrag && rateDrag.moved) { saveLoops(); paintAutoMarks(); }
     if (rateArmed && !rateRec) hideMemoToast();
     rateRec = null; rateArmed = false; rateDrag = null; rateEl.classList.remove('rec');
@@ -2503,6 +2846,7 @@ function createKnob(knobEl, format) {
   rateEl.addEventListener('dblclick', e => { e.stopPropagation(); const L = KnobLoops.get(key); stopRateLoop(L); setRate(0); });
   rateEl.addEventListener('wheel', e => { e.preventDefault(); e.stopPropagation(); const L = KnobLoops.get(key); if (L) { stopRateLoop(L); setRate((L.rate || 0) + (e.deltaY < 0 ? 5 : -5)); } }, { passive: false });
 
+  // ---- boucle ----
   function stopLoop(silent) {
     if (!KnobLoops.has(key)) return;
     KnobLoops.delete(key); delete savedLoops[key]; saveLoops();
@@ -2511,18 +2855,18 @@ function createKnob(knobEl, format) {
   }
   function startLoop(pts, dur) {
     let lo = Infinity, hi = -Infinity; pts.forEach(p => { lo = Math.min(lo, p[1]); hi = Math.max(hi, p[1]); });
-    const rate = (savedLoops[key] && savedLoops[key].rate) || 0;
+    const rate = (savedLoops[key] && savedLoops[key].rate) || 0;          // temps propre gardé avec la boucle
     const L = { pts, dur, t0: performance.now(), ph: 0, lo, hi, api: null, key, base: pts[0][1], rate };
     L.api = {
       setLoopValue(v, d) {
         v = Math.max(min, Math.min(max, Math.round(v / step) * step));
         if (d === undefined) d = 1;
-        drawRec(L.base + (L.lo - L.base) * d, L.base + (L.hi - L.base) * d, v);
+        drawRec(L.base + (L.lo - L.base) * d, L.base + (L.hi - L.base) * d, v);   // l'arc rouge suit la Dimension
         if (v === value) return false;
         update(v, false); return true;
       }
     };
-    const rl = savedLoops[key] && savedLoops[key].rateLoop;
+    const rl = savedLoops[key] && savedLoops[key].rateLoop;               // boucle de temps enregistrée
     KnobLoops.set(key, L); savedLoops[key] = { pts, dur, rate }; saveLoops();
     L.onRate = paintRate;
     if (rl && rl.pts && rl.pts.length > 1) { L.rateLoop = rl; L.rph = 0; savedLoops[key].rateLoop = rl; saveLoops(); }
@@ -2535,19 +2879,21 @@ function createKnob(knobEl, format) {
     const t = performance.now() - r.t0;
     r.pts.push([t, value]);
     if (t < 150 || r.hi === r.lo) { drawRec(null); showMemoToast('○ Mouvement trop court', '#FF2D3F', true); return; }
+    // allège la boucle (max ~400 points)
     let pts = r.pts; if (pts.length > 400) { const k = pts.length / 400; pts = pts.filter((_, i) => i % Math.ceil(k) === 0).concat([r.pts[r.pts.length - 1]]); }
     startLoop(pts.map(p => [Math.round(p[0]), p[1]]), Math.max(150, t));
-    showMemoToast('↻ ' + lbl + ' : boucle de ' + (t / 1000).toFixed(1) + ' s · touche le bouton pour l\'arrêter', '#FF2D3F', true);
+    showMemoToast('↻ ' + lbl + ' : boucle de ' + (t / 1000).toFixed(1) + ' s · touche le bouton pour l’arrêter', '#FF2D3F', true);
   }
 
   dial.addEventListener('pointerdown', (e) => {
-    stopLoop(true);
+    stopLoop(true);                               // toucher un bouton en boucle l'arrête
     dragging = true; moved = false; startY = hbar ? e.clientX : e.clientY; startValue = value;
     knobEl.classList.add('active');
     try { dial.setPointerCapture(e.pointerId); } catch(err) {}
     disarm(); startHold();
     e.preventDefault();
   });
+  // l'appui long marche aussi sur le chiffre et le nom sous le bouton (mémoriser)
   [valueEl, labelEl].filter(Boolean).forEach(el => {
     el.addEventListener('pointerdown', e => { disarm(); startHold(); e.preventDefault(); });
     el.addEventListener('pointerup', () => { cancelHold(); if (armed) { disarm(); memorize(); } });
@@ -2556,15 +2902,15 @@ function createKnob(knobEl, format) {
   });
   dial.addEventListener('pointermove', (e) => {
     if (!dragging) return;
-    let dy = hbar ? e.clientX - startY : startY - e.clientY;
+    let dy = hbar ? e.clientX - startY : startY - e.clientY;   // barre : gauche ↔ droite
     if (!moved) {
       if (Math.abs(dy) < DEAD) return;
       moved = true;
-      if (armed) {
+      if (armed) {                                // cercle rouge → on enregistre
         rec = { t0: performance.now(), pts: [[0, value]], lo: value, hi: value };
         knobEl.classList.add('recording');
         showMemoToast('● REC ' + lbl + ' : enregistrement… lâche pour boucler', '#FF2D3F', false);
-      } else cancelHold();
+      } else cancelHold();                        // simple réglage
     }
     dy -= Math.sign(dy) * DEAD;
     update(startValue + (dy / (hbar ? Math.max(120, dial.clientWidth) : 180)) * range, true);
@@ -2582,29 +2928,32 @@ function createKnob(knobEl, format) {
     knobEl.classList.remove('active');
     try { dial.releasePointerCapture(e.pointerId); } catch(err) {}
     if (rec) finishRecording();
-    else if (armed && !moved) memorize();
+    else if (armed && !moved) memorize();         // rouge + lâché sans bouger = mémoriser
     disarm();
   }
   dial.addEventListener('pointerup', end);
   dial.addEventListener('pointercancel', end);
   dial.addEventListener('contextmenu', e => e.preventDefault());
+  // double-clic : revient à la position mémorisée (sinon à la valeur de départ)
   dial.addEventListener('dblclick', () => update(eqMemo[key] !== undefined ? eqMemo[key] : defValue, true));
 
   update(value, false);
+  // relance la boucle enregistrée la dernière fois
   if (savedLoops[key] && savedLoops[key].pts && savedLoops[key].pts.length > 1) startLoop(savedLoops[key].pts, savedLoops[key].dur);
   return {
     setValue: (v) => { stopLoop(true); update(v, true); },
     getValue: () => value,
+    // pour les étoiles : range la boucle (sans l'effacer de son étoile) et remet le bouton à son point de départ
     parkLoop() {
       if (!KnobLoops.has(key)) return;
       const b = KnobLoops.get(key).base; KnobLoops.delete(key);
       knobEl.classList.remove('looping'); drawRec(null); update(b, false); paintAutoMarks();
     },
     startLoop: (pts, dur) => startLoop(pts, dur),
-    resync() { const L = KnobLoops.get(key); if (L) L.ph = 0; },
-    clearLoop() { stopLoop(true); },
-    toDefault() { stopLoop(true); update(defValue, true); },
-    resetTime() {
+    resync() { const L = KnobLoops.get(key); if (L) L.ph = 0; },            // relance depuis le début, garde le temps
+    clearLoop() { stopLoop(true); },                                        // efface la boucle
+    toDefault() { stopLoop(true); update(defValue, true); },                // réglage de départ
+    resetTime() {                                   // temps de la boucle à 0 et relance depuis le début
       const L = KnobLoops.get(key); if (!L) return;
       stopRateLoop(L); L.rate = 0; L.ph = 0; if (savedLoops[key]) savedLoops[key].rate = 0; paintRate(0);
     },
@@ -2619,6 +2968,7 @@ const fmtMs = v => Math.round(v);
 const fmtBal = v => v.toFixed(2);
 const fmtSpatial = v => (v > 0 ? '+' : '') + v.toFixed(1);
 
+// formes du bouton Signal : nom + icône (tracé SVG 32×16)
 const WAVES = [
   { n: 'SINUS',    ic: 'M1 8 C5 -1.5 11 -1.5 16 8 S27 17.5 31 8' },
   { n: 'TRIANGLE', ic: 'M1 13 L8.5 3 L16 13 L23.5 3 L31 13' },
@@ -2647,13 +2997,13 @@ function rememberDim() {
 function switchLoopSlot(i) {
   if (i === loopSlots.active) return;
   rememberDim();
-  Object.values(allKnobs).forEach(k => k.parkLoop());
+  Object.values(allKnobs).forEach(k => k.parkLoop());         // on range les boucles de l'étoile quittée
   loopSlots.active = i;
   const sl = loopSlots.slots[i];
   savedLoops = sl.loops;
   allKnobs.dimension.setQuiet(sl.dim !== undefined ? sl.dim : 100);
   allKnobs.dimSpeed.setQuiet(sl.spd !== undefined ? sl.spd : 100);
-  Object.keys(savedLoops).forEach(key => {
+  Object.keys(savedLoops).forEach(key => {                     // et on relance celles de la nouvelle étoile
     const L = savedLoops[key];
     if (allKnobs[key] && L && L.pts && L.pts.length > 1) allKnobs[key].startLoop(L.pts, L.dur);
   });
@@ -2676,7 +3026,7 @@ document.querySelectorAll('.knob').forEach(k => {
   else if (key === 'fxMix') fmt = v => Math.round(v) + '%';
   else if (key === 'chorPulse') fmt = v => '×' + Math.round(v);
   else if (key === 'chorWave') {
-    const dial = k.querySelector('.knob-dial'), icons = WAVES.map((w, i) => {
+    const dial = k.querySelector('.knob-dial'), icons = WAVES.map((w, i) => {   // une icône au bout de chaque cran
       const a = (-135 + i * 67.5) * Math.PI / 180, el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       el.setAttribute('viewBox', '0 0 32 16'); el.setAttribute('class', 'wave-pos');
       el.innerHTML = '<path d="' + w.ic + '"/>';
@@ -2693,6 +3043,7 @@ document.querySelectorAll('.knob').forEach(k => {
   else if (key.indexOf('chor') === 0) fmt = fmtPct;
   allKnobs[key] = createKnob(k, fmt);
 });
+// repère d'automatisation sur chaque conteneur : nombre de boucles + bouton « temps à 0 »
 function paintAutoMarks() {
   autoMarks.forEach(m => {
     const keys = [...m.box.querySelectorAll('.knob')].map(k => k.dataset.key).filter(k => KnobLoops.has(k));
@@ -2701,6 +3052,7 @@ function paintAutoMarks() {
     m.count.textContent = '↻ ' + keys.length;
   });
 }
+// les 4 sortes de reset ; « box » = un bloc, ou toute la page pour TOUT RESET
 const RESETS = [
   { id: 'time',  ic: '⏱', t: 'Temps à 0', d: 'Temps des boucles à 0, relancées ensemble' },
   { id: 'sync',  ic: '▶', t: 'Relancer ensemble', d: 'Garde les temps, repart du début en même temps' },
@@ -2744,7 +3096,7 @@ function blockName(box) {
 }
 function addAutoMark(box, head, before, global) {
   const el = document.createElement('span'); el.className = 'auto-mark';
-  el.innerHTML = '<b title="Boutons qui ont une boucle d\'automatisation">↻ 0</b>'
+  el.innerHTML = '<b title="Boutons qui ont une boucle d’automatisation">↻ 0</b>'
                + '<button type="button" title="Choisir le reset">⟲ ' + (global ? 'TOUT RESET' : 'RESET') + ' ▾</button>';
   const m = { box, el, count: el.querySelector('b'), btn: el.querySelector('button') };
   m.btn.addEventListener('pointerdown', e => e.stopPropagation());
@@ -2760,8 +3112,9 @@ document.querySelectorAll('.xfade-wrap, #console > .section, .pedal').forEach(bo
   const head = box.querySelector('.pedal-actions') || box.querySelector('.section-title') || box.querySelector('.xf-head');
   addAutoMark(box, head, box.classList.contains('xfade-wrap') ? head.querySelector('.knob-value') : (head.firstElementChild || null));
 });
-{ const bar = document.getElementById('autoAll'); addAutoMark(document.body, bar, null, true); }
+{ const bar = document.getElementById('autoAll'); addAutoMark(document.body, bar, null, true); }   // TOUT RESET
 
+// RESET TOUT LE SITE : tous les réglages comme au premier lancement (les stations et favoris radio sont gardés)
 document.getElementById('siteReset').addEventListener('click', () => {
   if (!confirm('Remettre TOUT le site à zéro ?\n\n• tous les boutons et barres à leur valeur de départ\n• toutes les boucles des 5 étoiles effacées\n• toutes les positions mémorisées effacées\n• pédales sur OFF, Effets ON, Dimension ON\n\nTes stations et favoris radio sont gardés.')) return;
   Object.values(allKnobs).forEach(k => k.parkLoop());
@@ -2775,6 +3128,7 @@ document.getElementById('siteReset').addEventListener('click', () => {
   paintFxQuick(); paintLoopStars(); paintAutoMarks(); applyAll();
   showMemoToast('⟲ Site remis à zéro', '#FF2D3F', true);
 });
+// Dimension et vitesse de l'étoile allumée
 { const sl = loopSlots.slots[loopSlots.active];
   if (sl.dim !== undefined) allKnobs.dimension.setQuiet(sl.dim);
   if (sl.spd !== undefined) allKnobs.dimSpeed.setQuiet(sl.spd);
@@ -2813,7 +3167,7 @@ function paintFxQuick() {
   if (m) { m.classList.toggle('on', fxMasterOn); m.textContent = fxMasterOn ? 'ON' : 'OFF'; m.setAttribute('aria-checked', fxMasterOn); }
 }
 document.getElementById('fxMaster').addEventListener('click', e => {
-  e.stopPropagation();
+  e.stopPropagation();                         // ne pas ouvrir le tiroir
   fxMasterOn = !fxMasterOn;
   try { localStorage.setItem('core_fx_master', fxMasterOn ? '1' : '0'); } catch (err) {}
   paintFxQuick(); applyAll();
@@ -2822,6 +3176,7 @@ document.getElementById('fxMaster').addEventListener('click', e => {
 try { fxMasterOn = localStorage.getItem('core_fx_master') !== '0'; } catch (err) {}
 document.querySelectorAll('#fxQuick button').forEach(b => {
   b.addEventListener('click', () => openFxDrawer(true, b.dataset.fx));
+  // l'interrupteur allume / éteint l'effet sans ouvrir la fenêtre
   b.querySelector('.fxsw').addEventListener('click', e => {
     e.stopPropagation();
     const btn = document.querySelector('.toggle-btn[data-toggle="' + b.dataset.fx + '"]');
@@ -2831,6 +3186,7 @@ document.querySelectorAll('#fxQuick button').forEach(b => {
   });
 });
 
+/* fenêtre des effets : glisser vers le bas pour la fermer */
 (function () {
   const dr = document.getElementById('fxDrawer');
   const zones = [dr.querySelector('.drawer-handle'), dr.querySelector('.dhead')];
@@ -2855,32 +3211,6 @@ document.querySelectorAll('#fxQuick button').forEach(b => {
     };
     z.addEventListener('pointerup', end); z.addEventListener('pointercancel', end);
   });
-})();
-
-// geste de fermeture pour le tiroir Agent IA : on glisse vers le haut
-(function () {
-  const dr = agentDrawer;
-  let y0 = null, dy = 0, t0 = 0;
-  dr.addEventListener('pointerdown', e => {
-    if (e.target.closest('button, input, select, label, .ag-go, .ag-seg')) return;
-    if (dr.scrollTop > 2) return;
-    y0 = e.clientY; dy = 0; t0 = performance.now();
-    dr.style.transition = 'none';
-  });
-  dr.addEventListener('pointermove', e => {
-    if (y0 === null) return;
-    dy = Math.min(0, e.clientY - y0);
-    dr.style.transform = 'translateY(' + dy + 'px)';
-  });
-  const end = () => {
-    if (y0 === null) return;
-    const fast = Math.abs(dy) / Math.max(1, performance.now() - t0) > 0.6;
-    y0 = null; dr.style.transition = ''; dr.style.transform = '';
-    if (dy < -90 || (fast && dy < -30)) openAgentDrawer(false);
-  };
-  dr.addEventListener('pointerup', end);
-  dr.addEventListener('pointercancel', end);
-  dr.addEventListener('pointerleave', end);
 })();
 
 document.querySelectorAll('.toggle-btn').forEach(btn => {
@@ -2976,25 +3306,30 @@ let idle = 0, lastFrame = 0;
 
   const playing = isPlaying;
   const live = playing && usingMix && analyser && _waveData;
+  if (live && ytCaptureActive) ytTickMeter();
   if (live && chorusOn) updateChorusDisplay(t);
 
   if (live) {
     try {
+      // spectre (graves à gauche → aigus à droite), échelle logarithmique
       analyser.getByteFrequencyData(_specData);
       const Hmax = waveEl.clientHeight - 10, nyq = audioCtx.sampleRate / 2, bins = _specData.length;
       for (let k = 0; k < BARS; k++) {
         const f0 = 40 * Math.pow(16000 / 40, k / BARS), f1 = 40 * Math.pow(16000 / 40, (k + 1) / BARS);
         const i0 = Math.max(1, Math.floor(f0 / nyq * bins)), i1 = Math.max(i0 + 1, Math.ceil(f1 / nyq * bins));
         let m = 0; for (let i = i0; i < i1 && i < bins; i++) if (_specData[i] > m) m = _specData[i];
-        const v = Math.pow(m / 255, 1.6) * (1 + k / BARS * 0.8);
+        const v = Math.pow(m / 255, 1.6) * (1 + k / BARS * 0.8);   // léger bonus aux aigus
         const target = Math.max(4, Math.min(1, v) * Hmax);
-        barH[k] = target > barH[k] ? target : barH[k] * 0.82 + target * 0.18;
+        barH[k] = target > barH[k] ? target : barH[k] * 0.82 + target * 0.18;   // monte vite, retombe en douceur
         barEls[k].style.height = barH[k].toFixed(1) + 'px';
       }
       if (anaL && _dataL) {
         anaL.getByteTimeDomainData(_dataL);
         anaR.getByteTimeDomainData(_dataR);
         const lvL = rms(_dataL), lvR = rms(_dataR);
+        { let _b = 0; const _n = Math.max(1, Math.floor(BARS / 4));
+          for (let q = 0; q < _n; q++) _b += barH[q];
+          window.juliaFx.level(lvL, lvR, _b / _n / Math.max(1, waveEl.clientHeight - 10)); }
         const segsL = Math.round(Math.min(1, lvL * 3.4) * vuLEls.length);
         const segsR = Math.round(Math.min(1, lvR * 3.4) * vuREls.length);
         for (let s = 0; s < vuLEls.length; s++) {
@@ -3011,6 +3346,7 @@ let idle = 0, lastFrame = 0;
     } catch(e){}
   } else {
     idle += 0.06;
+    window.juliaFx.level(0, 0, 0);
     for (let k = 0; k < BARS; k++) {
       const h = playing
         ? (10 + Math.sin(idle + k*0.4) * 8 + Math.sin(idle*1.7 + k) * 4)
@@ -3024,7 +3360,172 @@ let idle = 0, lastFrame = 0;
   }
 })();
 
-const CHOR_T = 0.1;
+/* =========================================================
+   YOUTUBE ON AIR — capture audio de l'onglet
+   ========================================================= */
+let ytFlowStep = 1, ytPopup = null, ytOpenedUrl = '';
+let ytTabs = [];       // onglets partagés en même temps : { stream, src, gain, n, muted }
+let ytTabCount = 0;
+// tous les onglets au même volume (baissé ensemble pour que la somme ne sature pas)
+function ytRegain() {
+  if (!audioCtx) return;
+  const on = ytTabs.filter(t => !t.muted).length || 1, g = 1 / Math.sqrt(on);
+  ytTabs.forEach(t => t.gain.gain.setTargetAtTime(t.muted ? 0 : g, audioCtx.currentTime, 0.05));
+}
+function paintYtTabs() {
+  const box = document.getElementById('ytTabList'); box.innerHTML = '';
+  ytTabs.forEach((t, i) => {
+    const row = document.createElement('div'); row.className = 'yt-tab' + (t.muted ? ' muted' : '');
+    row.innerHTML = '<i></i><span>Onglet ' + (i + 1) + '</span><button type="button" class="m">' + (t.muted ? 'Remettre' : 'Couper') + '</button><button type="button" class="x" title="Retirer cet onglet">✕</button>';
+    row.querySelector('.m').addEventListener('click', () => { t.muted = !t.muted; ytRegain(); paintYtTabs(); });
+    row.querySelector('.x').addEventListener('click', () => ytRemoveTab(t));
+    box.appendChild(row);
+  });
+}
+async function ytCapture() {
+  const stream = await navigator.mediaDevices.getDisplayMedia({
+    video: { displaySurface: 'browser' },
+    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, suppressLocalAudioPlayback: true },
+    systemAudio: 'exclude', selfBrowserSurface: 'exclude', monitorTypeSurfaces: 'exclude', surfaceSwitching: 'include'
+  });
+  if (!stream.getAudioTracks().length) {
+    stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+    throw new Error('Aucun son reçu. Choisis l’onglet et coche « Partager l’audio de cet onglet ».');
+  }
+  stream.getVideoTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+  if (audioCtx.state === 'suspended') await audioCtx.resume();
+  const src = audioCtx.createMediaStreamSource(stream), gain = audioCtx.createGain();
+  src.connect(gain); gain.connect(inBus);
+  const tab = { stream, src, gain, n: ++ytTabCount, muted: false };
+  ytTabs.push(tab); ytRegain(); paintYtTabs();
+  stream.getAudioTracks().forEach(t => t.addEventListener('ended', () => ytRemoveTab(tab), { once: true }));
+  return tab;
+}
+function ytRemoveTab(tab) {
+  const i = ytTabs.indexOf(tab); if (i < 0) return;
+  ytTabs.splice(i, 1);
+  try { tab.src.disconnect(); tab.gain.disconnect(); } catch (e) {}
+  tab.stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+  if (!ytTabs.length && ytCaptureActive) { stopYT(true); return; }
+  ytRegain(); paintYtTabs();
+  if (ytCaptureActive) ytSetStatus('<strong>À l’antenne</strong> · ' + ytTabs.length + ' onglet' + (ytTabs.length > 1 ? 's' : '') + ' ensemble.', 'live');
+}
+async function ytAddTab() {
+  if (!ytCaptureActive) { startYT(); return; }
+  const url = normalizeYT(document.getElementById('ytUrl').value);
+  if (url && url !== ytOpenedUrl) { const w = window.open(url, '_blank'); if (w) { ytPopup = w; ytOpenedUrl = url; } }
+  ytSetStatus('<strong>Choisis l’onglet suivant</strong> et coche <b>Partager l’audio</b>.');
+  try {
+    await ytCapture();
+    ytSetStatus('<strong>À l’antenne</strong> · ' + ytTabs.length + ' onglets ensemble, au même volume.', 'live');
+  } catch (e) {
+    ytSetStatus('<strong>Onglet non ajouté :</strong> ' + String(e && e.message ? e.message : e), 'bad');
+  }
+}
+// ytFlowStep = 1, ytPopup = null, ytOpenedUrl = '';
+function ytSetStatus(msg, mode) {
+  const el = document.getElementById('ytStatus');
+  el.className = 'yt-status' + (mode ? ' ' + mode : ''); el.innerHTML = msg;
+}
+function ytSetStep(step, done) {
+  ytFlowStep = step;
+  document.querySelectorAll('.yt-step').forEach(el => {
+    const n = Number(el.dataset.step);
+    el.classList.toggle('active', !done && n === step);
+    el.classList.toggle('done', done ? n <= step : n < step);
+  });
+  document.getElementById('ytFlowState').textContent = ['Prêt', 'Prêt', 'Choix de l’onglet', 'Partage audio', 'En direct'][Math.max(0, Math.min(4, step))];
+  document.getElementById('ytDial').style.setProperty('--needle', ((Math.max(1, Math.min(4, step)) - 1) * 25 + 12.5) + '%');
+  document.getElementById('ytCard').classList.toggle('is-wait', !done && (step === 2 || step === 3));
+}
+function ytButton(mode) {
+  const b = document.getElementById('ytMainButton');
+  const L = { idle: ['Passer à l’antenne', '↗'], live: ['Couper l’antenne', '■'], wait: ['Connexion', '◌'] }[mode];
+  b.innerHTML = '<span class="lb">' + L[0] + '</span><span class="ic">' + L[1] + '</span>';
+  b.classList.toggle('active', mode === 'live'); b.disabled = mode === 'wait';
+  document.getElementById('ytCard').classList.toggle('is-live', mode === 'live');
+}
+function ytSetMeter(rms) {
+  const live = ytCaptureActive && rms > 0.001;
+  document.getElementById('ytOutputState').textContent = live ? 'LIVE' : 'OFF';
+  document.getElementById('ytOutputBadge').classList.toggle('live', live);
+  const dbv = 20 * Math.log10(Math.max(0.0001, rms || 0));
+  document.getElementById('ytMeterFill').style.width = Math.max(0, Math.min(100, (dbv + 60) / 60 * 100)) + '%';
+  document.getElementById('ytMeterDb').textContent = (dbv <= -59 ? '−∞' : dbv.toFixed(1)) + ' dB';
+}
+function normalizeYT(raw) {
+  const u = (raw || '').trim(); if (!u) return null;
+  try {
+    const url = new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u), h = url.hostname.toLowerCase();
+    if (h === 'youtu.be' || h.endsWith('youtube.com') || h.endsWith('youtube-nocookie.com')) return url.href;
+  } catch (e) {}
+  return null;
+}
+async function stopYT(showStatus) {
+  ytCaptureActive = false;
+  ytTabs.slice().forEach(ytRemoveTab); ytTabCount = 0;
+  isPlaying = false; ytSetMeter(0); ytButton('idle'); ytSetStep(1);
+  if (showStatus) ytSetStatus('<strong>Antenne coupée.</strong> Colle un autre lien ou relance.');
+  title(lastRadio ? lastRadio.n : 'Rien en lecture');
+  render(); setStatus('⏹ YouTube coupé.');
+}
+async function startYT() {
+  if (ytCaptureActive) { await stopYT(true); return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    ytSetStatus('<strong>Capture indisponible.</strong> Utilise Chrome ou Edge, page ouverte via <code>LANCER.bat</code>.', 'bad'); return;
+  }
+  const url = normalizeYT(document.getElementById('ytUrl').value);
+  if (!url) { ytSetStatus('<strong>Lien invalide.</strong> Colle une adresse youtube.com ou youtu.be.', 'bad'); document.getElementById('ytUrl').focus(); return; }
+  ytButton('wait');
+  try {
+    // coupe la radio en cours
+    if (isPlaying) {
+      isPlaying = false; sessionId++;
+      [mixEl, player].forEach(el => { try { el.pause(); el.removeAttribute('src'); el.load(); } catch (e) {} });
+    }
+    buildGraph();
+    // n'ouvre la vidéo qu'une fois (un 2e clic relance juste le partage)
+    if (!(ytPopup && !ytPopup.closed && ytOpenedUrl === url)) {
+      ytSetStep(1);
+      ytPopup = window.open(url, '_blank'); ytOpenedUrl = url;
+      if (!ytPopup) throw new Error('Pop-up bloquée : autorise les fenêtres pour cette page puis réessaie.');
+    }
+    ytSetStep(2);
+    ytSetStatus('<strong>Choisis l’onglet YouTube</strong> dans la fenêtre du navigateur et coche <b>Partager l’audio</b>.');
+    const tab = await ytCapture();
+    ytSetStep(3);
+    applyAll();
+    const aTracks = tab.stream.getAudioTracks();
+    const muted = (aTracks[0].getSettings ? aTracks[0].getSettings() : {}).suppressLocalAudioPlayback === true;
+    ytCaptureActive = true; isPlaying = true; usingMix = true;
+    currentStation = { n: 'YouTube — On air', g: 'Capture onglet', u: 'capture://youtube', alts: [] };
+    title('YouTube — On air'); setStatus('● On air · EQ + pédales');
+    ytSetStep(4, true); ytButton('live');
+    ytSetStatus('<strong>À l’antenne.</strong> Tous les réglages agissent en direct.' + (muted ? '' : ' Son en double ? Coupe le son de l’onglet YouTube.'), 'live');
+    render();
+  } catch (e) {
+    ytCaptureActive = false; ytButton('idle'); ytSetStep(Math.max(1, ytFlowStep));
+    const msg = String(e && e.message ? e.message : e);
+    ytSetStatus(/activation|gesture|user/i.test(msg)
+      ? '<strong>Clique encore une fois sur Passer à l’antenne</strong> : la vidéo est déjà ouverte.'
+      : '<strong>Connexion interrompue :</strong> ' + msg, 'bad');
+    render();
+  }
+}
+document.getElementById('ytMainButton').addEventListener('click', startYT);
+document.getElementById('ytAddTab').addEventListener('click', ytAddTab);
+document.getElementById('ytUrl').addEventListener('keydown', e => { if (e.key === 'Enter') startYT(); });
+ytButton('idle'); ytSetStep(1);
+
+
+/* =========================================================
+   CHORUS — accorde / désaccorde le son (change la tonalité)
+   Principe : 2 lignes à retard dont le délai glisse en continu
+   (le glissement change la hauteur), relayées en fondu pour
+   ne jamais entendre le « saut ». Mix < 100 % = effet chorus.
+   ========================================================= */
+const CHOR_T = 0.1;      // durée d'un cycle (s) — méthode de secours
+/* Transpositeur de qualité (vocodeur de phase) exécuté dans un fil audio séparé */
 const CHI_PITCH_SRC = String.raw`// Vocodeur de phase (transposition sans changer la vitesse) — d'après S. M. Bernsee
 class PitchShift {
   constructor(N, osamp, sr) {
@@ -3036,6 +3537,7 @@ class PitchShift {
     this.re = new Float64Array(N); this.im = new Float64Array(N);
     this.win = new Float64Array(N); for (let k = 0; k < N; k++) this.win[k] = -0.5 * Math.cos(2 * Math.PI * k / N) + 0.5;
     this.rover = this.lat;
+    // tables FFT
     this.rev = new Uint32Array(N); const bits = Math.log2(N);
     for (let i = 0; i < N; i++) { let r = 0; for (let b = 0; b < bits; b++) r |= ((i >> b) & 1) << (bits - 1 - b); this.rev[i] = r; }
     this.cs = new Float64Array(N / 2); this.sn = new Float64Array(N / 2);
@@ -3107,7 +3609,7 @@ if (typeof registerProcessor === 'function') {
         const src = inp[c] || inp[0];
         if (!src) { out[c].fill(0); continue; }
         const ps = this.ps[Math.min(c, 1)];
-        if (Math.abs(r - 1) < 1e-4) { ps.process(src, this.tmp, r); out[c].set(src); }
+        if (Math.abs(r - 1) < 1e-4) { ps.process(src, this.tmp, r); out[c].set(src); }   // tonalité normale : son d'origine
         else ps.process(src, out[c], r);
       }
       return true;
@@ -3116,7 +3618,7 @@ if (typeof registerProcessor === 'function') {
   registerProcessor('chi-pitch', ChiPitch);
 }
 `;
-const CHOR_BASE = 0.03;
+const CHOR_BASE = 0.03;  // délai de base (s)
 function buildChorus(ctx) {
   const c = {
     input: ctx.createGain(), dry: ctx.createGain(), wet: ctx.createGain(), merger: ctx.createGain(),
@@ -3135,8 +3637,10 @@ function buildChorus(ctx) {
   const rd = ramp.getChannelData(0), wd = win.getChannelData(0);
   for (let i = 0; i < len; i++) { rd[i] = i / len; const s = Math.sin(Math.PI * i / len); wd[i] = s * s; }
 
+  // petite modulation lente : donne le « chatoiement » du chorus quand Mix < 100 %
   const lfo = ctx.createOscillator(); lfo.frequency.value = 0.35; c.lfoGain.gain.value = 0;
-  const shape = f => {
+  // Signal : sinus / triangle / carré de l'oscillateur ; Impulsion et S&H = formes dessinées (une période, t de 0 à 1)
+  const shape = f => {                                  // forme → onde périodique (série de Fourier)
     const M = 2048, N = 64, re = new Float32Array(N + 1), im = new Float32Array(N + 1);
     for (let n = 1; n <= N; n++) {
       let a = 0, b = 0;
@@ -3145,15 +3649,16 @@ function buildChorus(ctx) {
     }
     return ctx.createPeriodicWave(re, im);
   };
-  const sh = Array.from({ length: 8 }, () => Math.random() * 2 - 1);
+  const sh = Array.from({ length: 8 }, () => Math.random() * 2 - 1);                     // 8 paliers tirés au hasard
   c.waves = {
-    pulse: shape(t => t < 0.2 ? 1 : -0.25),
-    sh: shape(t => sh[Math.floor(t * 8)])
+    pulse: shape(t => t < 0.2 ? 1 : -0.25),                  // Impulsion : rectangle étroit (20 % du cycle)
+    sh: shape(t => sh[Math.floor(t * 8)])                     // Sample & Hold : saute d'une valeur au hasard à l'autre
   };
   c.oscSel = ctx.createGain();
-  c.lfoSmooth = ctx.createBiquadFilter(); c.lfoSmooth.type = 'lowpass'; c.lfoSmooth.frequency.value = 25;
+  c.lfoSmooth = ctx.createBiquadFilter(); c.lfoSmooth.type = 'lowpass'; c.lfoSmooth.frequency.value = 25;   // adoucit les sauts (pas de clics)
   lfo.connect(c.oscSel); c.oscSel.connect(c.lfoSmooth); c.lfoSmooth.connect(c.lfoGain);
   lfo.start(); c.lfo = lfo; c.waveNow = 0; c.delays = [];
+  // entrée de la transposition + étage d'ondulation (Vitesse)
   c.pitchIn = ctx.createGain(); c.input.connect(c.pitchIn);
   c.modDelay = ctx.createDelay(0.1); c.modDelay.delayTime.value = 0.01;
   c.lfoGain.connect(c.modDelay.delayTime);
@@ -3167,16 +3672,17 @@ function buildChorus(ctx) {
     const ws = ctx.createBufferSource(); ws.buffer = win; ws.loop = true;
     const vca = ctx.createGain(); vca.gain.value = 0; ws.connect(vca.gain);
     c.pitchIn.connect(d); d.connect(vca); vca.connect(c.shiftOut);
-    const off = k * CHOR_T / 2;
+    const off = k * CHOR_T / 2;              // la 2e tête est décalée d'un demi-cycle
     rs.start(t0, off); ws.start(t0, off);
     c.shiftGains.push(g);
   }
+  // --- Sustain : 4 retards qui se renvoient le son (0 = rien, 100 = tenu à l'infini) ---
   const sus = { in: ctx.createGain(), out: ctx.createGain(), send: ctx.createGain(), ret: ctx.createGain(), lines: [], mat: [], damps: [] };
   const curve = new Float32Array(2048);
-  for (let i = 0; i < 2048; i++) { const x = i / 1023.5 - 1; curve[i] = Math.tanh(x); }
+  for (let i = 0; i < 2048; i++) { const x = i / 1023.5 - 1; curve[i] = Math.tanh(x); }   // garde-fou : gain 1, adoucit seulement les crêtes
   [0.061, 0.073, 0.089, 0.107].forEach(tm => {
     const d = ctx.createDelay(0.2); d.delayTime.value = tm;
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6000; lp.Q.value = -3.01;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6000; lp.Q.value = -3.01;   // sans bosse (Q en dB)
     const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 30; hp.Q.value = -3.01;
     const sh = ctx.createWaveShaper(); sh.curve = curve;
     const inG = ctx.createGain(); inG.gain.value = 0.5;
@@ -3184,6 +3690,7 @@ function buildChorus(ctx) {
     sh.connect(sus.ret);
     sus.lines.push({ d, sh }); sus.damps.push(lp);
   });
+  // 4 boucles indépendantes de longueurs différentes (stables ; le mélange croisé ne l'est pas ici)
   for (let i = 0; i < 4; i++) {
     const gn = ctx.createGain(); gn.gain.value = 0;
     sus.lines[i].sh.connect(gn); gn.connect(sus.lines[i].d);
@@ -3193,6 +3700,7 @@ function buildChorus(ctx) {
   sus.in.connect(sus.out); sus.in.connect(sus.send); sus.ret.connect(sus.out);
   c.sus = sus;
   c.shiftOut.connect(c.modDelay); c.modDelay.connect(sus.in); sus.out.connect(c.comp); c.comp.connect(c.bass); c.bass.connect(c.treble);
+  // charge le transpositeur de qualité ; en cas d'échec on garde la méthode de secours
   if (ctx.audioWorklet && window.AudioWorkletNode) {
     const url = URL.createObjectURL(new Blob([CHI_PITCH_SRC], { type: 'application/javascript' }));
     ctx.audioWorklet.addModule(url).then(() => {
@@ -3211,30 +3719,34 @@ function buildChorus(ctx) {
 function applyChorus(t) {
   const c = chorusChain; if (!c) return;
   const on = chorusOn && fxMasterOn, ratio = P.chorRef / 440;
-  const g = on ? (1 - ratio) * CHOR_T : 0;
-  if (c.pv) {
+  const g = on ? (1 - ratio) * CHOR_T : 0;           // pente du délai = changement de hauteur
+  if (c.pv) {                                          // transpositeur de qualité
     c.shiftGains.forEach(sg => setParam(sg.gain, 0, t));
     const rp = c.pv.parameters.get('ratio'); rp.cancelScheduledValues(t); rp.setValueAtTime(on ? ratio : 1, t);
   } else c.shiftGains.forEach(sg => setParam(sg.gain, g, t));
-  const pulse = Math.max(1, Math.min(6, Math.round(P.chorPulse || 1)));
+  // Vitesse : ondulation du chorus de 0,02 à 1,6 Hz (0 = arrêtée)
+  const pulse = Math.max(1, Math.min(6, Math.round(P.chorPulse || 1)));   // Temps : 1 à 6 impulsions par cycle
   const sp = P.chorSpeed / 100, rate = (sp > 0 ? 0.02 * Math.pow(80, sp) : 0.02) * pulse;
   const depth = on && sp > 0 ? Math.min(0.006, 0.025 / (2 * Math.PI * rate)) : 0;
   setParam(c.lfo.frequency, rate, t);
   const wv = Math.max(0, Math.min(4, Math.round(P.chorWave || 0)));
-  if (c.waveNow !== wv) {
+  if (c.waveNow !== wv) {                               // Sinus · Triangle · Carré · Impulsion · S&H
     if (wv < 3) c.lfo.type = ['sine', 'triangle', 'square'][wv];
     else c.lfo.setPeriodicWave(wv === 3 ? c.waves.pulse : c.waves.sh);
     c.waveNow = wv;
   }
+  // délai de base assez long pour la descente de hauteur + l'ondulation
   const base = 0.012 + Math.max(0, -g);
   c.delays.forEach(d => setParam(d.delayTime, base, t));
   setParam(c.modDelay.delayTime, 0.002 + depth, t);
   const sus = P.chorSustain / 100, rel = P.chorRelease / 100, ta = (P.chorTone - 50) / 50, mix = P.chorMix / 100;
+  // compresseur neutre : le Sustain est maintenant une vraie tenue du son
   setParam(c.comp.threshold, 0, t); setParam(c.comp.ratio, 1, t);
-  const fb = sus >= 0.995 ? 1 : 1 - Math.pow(1 - sus, 2.2);
+  const fb = sus >= 0.995 ? 1 : 1 - Math.pow(1 - sus, 2.2);      // 100 % = boucle parfaite = infini
   c.sus.mat.forEach(m => setParam(m.gn.gain, on ? 0.5 * m.h * fb : 0, t));
   setParam(c.sus.send.gain, on && sus > 0 ? (sus >= 0.995 ? 0 : Math.max(0.08, 1 - fb)) : 0, t);
   setParam(c.sus.ret.gain, on ? Math.min(1, sus * 1.4) * 0.9 : 0, t);
+  // Release = couleur de la tenue : sombre (0) → brillante (100)
   c.sus.damps.forEach(lp => setParam(lp.frequency, 1200 * Math.pow(14, rel), t));
   setParam(c.bass.gain, -ta * 6, t);
   setParam(c.treble.gain, ta * 6, t);
@@ -3244,11 +3756,13 @@ function applyChorus(t) {
   setParam(c.lfoGain.gain, depth, t);
 }
 
-function setChorRef(hz) {
+/* ---- barre Tonalité : −12 à +12 demi-tons (bouton « chorPitch » en cents, automatisable) ---- */
+function setChorRef(hz) {                              // utilisé par les favoris d'effet (stockés en Hz de LA4)
   hz = Math.max(220, Math.min(880, +hz || 440));
   allKnobs.chorPitch.setValue(1200 * Math.log2(hz / 440));
 }
 
+/* ---- affichage : note jouée APRÈS le Chorus ---- */
 let _chorBuf = null, chorLast = 0;
 function updateChorusDisplay(now) {
   if (now - chorLast < 80 || !chorusChain) return;
@@ -3257,6 +3771,7 @@ function updateChorusDisplay(now) {
   const disp = document.getElementById('chorDisplay'), noteEl = document.getElementById('chorNote'),
         hzEl = document.getElementById('chorHz'), needle = document.getElementById('chorNeedle'),
         centsEl = document.getElementById('chorCents');
+  // Détection de hauteur YIN (précise au centième de demi-ton)
   if (!_chorBuf || _chorBuf.length !== 4096) _chorBuf = new Float32Array(4096);
   const buf = _chorBuf; an.getFloatTimeDomainData(buf);
   const sr = audioCtx.sampleRate, W = 2048;
@@ -3268,7 +3783,7 @@ function updateChorusDisplay(now) {
   for (let lag = 1; lag <= maxLag + 1; lag++) {
     let sum = 0;
     for (let i = 0; i < W; i++) { const x = buf[i] - buf[i + lag]; sum += x * x; }
-    run += sum; d[lag] = run ? sum * lag / run : 1;
+    run += sum; d[lag] = run ? sum * lag / run : 1;       // différence normalisée cumulée
   }
   for (let lag = minLag; lag <= maxLag; lag++) {
     if (d[lag] < 0.15) { while (lag + 1 <= maxLag && d[lag + 1] < d[lag]) lag++; tau = lag; break; }
@@ -3294,6 +3809,23 @@ function resetChorusDisplay() {
   document.getElementById('chorDisplay').classList.remove('locked');
 }
 
+/* ---- vu-mètre YouTube ---- */
+let _ytBuf = null, ytMeterLast = 0;
+function ytTickMeter() {
+  const now = performance.now(); if (now - ytMeterLast < 150 || !analyser) return;
+  ytMeterLast = now;
+  if (!_ytBuf || _ytBuf.length !== analyser.fftSize) _ytBuf = new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(_ytBuf);
+  let s = 0; for (let i = 0; i < _ytBuf.length; i++) s += _ytBuf[i] * _ytBuf[i];
+  ytSetMeter(Math.sqrt(s / _ytBuf.length));
+}
+
+
+/* =========================================================
+   PRESETS D'ÉGALISEUR : 5 thèmes × 5 sous-genres
+   Courbes publiques (WiiM, Eversolo, Music Guy Mixing, Sonifex…) ramenées aux
+   5 bandes du site : Sub 60 Hz · Bass 250 Hz · Mid 1 kHz · Hi-Mid 4 kHz · High 12 kHz (dB)
+   ========================================================= */
 const EQ_BANDS = ['sub', 'bass', 'mid', 'himid', 'high'];
 const EQ_PRESETS = [
   { t: 'Rock', c: '#FF3D9E', p: [
@@ -3327,7 +3859,7 @@ const EQ_PRESETS = [
     ['Anti-fatigue',  [0.5, 0, -0.5, -2, -3]],
     ['Podcast',       [-5, -1.5, 1.5, 2, -0.5]] ] }
 ];
-let eqpTheme = 0, eqpTarget = 'LR', eqpAmt = 2.5;
+let eqpTheme = 0, eqpTarget = 'LR', eqpAmt = 2.5;   // Intensité : les courbes « pro » sont douces, on les amplifie
 try { const a = parseFloat(localStorage.getItem('core_eq_amt')); if (a >= 1 && a <= 4) eqpAmt = a; } catch (e) {}
 const eqpScaled = g => g.map(v => Math.max(-24, Math.min(24, Math.round(v * eqpAmt * 2) / 2)));
 try { const sv = JSON.parse(localStorage.getItem('core_eq_preset') || 'null'); if (sv) { eqpTheme = sv.theme || 0; eqpTarget = sv.target || 'LR'; } } catch (e) {}
@@ -3375,7 +3907,7 @@ function eqpApply(ti, si) {
     eqpAmt = parseFloat(amt.value); document.getElementById('eqpAmtV').textContent = '×' + eqpAmt;
     try { localStorage.setItem('core_eq_amt', eqpAmt); } catch (e) {}
     let cur = null; try { cur = JSON.parse(localStorage.getItem('core_eq_preset') || 'null'); } catch (e) {}
-    if (cur && EQ_PRESETS[cur.theme]) { eqpTarget = cur.target || eqpTarget; eqpApply(cur.theme, cur.sub); } else eqpPaint();
+    if (cur && EQ_PRESETS[cur.theme]) { eqpTarget = cur.target || eqpTarget; eqpApply(cur.theme, cur.sub); } else eqpPaint();   // réapplique en direct
   });
   document.getElementById('eqpFlat').addEventListener('click', () => {
     const chans = eqpTarget === 'LR' ? ['L', 'R'] : [eqpTarget];
@@ -3389,12 +3921,19 @@ function eqpApply(ti, si) {
     if (sv && EQ_PRESETS[sv.theme] && EQ_PRESETS[sv.theme].p[sv.sub]) eqpPaintNow('<b>' + EQ_PRESETS[sv.theme].t + ' › ' + EQ_PRESETS[sv.theme].p[sv.sub][0] + '</b> (dernier choisi)', EQ_PRESETS[sv.theme].c); } catch (e) {}
 }
 
+/* =========================================================
+   AGENT PRESET — écoute comme un ingénieur du son, règle tout le site,
+   crée des automatisations calées sur le tempo et apprend de tes avis.
+   ========================================================= */
 const AG_KEY = 'core_agent';
+let agOn = false; try { agOn = localStorage.getItem('core_agent_on') === '1'; } catch (e) {}
 let agMem = { taste: {}, votes: 0, presets: [] };
 try { agMem = Object.assign(agMem, JSON.parse(localStorage.getItem(AG_KEY) || '{}')); } catch (e) {}
 function agSave() { try { localStorage.setItem(AG_KEY, JSON.stringify(agMem)); } catch (e) {} }
 const AG_GENRES = ['Rock', 'Jazz', 'Classique', 'Électronique', 'Vocal / Acoustique'];
+// équilibre tonal « de référence » d'un bon mix (dB par bande, relatif au Mid) — pente ≈ −4 dB/octave
 const AG_BASE = [15, 7.5, 0, -8, -14];
+// couleur voulue par style, en plus de l'équilibre de référence
 const AG_GOFF = { 'Rock': [1, -0.5, 0, 1, 0.5], 'Jazz': [0, 0.5, 0, 0, -0.5], 'Classique': [-1, 0.5, 0, 0, 0],
                   'Électronique': [3, -0.5, -0.5, 0, 1], 'Vocal / Acoustique': [-2, -0.5, 0.5, 1, 0] };
 const AG_BANDS_HZ = [[30, 120], [120, 500], [500, 2000], [2000, 6000], [6000, 16000]];
@@ -3404,6 +3943,7 @@ const agSt = t => document.getElementById('agSt').textContent = t;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const r05 = v => Math.round(v * 2) / 2;
 
+// ---------- 1. écoute ----------
 function agListen(ms) {
   return new Promise(resolve => {
     const sr = audioCtx.sampleRate, N = agAna.frequencyBinCount, fd = new Float32Array(N);
@@ -3418,7 +3958,7 @@ function agListen(ms) {
         let acc = 0; for (let i = a; i <= b; i++) acc += Math.pow(10, fd[i] / 10);
         const m = acc / (b - a + 1); pow[k] += m; if (k <= 1) e += m;
       });
-      onset.push(Math.max(0, e - prevE)); prevE = e;
+      onset.push(Math.max(0, e - prevE)); prevE = e;          // attaques dans le grave = rythme
       agAnaL.getFloatTimeDomainData(tl); agAnaR.getFloatTimeDomainData(tr);
       for (let i = 0; i < tl.length; i += 4) { sL += tl[i] * tl[i]; sR += tr[i] * tr[i]; sLR += tl[i] * tr[i]; peak = Math.max(peak, Math.abs(tl[i]), Math.abs(tr[i])); }
       frames++;
@@ -3435,6 +3975,7 @@ function agListen(ms) {
     }, dt);
   });
 }
+// tempo : autocorrélation des attaques (60 à 180 BPM, ramené entre 80 et 160)
 function agTempo(on, dt) {
   const m = on.reduce((a, b) => a + b, 0) / on.length, x = on.map(v => v - m);
   let best = 0, bestBpm = 120, sum0 = x.reduce((a, v) => a + v * v, 0) || 1;
@@ -3446,6 +3987,7 @@ function agTempo(on, dt) {
   while (bestBpm < 80) bestBpm *= 2; while (bestBpm > 160) bestBpm /= 2;
   return { bpm: Math.round(bestBpm), sure: best / sum0 > 0.15 };
 }
+// ---------- 2. diagnostic ----------
 function agGuessGenre(a) {
   const dev = a.rel.map((v, i) => v - AG_BASE[i]), c = a.crest, b = a.tempo.bpm;
   const sc = {
@@ -3457,40 +3999,48 @@ function agGuessGenre(a) {
   };
   return Object.entries(sc).sort((x, y) => y[1] - x[1])[0][0];
 }
+// ---------- 3. décision ----------
 function agPlan(a, genre, explore) {
   const I = agChar, taste = agMem.taste[genre] || { eq: [0, 0, 0, 0, 0], fx: 1, motion: 1 };
   const dev = a.rel.map((v, i) => v - AG_BASE[i]);
+  // correction « oreille » : on rapproche de l'équilibre de référence + couleur du style
   const corr = dev.map((v, i) => clamp(AG_GOFF[genre][i] * 2 - v * 0.8, -9, 9));
+  // choisit dans la bibliothèque le sous-genre qui va le mieux avec cette correction
   const lib = EQ_PRESETS.find(t => t.t === genre);
   let sub = lib.p[0], bestD = Infinity;
   lib.p.forEach(pp => { const dd = eqpScaled(pp[1]).reduce((s, v, i) => s + (v - corr[i]) ** 2, 0); if (dd < bestD) { bestD = dd; sub = pp; } });
   const subS = eqpScaled(sub[1]);
   let eq = corr.map((v, i) => (0.5 * v + 0.5 * subS[i]) * I + taste.eq[i] + explore.eq[i]);
+  // réflexe d'ingé son : boosts raisonnables (+8 dB max) et niveau moyen sous contrôle
   const mx = Math.max(...eq); if (mx > 8) eq = eq.map(v => v - (mx - 8));
   const mean = eq.reduce((x, y) => x + y, 0) / 5; if (mean > 2) eq = eq.map(v => v - (mean - 2));
   eq = eq.map(v => r05(clamp(v, -14, 9)));
+  // volume : viser ≈ −16 dBFS en entrée, compenser les boosts
   const boost = Math.max(0, ...eq) * 0.4;
   const gain = r05(clamp((-16 - a.rmsDb) * 0.5 - boost, -6, 6));
   const balance = Math.abs(a.balDb) > 0.8 ? Math.round(clamp(-a.balDb / 10, -0.3, 0.3) * 100) / 100 : 0;
+  // effets dosés par style × caractère × goût appris
   const F = I * taste.fx * explore.fx, beat = 60 / a.tempo.bpm;
   const fx = { drv: null, rvb: null, ech: null, chor: null };
   if (genre === 'Rock') fx.drv = { drvAmount: r05(30 * F + 10), drvTone: 58, drvLevel: 60, drvMix: Math.round(clamp(28 * F, 8, 60)) };
   const rv = { 'Rock': [40, 18, 50, 15], 'Jazz': [60, 30, 45, 25], 'Classique': [80, 38, 35, 30], 'Électronique': [55, 22, 55, 10], 'Vocal / Acoustique': [35, 16, 55, 12] }[genre];
   fx.rvb = { rvbSize: rv[0], rvbMix: Math.round(clamp(rv[1] * F, 6, 65)), rvbDamp: rv[2], rvbPredelay: rv[3] };
   if (genre === 'Électronique' || I > 1.2) fx.ech = { echTime: Math.round(clamp(beat * 750, 20, 1200)), echFeedback: Math.round(clamp(38 * F, 15, 70)),
-    echTone: 45, echMix: Math.round(clamp(20 * F, 8, 50)) };
+    echTone: 45, echMix: Math.round(clamp(20 * F, 8, 50)) };                     // écho sur la croche pointée
   if (I > 1.2) fx.chor = { chorMix: Math.round(clamp(26 * F, 10, 50)), chorSpeed: 30, chorWave: genre === 'Électronique' ? 3 : 0, chorPulse: 1, chorTone: 50 };
+  // automatisations : longueurs en mesures (4 temps) pour tomber pile sur la musique
   const bar = beat * 4 * 1000, M = I * taste.motion * explore.motion, loops = [];
   if (document.getElementById('agMotion').checked) {
     const add = (key, base, amp, bars, shape) => loops.push({ key, base, amp: amp * M, dur: Math.round(bar * bars), shape });
-    add('rvbMix', fx.rvb.rvbMix, Math.max(8, fx.rvb.rvbMix * 0.9), 8, 'sine');
-    if (genre !== 'Classique' || I > 1) add('spatial', 0, 2, 16, 'sine');
-    if (fx.ech) add('echMix', fx.ech.echMix, Math.max(8, fx.ech.echMix * 0.9), 2, 'tri');
-    if (genre === 'Électronique') ['highL', 'highR'].forEach(k => add(k, 0, 4, 4, 'sine'));
-    if (I > 1.2) add('fxMix', 100, -30, 16, 'sine');
+    add('rvbMix', fx.rvb.rvbMix, Math.max(8, fx.rvb.rvbMix * 0.9), 8, 'sine');                 // la réverb respire sur 8 mesures
+    if (genre !== 'Classique' || I > 1) add('spatial', 0, 2, 16, 'sine');                        // le son voyage
+    if (fx.ech) add('echMix', fx.ech.echMix, Math.max(8, fx.ech.echMix * 0.9), 2, 'tri');        // l'écho pulse sur 2 mesures
+    if (genre === 'Électronique') ['highL', 'highR'].forEach(k => add(k, 0, 4, 4, 'sine'));      // brillance qui s'ouvre / se ferme
+    if (I > 1.2) add('fxMix', 100, -30, 16, 'sine');                                             // respiration brut ↔ effets
   }
   return { genre, sub: sub[0], eq, gain, balance, fx, loops, bpm: a.tempo.bpm, sure: a.tempo.sure, explore };
 }
+// ---------- 4. application sur tout le site ----------
 function agLoopPts(base, amp, dur, shape) {
   const pts = [];
   for (let i = 0; i <= 48; i++) {
@@ -3544,8 +4094,8 @@ function agExplore(strength) {
   return { eq: [r(), r(), r(), r(), r()].map(v => v * 1.2), fx: 1 + r() * 0.25, motion: 1 + r() * 0.35 };
 }
 async function agRun(strength) {
-  if (agBusy) return;
-  if (!graphBuilt || !agAna || !isPlaying) { showMemoToast('🤖 Lance d\'abord la radio : l\'agent doit écouter la musique', '#FFC23D', true); return; }
+  if (agBusy || !agOn) return;
+  if (!graphBuilt || !agAna || !isPlaying) { showMemoToast('🤖 Lance d\'abord la radio ou YouTube : l\'agent doit écouter la musique', '#FFC23D', true); return; }
   agBusy = true; const go = document.getElementById('agGo'); go.disabled = true;
   if (audioCtx.state === 'suspended') await audioCtx.resume();
   const a = await agListen(8000);
@@ -3559,6 +4109,7 @@ async function agRun(strength) {
   showMemoToast('🤖 Preset ' + genre + ' créé — écoute, puis dis-moi 👍 ou 👎', '#FFC23D', true);
   go.disabled = false; agBusy = false; go.textContent = '🎧 Réécouter et recréer (8 s)';
 }
+// ---------- 5. apprentissage ----------
 function agTaste(g) { return agMem.taste[g] || (agMem.taste[g] = { eq: [0, 0, 0, 0, 0], fx: 1, motion: 1 }); }
 function agLearnPaint() {
   const t = Object.entries(agMem.taste).map(([g, v]) => g + ' : ' + v.eq.map(x => (x > 0 ? '+' : '') + x.toFixed(1)).join('/') + ' · effets ×' + v.fx.toFixed(2) + ' · mouvement ×' + v.motion.toFixed(2));
@@ -3594,6 +4145,7 @@ document.getElementById('agNo').onclick = async () => {
   if (!agLast || agBusy) return; const t = agTaste(agLast.pl.genre), ex = agLast.pl.explore;
   t.eq = t.eq.map((v, i) => clamp(v - 0.5 * ex.eq[i], -4, 4)); t.fx = clamp(t.fx * (1 - 0.5 * (ex.fx - 1)), 0.4, 2); t.motion = clamp(t.motion * (1 - 0.5 * (ex.motion - 1)), 0.3, 2.5);
   agMem.votes++; agSave(); agLearnPaint();
+  // nouvelle version sans réécouter : même analyse, autre exploration plus marquée
   const pl = agPlan(agLast.a, agLast.pl.genre, agExplore(1.3));
   agApply(pl); agReport(agLast.a, pl); agLast = { a: agLast.a, pl };
   showMemoToast('👎 Noté. Voici une autre version', '#FF6B78', true);
@@ -3601,6 +4153,7 @@ document.getElementById('agNo').onclick = async () => {
 document.getElementById('agTweak').onclick = () => {
   if (!agLast || !agLast.pl.applied) return;
   const t = agTaste(agLast.pl.genre), now = agSnapshot().v, was = agLast.pl.applied.v;
+  // l'agent retient les retouches d'égaliseur (moyenne L/R) et le dosage des effets
   EQ_BANDS.forEach((b, i) => { const d = ((now[b + 'L'] - was[b + 'L']) + (now[b + 'R'] - was[b + 'R'])) / 2; t.eq[i] = clamp(t.eq[i] + 0.6 * d, -4, 4); });
   const mixes = ['rvbMix', 'echMix', 'drvMix', 'chorMix'].filter(k => was[k] > 0);
   if (mixes.length) { const ratio = mixes.reduce((s, k) => s + (now[k] + 1) / (was[k] + 1), 0) / mixes.length; t.fx = clamp(t.fx * (1 + 0.6 * (ratio - 1)), 0.4, 2); }
@@ -3621,10 +4174,11 @@ document.querySelectorAll('#agChar button').forEach(b => b.onclick = () => {
 });
 agLearnPaint(); agPresetsPaint();
 
+// ---------- pop-up « T'aimes bien ce réglage ? » ----------
 let agPopMode = null, agPopTimer = null, agManualAt = 0, agManualDirty = false, agLastAsk = 0;
 const agPop = document.getElementById('agPop');
 function agAsk(mode, txt) {
-  if (agPop.classList.contains('show')) return;
+  if (!agOn || agPop.classList.contains('show')) return;
   agPopMode = mode; agLastAsk = Date.now();
   document.getElementById('agPopTxt').textContent = txt;
   agPop.classList.add('show');
@@ -3639,8 +4193,9 @@ document.getElementById('agPopYes').onclick = () => {
   if (mode === 'agent' && agLast) {
     document.getElementById('agYes').click();
     agSaveAuto(agLast.pl.genre + ' · ' + agLast.pl.sub + ' · ' + agLast.pl.bpm + ' BPM');
-    showMemoToast('✔ Enregistré dans les presets de l\'agent, et appris 👍', '#B9FF45', true);
+    showMemoToast('✔ Enregistré dans les presets de l’agent, et appris 👍', '#B9FF45', true);
   } else if (mode === 'manual') {
+    // réglage fait à la main : on l'enregistre et on apprend l'égaliseur pour le style en cours
     const g = agLast ? agLast.pl.genre : (document.getElementById('agGenre').value !== 'auto' ? document.getElementById('agGenre').value : null);
     const now = agSnapshot().v;
     if (g) {
@@ -3658,159 +4213,96 @@ document.getElementById('agPopNo').onclick = () => {
   else showMemoToast('OK, je ne le garde pas', '#FF6B78', true);
 };
 document.getElementById('agPopX').onclick = agPopClose;
+(function () {
+  const box = document.getElementById('agentBox'), sw = document.getElementById('agOnOff');
+  function paint() {
+    box.classList.toggle('off', !agOn);
+    sw.textContent = agOn ? 'ON' : 'OFF'; sw.setAttribute('aria-pressed', agOn);
+    document.getElementById('agGo').disabled = !agOn;
+    if (!agOn) { box.open = false; agPopClose(); clearTimeout(agPopTimer); }
+  }
+  sw.addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation();
+    agOn = !agOn; try { localStorage.setItem('core_agent_on', agOn ? '1' : '0'); } catch (err) {}
+    paint(); if (agOn) box.open = true;
+  });
+  box.querySelector('summary').addEventListener('click', e => { if (!agOn) e.preventDefault(); });
+  paint();
+})();
+// après un preset de l'agent : question 15 s plus tard (le temps d'écouter)
 const agApplyOrig = agApply;
 agApply = function (pl) {
   agApplyOrig(pl); agManualDirty = false; agPopClose(); clearTimeout(agPopTimer);
-  agPopTimer = setTimeout(() => { if (isPlaying) agAsk('agent', 'Preset ' + pl.genre + ' · ' + pl.sub + '. Oui = je l\'enregistre et je retiens. Non = je te propose une autre version.'); }, 15000);
+  agPopTimer = setTimeout(() => { if (isPlaying) agAsk('agent', 'Preset ' + pl.genre + ' · ' + pl.sub + '. Oui = je l’enregistre et je retiens. Non = je te propose une autre version.'); }, 15000);
 };
+// réglages faits à la main : après 25 s sans toucher (musique en cours), on demande
 document.addEventListener('pointerup', e => {
   if (e.target.closest && e.target.closest('.knob') && !e.target.closest('.dim-stack .loop-rate')) { agManualDirty = true; agManualAt = Date.now(); }
 }, true);
 setInterval(() => {
-  if (!agManualDirty || !isPlaying || agBusy) return;
+  if (!agOn || !agManualDirty || !isPlaying || agBusy) return;
   if (Date.now() - agManualAt < 25000 || Date.now() - agLastAsk < 120000) return;
   agManualDirty = false;
-  agAsk('manual', 'Tu viens de régler les boutons. Oui = j\'enregistre ce réglage et j\'apprends tes goûts.');
+  agAsk('manual', 'Tu viens de régler les boutons. Oui = j’enregistre ce réglage et j’apprends tes goûts.');
 }, 5000);
 
-/* ============================================================
-   ENREGISTREMENT : WAV (natif) ou MP3 (lamejs)
-   ============================================================ */
-let recTick = null, recT0 = 0;
+/* =========================================================
+   ENREGISTREMENT : tout ce qu'on entend → fichier sur le disque dur
+   (dossier « enregistrements » à côté de la page ; sinon Téléchargements)
+   ========================================================= */
+let recorder = null, recChunks = [], recT0 = 0, recTick = null;
 const recWrap = document.getElementById('recWrap'), recTimeEl = document.getElementById('recTime');
-
 function recPaint() {
   const t = Math.floor((performance.now() - recT0) / 1000);
-  recTimeEl.textContent = String(Math.floor(t / 60)).padStart(2,'0')
-                        + ':' + String(t % 60).padStart(2,'0');
+  recTimeEl.textContent = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
 }
 function recName() {
-  const n = new Date(), z = x => String(x).padStart(2,'0');
-  return 'CORE_' + n.getFullYear() + '-' + z(n.getMonth()+1) + '-' + z(n.getDate())
-       + '_' + z(n.getHours()) + 'h' + z(n.getMinutes()) + 'm' + z(n.getSeconds()) + 's';
+  const n = new Date(), z = x => String(x).padStart(2, '0');
+  return 'CORE_' + n.getFullYear() + '-' + z(n.getMonth() + 1) + '-' + z(n.getDate()) + '_' + z(n.getHours()) + 'h' + z(n.getMinutes()) + 'm' + z(n.getSeconds()) + 's';
 }
 async function recSave(blob, ext) {
   const name = recName() + '.' + ext;
   try {
-    const r = await fetch('/save-recording?name=' + encodeURIComponent(name),
-                         { method:'POST', body: blob });
+    const r = await fetch('/save-recording?name=' + encodeURIComponent(name), { method: 'POST', body: blob });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const j = await r.json();
-    showMemoToast('💾 Enregistré : ' + j.path, '#FF2D3F', true);
+    showMemoToast('💾 Enregistré sur le disque : ' + j.path, '#FF2D3F', true);
     setStatus('💾 ' + j.path);
-  } catch (e) {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
-    showMemoToast('💾 Téléchargé : ' + name, '#FF2D3F', true);
+  } catch (e) {                                          // serveur ancien / page ouverte autrement → téléchargement
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    showMemoToast('💾 Enregistré dans Téléchargements : ' + name, '#FF2D3F', true);
   }
 }
-
-/* ---------- Encodage WAV (PCM 16 bit, sans dépendance) ---------- */
-function encodeWAV(chL, chR, sampleRate) {
-  const frames = chL.reduce((s, c) => s + c.length, 0);
-  const nCh = 2, bps = 2, blockAlign = nCh * bps;
-  const dataSize = frames * blockAlign;
-  const buf = new ArrayBuffer(44 + dataSize);
-  const v = new DataView(buf);
-  const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o+i, s.charCodeAt(i)); };
-  str(0,'RIFF'); v.setUint32(4, 36 + dataSize, true); str(8,'WAVE');
-  str(12,'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
-  v.setUint16(22, nCh, true); v.setUint32(24, sampleRate, true);
-  v.setUint32(28, sampleRate * blockAlign, true);
-  v.setUint16(32, blockAlign, true); v.setUint16(34, 16, true);
-  str(36,'data'); v.setUint32(40, dataSize, true);
-  let off = 44;
-  for (let c = 0; c < chL.length; c++) {
-    const L = chL[c], R = chR[c];
-    for (let i = 0; i < L.length; i++) {
-      v.setInt16(off, Math.max(-1, Math.min(1, L[i])) * 0x7FFF, true); off += 2;
-      v.setInt16(off, Math.max(-1, Math.min(1, R[i])) * 0x7FFF, true); off += 2;
-    }
-  }
-  return new Blob([buf], { type: 'audio/wav' });
-}
-
-/* ---------- Encodage MP3 via lamejs ---------- */
-async function encodeMP3(chL, chR, sampleRate, kbps) {
-  if (typeof lamejs === 'undefined') throw new Error('lamejs non chargé');
-  const enc = new lamejs.Mp3Encoder(2, sampleRate, kbps || 192);
-  const total = chL.reduce((s, c) => s + c.length, 0);
-  const L = new Int16Array(total), R = new Int16Array(total);
-  let p = 0;
-  for (let c = 0; c < chL.length; c++) {
-    const a = chL[c], b = chR[c];
-    for (let i = 0; i < a.length; i++) {
-      L[p] = Math.max(-1, Math.min(1, a[i])) * 0x7FFF;
-      R[p] = Math.max(-1, Math.min(1, b[i])) * 0x7FFF;
-      p++;
-    }
-  }
-  const parts = [], BLOCK = 1152;
-  for (let i = 0; i < total; i += BLOCK) {
-    const l = L.subarray(i, Math.min(i+BLOCK, total));
-    const r = R.subarray(i, Math.min(i+BLOCK, total));
-    const b = enc.encodeBuffer(l, r);
-    if (b.length) parts.push(b);
-    if ((i / BLOCK) % 200 === 199) await new Promise(r => setTimeout(r, 0));
-  }
-  const end = enc.flush();
-  if (end.length) parts.push(end);
-  return new Blob(parts, { type: 'audio/mpeg' });
-}
-
 function recStart() {
+  if (!window.MediaRecorder) { showMemoToast('Enregistrement impossible avec ce navigateur (utilise Chrome ou Edge)', '#FF2D3F', true); return; }
   buildGraph();
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  recChunksL = []; recChunksR = [];
-  recActive = true;
-  recT0 = performance.now(); recPaint();
-  recTick = setInterval(recPaint, 500);
+  const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+  try { recorder = new MediaRecorder(recDest.stream, mime ? { mimeType: mime, audioBitsPerSecond: 256000 } : {}); }
+  catch (e) { showMemoToast('Enregistrement impossible : ' + e.message, '#FF2D3F', true); recorder = null; return; }
+  recChunks = [];
+  recorder.ondataavailable = e => { if (e.data && e.data.size) recChunks.push(e.data); };
+  recorder.onstop = () => {
+    const type = recorder.mimeType || mime || 'audio/webm';
+    recSave(new Blob(recChunks, { type }), /ogg/.test(type) ? 'ogg' : 'webm');
+    recorder = null; recChunks = [];
+  };
+  recorder.start(1000);
+  recT0 = performance.now(); recPaint(); recTick = setInterval(recPaint, 500);
   recWrap.classList.add('on');
-  showMemoToast('● Enregistrement ' + recFormat.toUpperCase()
-              + '… clique ⏸ pour arrêter et sauvegarder', '#FF2D3F', true);
+  document.getElementById('recBtn').title = 'Arrêter l’enregistrement et l’écrire sur le disque dur';
+  showMemoToast('● Enregistrement… appuie sur ⏸ pour arrêter et sauvegarder', '#FF2D3F', true);
 }
-
-async function recStop() {
-  if (!recActive) return;
-  recActive = false;
+function recStop() {
+  if (!recorder) return;
   clearInterval(recTick); recTick = null;
   recWrap.classList.remove('on');
-  if (!recChunksL.length) { showMemoToast('Rien capturé', '#FF2D3F', true); return; }
-  try {
-    setStatus('Encodage ' + recFormat.toUpperCase() + '…');
-    let blob;
-    if (recFormat === 'mp3') {
-      blob = await encodeMP3(recChunksL, recChunksR, audioCtx.sampleRate, 192);
-      await recSave(blob, 'mp3');
-    } else {
-      blob = encodeWAV(recChunksL, recChunksR, audioCtx.sampleRate);
-      await recSave(blob, 'wav');
-    }
-  } catch (e) {
-    showMemoToast('Erreur encodage : ' + e.message, '#FF2D3F', true);
-  }
-  recChunksL = []; recChunksR = [];
+  document.getElementById('recBtn').title = 'Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur';
+  try { recorder.stop(); } catch (e) {}
 }
-
-/* --- bouton REC --- */
-document.getElementById('recBtn').addEventListener('click',
-  () => recActive ? recStop() : recStart());
-
-/* --- bouton format --- */
-const recFormatBtn = document.getElementById('recFormat');
-recFormatBtn.textContent = recFormat.toUpperCase();
-recFormatBtn.addEventListener('click', () => {
-  recFormat = recFormat === 'wav' ? 'mp3' : 'wav';
-  try { localStorage.setItem('core_rec_format', recFormat); } catch(e){}
-  recFormatBtn.textContent = recFormat.toUpperCase();
-  showMemoToast('Format : ' + recFormat.toUpperCase(), '#FF2D3F', true);
-});
-
-window.addEventListener('beforeunload', e => {
-  if (recActive) { e.preventDefault(); e.returnValue = ''; }
-});
+document.getElementById('recBtn').addEventListener('click', () => recorder ? recStop() : recStart());
+window.addEventListener('beforeunload', e => { if (recorder) { e.preventDefault(); e.returnValue = ''; } });
 
 initFxFavButtons();
 paintFxFavButtons();
