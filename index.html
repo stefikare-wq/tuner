@@ -2015,8 +2015,129 @@ function tryPlay(url, useMix, mySession) {
   });
 }
 
+/* ============================================================
+   TAMPON ANTI-JITTER (MSE) — repris de tunerMp3IA.
+   <audio src="url"> ne laisse pas régler la profondeur du tampon réseau :
+   on télécharge donc le flux avec fetch() et on l'injecte dans un SourceBuffer,
+   avec quelques secondes d'avance avant de lancer la lecture.
+   Marche partout (téléphone, Safari, Second Life…) dès que le navigateur sait faire du MSE en MP3.
+   Renvoie null (→ lecture classique) si le flux n'est pas du MP3 ou si MSE est absent.
+   ============================================================ */
+const MSE_MIME = 'audio/mpeg';
+const STREAM_BUFFER_S = 6;        // secondes d'avance visées avant lecture
+const STREAM_BUFFER_MAX_S = 18;   // au-delà, on ralentit le téléchargement
+const STREAM_KEEP_BEHIND_S = 20;  // on garde 20 s déjà jouées, le reste est libéré (écoute de plusieurs heures)
+const STREAM_SILENCE_MS = 20000;  // plus aucune donnée pendant 20 s → reconnexion
+let mseObjectUrl = null;
+
+function revokeMse() { if (mseObjectUrl) { try { URL.revokeObjectURL(mseObjectUrl); } catch (e) {} mseObjectUrl = null; } }
+function mseSupported() {
+  return typeof window.MediaSource !== 'undefined'
+      && typeof MediaSource.isTypeSupported === 'function'
+      && MediaSource.isTypeSupported(MSE_MIME);
+}
+function sbOp(sb, fn) {
+  return new Promise((resolve, reject) => {
+    const onUp = () => { sb.removeEventListener('updateend', onUp); sb.removeEventListener('error', onErr); resolve(); };
+    const onErr = (e) => { sb.removeEventListener('updateend', onUp); sb.removeEventListener('error', onErr); reject(e); };
+    sb.addEventListener('updateend', onUp);
+    sb.addEventListener('error', onErr);
+    try { fn(); } catch (e) { sb.removeEventListener('updateend', onUp); sb.removeEventListener('error', onErr); reject(e); }
+  });
+}
+
+function tryPlayBuffered(url, mySession) {
+  if (!mseSupported() || !mixEl) return Promise.resolve(null);
+
+  return new Promise((resolve) => {
+    let resolved = false, started = false, abortCtrl = null, watchdog = null, lastChunk = Date.now();
+    const onErr = () => finish(started);
+    const finish = (ok) => {
+      if (resolved) return;
+      resolved = true;
+      clearInterval(watchdog); clearTimeout(startupTimer);
+      mixEl.removeEventListener('error', onErr);
+      if (abortCtrl) { try { abortCtrl.abort(); } catch (e) {} }
+      resolve(ok);
+    };
+
+    revokeMse();
+    const ms = new MediaSource();
+    mseObjectUrl = URL.createObjectURL(ms);
+    mixEl.src = mseObjectUrl;
+    mixEl.addEventListener('error', onErr);
+
+    const startupTimer = setTimeout(() => { if (!started) finish(false); }, 20000);
+
+    ms.addEventListener('sourceopen', async () => {
+      if (sessionId !== mySession || !isPlaying) { finish(false); return; }
+      let sb;
+      try { sb = ms.addSourceBuffer(MSE_MIME); sb.mode = 'sequence'; }
+      catch (e) { finish(null); return; }
+
+      try {
+        abortCtrl = new AbortController();
+        const resp = await fetch(url, { signal: abortCtrl.signal });
+        if (!resp.ok || !resp.body) { finish(false); return; }
+        const ct = (resp.headers.get('content-type') || '').toLowerCase();
+        if (/text\/html/.test(ct)) { finish(false); return; }                 // page web (ex. racine Shoutcast), pas du son
+        if (ct && !/mpeg|mp3|octet-stream|icy/.test(ct)) { finish(null); return; }   // AAC, Ogg… : lecture classique
+        const reader = resp.body.getReader();
+        watchdog = setInterval(() => { if (Date.now() - lastChunk > STREAM_SILENCE_MS) finish(started); }, 3000);
+
+        while (true) {
+          if (sessionId !== mySession || !isPlaying) { finish(started); return; }
+          const { value, done } = await reader.read();
+          if (done) { finish(started); return; }
+          lastChunk = Date.now();
+
+          try { await sbOp(sb, () => sb.appendBuffer(value)); } catch (e) { finish(started ? true : false); return; }
+          if (sessionId !== mySession || !isPlaying) { finish(started); return; }
+
+          const b = mixEl.buffered;
+          const ahead = b.length ? b.end(b.length - 1) - mixEl.currentTime : 0;
+
+          // libère le passé pour ne pas faire gonfler la mémoire pendant des heures
+          try {
+            if (b.length && !sb.updating && mixEl.currentTime - b.start(0) > STREAM_KEEP_BEHIND_S + 20) {
+              await sbOp(sb, () => sb.remove(b.start(0), mixEl.currentTime - STREAM_KEEP_BEHIND_S));
+            }
+          } catch (e) {}
+
+          if (!started && ahead >= STREAM_BUFFER_S) {
+            started = true;
+            clearTimeout(startupTimer);
+            usingMix = true;
+            try {
+              await mixEl.play();
+              setStatus('▶ En direct · EQ + pédales (tampon ' + STREAM_BUFFER_S + ' s)');
+              render();
+            } catch (e) { finish(false); return; }
+          } else if (started && ahead > STREAM_BUFFER_MAX_S) {
+            await new Promise(r => setTimeout(r, 500));   // freine le téléchargement : le tampon est déjà large
+          }
+        }
+      } catch (e) { finish(started); }
+    }, { once: true });
+  });
+}
+
+async function runAttempt(step, mySession) {
+  if (step.mix) {
+    const bufOk = await tryPlayBuffered(step.url, mySession);
+    if (bufOk !== null) return bufOk;
+    revokeMse();
+  }
+  return tryPlay(step.url, step.mix, mySession);
+}
+
 async function streamSession(station, mySession) {
-  const rawUrls = [station.u].concat(station.alts || []).filter(Boolean);
+  // racine d'un Shoutcast (http://hote:port) = page web : on essaie d'abord « /; » qui donne le son
+  const rawUrls = [];
+  [station.u].concat(station.alts || []).filter(Boolean).forEach(u => {
+    try { const x = new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u); if (x.pathname === '/' && !x.search) rawUrls.push(x.origin + '/;'); } catch (e) {}
+    rawUrls.push(u);
+  });
   const plan = [];
   rawUrls.forEach(u => {
     const proxied = proxify(u);
@@ -2032,8 +2153,9 @@ async function streamSession(station, mySession) {
     setStatus('⏳ Essai ' + ((idx % plan.length) + 1) + '/' + plan.length);
 
     const startTs = Date.now();
-    const ok = await tryPlay(step.url, step.mix, mySession);
+    const ok = await runAttempt(step, mySession);
     const playedFor = Date.now() - startTs;
+    revokeMse();
 
     if (!isPlaying || sessionId !== mySession) return;
 
@@ -2215,6 +2337,7 @@ async function togglePlay(station) {
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
+    revokeMse();
     try { mixEl.pause(); } catch(e) {}
     try { mixEl.removeAttribute('src'); mixEl.load(); } catch(e) {}
     try { player.pause(); } catch(e) {}
@@ -2393,6 +2516,7 @@ function playStation(st) {
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
+    revokeMse();
     try { mixEl.pause(); } catch(e) {}
     try { mixEl.removeAttribute('src'); mixEl.load(); } catch(e) {}
     try { player.pause(); } catch(e) {}
