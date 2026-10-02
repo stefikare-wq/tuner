@@ -217,6 +217,9 @@
   .addtop .txtin{min-height:56px;font-size:19px;padding:0 18px}
   .addtop .row2 .txtin{flex:1;min-width:0}
   .addtop .pill{min-height:56px;font-size:19px}
+  .addtop .capopt{display:flex;align-items:center;gap:12px;font-size:17px;line-height:1.3;color:var(--muted);cursor:pointer;padding:2px 4px}
+  .addtop .capopt input{width:24px;height:24px;accent-color:var(--cyan);flex:none}
+  .addtop .capopt small{opacity:.7}
   .searchbox{margin-bottom:14px;flex:0 0 auto}
   .txtin{width:100%;font:inherit;color:var(--ice);background:rgba(234,241,255,.05);
     border:1px solid var(--edge2);border-radius:14px;min-height:56px;padding:0 18px;font-size:19px;
@@ -1095,6 +1098,7 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
                autocorrect="off" placeholder="Nom (facultatif)">
         <button class="pill" id="addUrl" style="flex:0 0 auto;padding:0 26px">＋ Ajouter</button>
       </div>
+      <label class="capopt"><input type="checkbox" id="capDefault" checked><span>Anti-coupure : partager le son de l’onglet <small>(comme YouTube)</small></span></label>
     </div>
     <div class="searchbox">
       <input type="text" class="txtin" id="search" placeholder="Chercher une station…"
@@ -1499,6 +1503,7 @@ let echoChain = null;
 let chorusChain = null, chorusOn = false;
 let fxMasterOn = true;   // interrupteur général du bouton Effets
 let ytCaptureActive = false, lastRadio = null;
+let capStream = false, capPopup = null, capOpenedUrl = '', capDirect = false;   // flux radio lu dans un onglet, son partagé à l'app
 
 let graphBuilt = false;
 let isPlaying = false;
@@ -2056,6 +2061,110 @@ async function streamSession(station, mySession) {
   }
 }
 
+/* =========================================================
+   FLUX « ANTI-COUPURE » — même système que YouTube :
+   le flux est lu tel quel par un onglet du navigateur (sans proxy, sans CORS),
+   puis le son de cet onglet est partagé à l'app et passe dans l'EQ + les pédales.
+   ========================================================= */
+// page affichée dans l'onglet du flux (lecteur natif + reconnexion automatique)
+function capPopupMain(url, name) {
+  var a = document.getElementById('a'), s = document.getElementById('s'), b = document.getElementById('b');
+  var tries = 0, timer = null;
+  function say(t) { s.textContent = t; }
+  function setName(n) { document.getElementById('n').textContent = n; document.title = '🔊 ' + n; }
+  function go() {
+    clearTimeout(timer);
+    a.src = url; a.load();
+    var p = a.play();
+    if (p && p.catch) p.catch(function () { b.style.display = 'inline-block'; say('Appuie sur ▶ pour lancer le son'); });
+  }
+  function retry() {
+    clearTimeout(timer); tries++;
+    say(tries > 4 ? 'Flux illisible ? Nouvelle tentative (' + tries + ')…' : 'Coupure… reconnexion (' + tries + ')');
+    timer = setTimeout(go, Math.min(400 * Math.pow(1.5, tries), 8000));
+  }
+  b.onclick = function () { b.style.display = 'none'; go(); };
+  a.onplaying = function () { clearTimeout(timer); tries = 0; b.style.display = 'none'; say('▶ En direct'); };
+  a.onerror = retry; a.onended = retry;
+  a.onwaiting = a.onstalled = function () {
+    clearTimeout(timer);
+    timer = setTimeout(function () { if (a.readyState < 3) retry(); }, 15000);
+  };
+  window.__core = { go: function (u, n) { url = u; tries = 0; setName(n); go(); } };
+  setName(name); go();
+}
+function openStreamTab(url, name) {
+  const w = window.open('', '_blank');
+  if (!w) return null;
+  // page en https + flux en http : le navigateur bloquerait l'audio intégré → on ouvre le flux directement
+  capDirect = location.protocol === 'https:' && /^http:\/\//i.test(url);
+  try {
+    if (capDirect) { w.location.href = url; }
+    else {
+      const J = v => JSON.stringify(v).replace(/</g, '\\u003c');
+      w.document.open();
+      w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>🔊 Flux</title></head>'
+        + '<body style="margin:0;height:100vh;display:grid;place-items:center;background:#05060C;color:#EAF1FF;font:18px system-ui,sans-serif;text-align:center">'
+        + '<div style="max-width:560px;width:100%;padding:24px;box-sizing:border-box"><div style="font-size:54px">📻</div>'
+        + '<h2 id="n" style="margin:.3em 0">…</h2><p id="s" style="color:#B9FF45;min-height:1.5em">Connexion…</p>'
+        + '<button id="b" style="display:none;font:inherit;padding:14px 28px;border-radius:99px;border:0;background:#2FE7FF;color:#03121A;font-weight:700;cursor:pointer">▶ Lancer le son</button>'
+        + '<audio id="a" controls style="display:block;margin:18px auto 0;width:100%"></audio>'
+        + '<p style="opacity:.55;font-size:14px;margin-top:22px">Laisse cet onglet ouvert : son son est envoyé à Radio The Core (EQ + effets).</p></div>'
+        + '<scr' + 'ipt>(' + capPopupMain.toString() + ')(' + J(url) + ',' + J(name) + ');</scr' + 'ipt></body></html>');
+      w.document.close();
+    }
+  } catch (e) { try { w.location.href = url; capDirect = true; } catch (e2) {} }
+  return w;
+}
+// changer de station sans refaire le partage : on change juste le flux dans l'onglet déjà partagé
+function capSwitch(st) {
+  try {
+    if (capDirect) capPopup.location.href = st.u;
+    else capPopup.__core.go(st.u, st.n);
+  } catch (e) { return false; }
+  capOpenedUrl = st.u;
+  return true;
+}
+async function startStreamCapture(st) {
+  const mySession = ++sessionId;
+  lastRadio = st; title(st.n);
+  buildGraph();
+  // (un 2e clic après un partage raté ne rouvre pas l'onglet : il relance juste le partage)
+  if (!(capPopup && !capPopup.closed && capOpenedUrl === st.u)) {
+    capPopup = openStreamTab(st.u, st.n); capOpenedUrl = st.u;
+  }
+  if (!capPopup) {
+    capOpenedUrl = ''; setStatus('⚠ Pop-up bloquée : autorise-les pour cette page puis réessaie.'); render(); return;
+  }
+  setStatus('👆 Choisis l’onglet du flux et coche « Partager l’audio »');
+  try {
+    await ytCapture();
+  } catch (e) {
+    const msg = String(e && e.message ? e.message : e), nm = String(e && e.name ? e.name : '');
+    if (/denied|cancel|abort/i.test(nm + ' ' + msg)) {           // partage refusé : on ferme l'onglet
+      try { capPopup.close(); } catch (_) {} capPopup = null; capOpenedUrl = '';
+      setStatus('⚠ Partage annulé. Touche Écouter pour réessayer.');
+    } else if (/activation|gesture/i.test(msg)) {
+      setStatus('⚠ Touche encore Écouter : l’onglet du flux est déjà ouvert.');
+    } else {
+      setStatus('⚠ ' + msg);
+    }
+    render(); return;
+  }
+  if (sessionId !== mySession) { ytTabs.slice().forEach(ytRemoveTab); return; }
+  applyAll();
+  ytCaptureActive = true; capStream = true; isPlaying = true; usingMix = true; currentStation = st;
+  title(st.n); setStatus('● En direct · onglet partagé · EQ + pédales');
+  render(); paintList(); paintFavsList();
+  // petit contrôle : si rien n'arrive au bout de 8 s, on le dit
+  setTimeout(() => {
+    if (!(ytCaptureActive && capStream && agAna)) return;
+    const d = new Float32Array(agAna.fftSize); agAna.getFloatTimeDomainData(d);
+    let s = 0; for (let i = 0; i < d.length; i++) s += d[i] * d[i];
+    if (Math.sqrt(s / d.length) < 0.0005) setStatus('⚠ Pas de son : regarde l’onglet du flux (bouton ▶ ?)');
+  }, 8000);
+}
+
 async function togglePlay(station) {
   if (ytCaptureActive) { await stopYT(true); return; }
   if (isPlaying) {
@@ -2070,6 +2179,12 @@ async function togglePlay(station) {
     return;
   }
   if (!station || /^capture:/.test(station.u)) { setStatus('⚠️ Aucune station.'); return; }
+
+  // flux « anti-coupure » : lu par le navigateur dans un onglet, dont on partage le son (comme YouTube)
+  if (station.cap && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+    await startStreamCapture(station);
+    return;
+  }
 
   currentStation = station;
   isPlaying = true;
@@ -2163,7 +2278,7 @@ function title(t) { npName.textContent = t; }
 function render() {
   const p = isPlaying;
   const yb = document.getElementById('openYT');
-  if (yb) { yb.classList.toggle('live', ytCaptureActive); yb.textContent = ytCaptureActive ? '● On air' : '▶ YouTube'; }
+  if (yb) { const ytLive = ytCaptureActive && !capStream; yb.classList.toggle('live', ytLive); yb.textContent = ytLive ? '● On air' : '▶ YouTube'; }
   waveEl.classList.toggle('on', p);
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
@@ -2213,6 +2328,11 @@ function paintFavsList() {
 }
 
 function playStation(st) {
+  if (ytCaptureActive && capStream && st.cap && capPopup && !capPopup.closed) {
+    lastRadio = st; currentStation = st; title(st.n);
+    plays[st.u] = (plays[st.u] || 0) + 1; savePlays();
+    if (capSwitch(st)) { render(); paintFavsList(); paintList(); setStatus('● En direct · onglet partagé · EQ + pédales'); return; }
+  }
   if (ytCaptureActive) { stopYT(false).then(() => playStation(st)); return; }
   lastRadio = st;
   currentStation = st;
@@ -2397,6 +2517,10 @@ function searchLibrary(q) {
   }).catch(() => { listMsg.innerHTML = '<b>Bibliothèque injoignable.</b>'; });
 }
 
+const capDefaultEl = document.getElementById('capDefault');
+try { if (localStorage.getItem('core_cap_default') === '0') capDefaultEl.checked = false; } catch (e) {}
+capDefaultEl.addEventListener('change', () => { try { localStorage.setItem('core_cap_default', capDefaultEl.checked ? '1' : '0'); } catch (e) {} });
+
 function addStream(urlValue, nameValue, urlBox, nameBox) {
   let u = (urlValue || '').trim();
   if (!u) { listMsg.textContent = 'Colle un lien de flux.'; return; }
@@ -2404,24 +2528,27 @@ function addStream(urlValue, nameValue, urlBox, nameBox) {
   if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
   const name = (nameValue || '').trim() ||
                u.replace(/^https?:\/\//i, '').split('/')[0].slice(0, 30);
+  const useCap = !!(capDefaultEl && capDefaultEl.checked);
   const existing = CORE.find(x => x.u === u);
   if (existing) {
     if (urlBox) urlBox.value = '';
     if (nameBox) nameBox.value = '';
-    listMsg.innerHTML = '<b>Cette radio est déjà dans ta liste.</b>';
+    if (existing.custom) { existing.cap = useCap; saveCustomStations(); }
+    listMsg.innerHTML = '<b>Cette radio est déjà dans ta liste.</b>' + (existing.custom ? (useCap ? ' Mode anti-coupure activé.' : ' Mode anti-coupure désactivé.') : '');
     playStation(existing);
     return;
   }
-  const st = { n: name, g: wasHttp ? 'Flux ajouté (proxy auto)' : 'Flux ajouté',
-    c: 'all', q: '', u: u, alts: [], custom: true };
+  const st = { n: name, g: useCap ? 'Flux ajouté (partage d’onglet)' : (wasHttp ? 'Flux ajouté (proxy auto)' : 'Flux ajouté'),
+    c: 'all', q: '', u: u, alts: [], custom: true, cap: useCap };
   CORE.push(st);
   customStations.push(st);
   saveCustomStations();
   if (urlBox) urlBox.value = '';
   if (nameBox) nameBox.value = '';
-  listMsg.innerHTML = wasHttp
-    ? '<b>✓ « ' + name + ' » ajoutée.</b> HTTP → proxy HTTPS auto.'
-    : '<b>✓ « ' + name + ' » ajoutée.</b>';
+  listMsg.innerHTML = useCap
+    ? '<b>✓ « ' + name + ' » ajoutée.</b> Choisis l’onglet du flux et coche « Partager l’audio ».'
+    : (wasHttp ? '<b>✓ « ' + name + ' » ajoutée.</b> HTTP → proxy HTTPS auto.'
+               : '<b>✓ « ' + name + ' » ajoutée.</b>');
   tab = 'custom';
   tabsEl.querySelectorAll('button').forEach(x => {
     x.classList.toggle('sel', x.textContent === 'Mes ajouts');
@@ -3462,12 +3589,15 @@ function normalizeYT(raw) {
   return null;
 }
 async function stopYT(showStatus) {
+  const wasStream = capStream;
+  capStream = false; capOpenedUrl = '';
+  if (capPopup) { try { capPopup.close(); } catch (e) {} capPopup = null; }
   ytCaptureActive = false;
   ytTabs.slice().forEach(ytRemoveTab); ytTabCount = 0;
   isPlaying = false; ytSetMeter(0); ytButton('idle'); ytSetStep(1);
   if (showStatus) ytSetStatus('<strong>Antenne coupée.</strong> Colle un autre lien ou relance.');
   title(lastRadio ? lastRadio.n : 'Rien en lecture');
-  render(); setStatus('⏹ YouTube coupé.');
+  render(); setStatus(wasStream ? '⏹ Flux coupé.' : '⏹ YouTube coupé.');
 }
 async function startYT() {
   if (ytCaptureActive) { await stopYT(true); return; }
