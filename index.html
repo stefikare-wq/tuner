@@ -865,6 +865,12 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
 .agent.off .ag-st{display:none}
 .agent > summary .ag-onoff{margin-left:10px}
 .agent.off > summary .ag-onoff{margin-left:auto}
+  /* ===== Snif Audio : 6e bouton de la barre ===== */
+  .tb-btns #power,.tb-btns #openYT,.tb-btns #snif{grid-column:span 2}
+  .pill.snif-btn{background:linear-gradient(135deg,#B9FF45,#4FA81A);color:#08150A}
+  .pill.snif-btn.live{box-shadow:0 0 0 3px rgba(185,255,69,.25),0 0 26px rgba(185,255,69,.6)}
+  @media (min-width:900px){ .tb-btns{grid-template-columns:repeat(6,1fr)!important} .tb-btns #snif{grid-column:auto} }
+  @media (max-width:700px){ .tb-btns #snif{font-size:17px} }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
@@ -892,6 +898,7 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
     <div class="tb-btns">
       <button class="pill" id="power">▶ Écouter</button>
       <button class="pill yt-btn" id="openYT">▶ YouTube</button>
+      <button class="pill snif-btn" id="snif" title="Capter le son de n'importe quel onglet (radio, site, vidéo…) et le passer dans l'EQ + les effets">👂 Snif Audio</button>
       <button class="pill fav-btn" id="openFavs">★ Favoris</button>
       <button class="pill ghost" id="openFx">✦ Effets <span class="fx-master on" id="fxMaster" role="switch" aria-checked="true" title="Activer / couper tous les effets">ON</span></button>
       <button class="pill ghost" id="openDrawer">☰ Stations</button>
@@ -1503,7 +1510,7 @@ let echoChain = null;
 let chorusChain = null, chorusOn = false;
 let fxMasterOn = true;   // interrupteur général du bouton Effets
 let ytCaptureActive = false, lastRadio = null;
-let capStream = false, capPopup = null, capOpenedUrl = '', capDirect = false;   // flux radio lu dans un onglet, son partagé à l'app
+let capSnif = false, capStream = false, capPopup = null, capOpenedUrl = '', capDirect = false;   // flux radio lu dans un onglet, son partagé à l'app
 
 let graphBuilt = false;
 let isPlaying = false;
@@ -2066,32 +2073,60 @@ async function streamSession(station, mySession) {
    le flux est lu tel quel par un onglet du navigateur (sans proxy, sans CORS),
    puis le son de cet onglet est partagé à l'app et passe dans l'EQ + les pédales.
    ========================================================= */
-// page affichée dans l'onglet du flux (lecteur natif + reconnexion automatique)
+// page affichée dans l'onglet du flux (lecteur natif + reconnexion + essai des adresses Shoutcast/Icecast)
 function capPopupMain(url, name) {
-  var a = document.getElementById('a'), s = document.getElementById('s'), b = document.getElementById('b');
-  var tries = 0, timer = null;
+  var a = document.getElementById('a'), s = document.getElementById('s'), b = document.getElementById('b'), d = document.getElementById('d');
+  var tries = 0, timer = null, idx = 0, good = -1, cands = [];
+  function build(u) {
+    var list = [u];
+    try {
+      var x = new URL(u);
+      if (x.pathname === '/' || x.pathname === '') {      // Shoutcast : la racine renvoie une page web, le son est sur « /; »
+        list = [x.origin + '/;', x.origin + '/;stream.mp3', u, x.origin + '/stream', x.origin + '/stream/1', x.origin + '/live', x.origin + '/listen.mp3'];
+      }
+    } catch (e) {}
+    return list;
+  }
   function say(t) { s.textContent = t; }
   function setName(n) { document.getElementById('n').textContent = n; document.title = '🔊 ' + n; }
   function go() {
     clearTimeout(timer);
-    a.src = url; a.load();
+    var u = cands[(good >= 0 ? good : idx) % cands.length];
+    d.textContent = u;
+    a.src = u; a.load();
     var p = a.play();
-    if (p && p.catch) p.catch(function () { b.style.display = 'inline-block'; say('Appuie sur ▶ pour lancer le son'); });
+    if (p && p.catch) p.catch(function (e) {
+      if (e && e.name === 'NotAllowedError') { b.style.display = 'inline-block'; say('Appuie sur ▶ pour lancer le son'); }
+    });
+    timer = setTimeout(function () { if (a.readyState < 3 && a.paused === false) retry('pas de données reçues'); }, 12000);
   }
-  function retry() {
+  function retry(why) {
     clearTimeout(timer); tries++;
-    say(tries > 4 ? 'Flux illisible ? Nouvelle tentative (' + tries + ')…' : 'Coupure… reconnexion (' + tries + ')');
-    timer = setTimeout(go, Math.min(400 * Math.pow(1.5, tries), 8000));
+    if (good < 0) idx++;
+    var code = a.error ? ' (erreur ' + a.error.code + ')' : '';
+    say((why || 'Coupure') + code + ' → nouvel essai ' + tries);
+    var wait = (good < 0 && tries <= cands.length) ? 400 : Math.min(500 * Math.pow(1.5, tries - cands.length), 8000);
+    timer = setTimeout(go, wait);
   }
-  b.onclick = function () { b.style.display = 'none'; go(); };
-  a.onplaying = function () { clearTimeout(timer); tries = 0; b.style.display = 'none'; say('▶ En direct'); };
-  a.onerror = retry; a.onended = retry;
-  a.onwaiting = a.onstalled = function () {
-    clearTimeout(timer);
-    timer = setTimeout(function () { if (a.readyState < 3) retry(); }, 15000);
+  b.onclick = function () {
+    b.style.display = 'none';
+    if (a.src && a.paused) { var p = a.play(); if (p && p.catch) p.catch(function () { go(); }); } else go();
   };
-  window.__core = { go: function (u, n) { url = u; tries = 0; setName(n); go(); } };
-  setName(name); go();
+  a.onplaying = function () { clearTimeout(timer); good = idx % cands.length; tries = 0; b.style.display = 'none'; say('▶ En direct'); };
+  a.onerror = function () { retry('Flux illisible'); };
+  a.onended = function () { retry('Flux terminé'); };
+  a.onstalled = a.onwaiting = function () {
+    clearTimeout(timer);
+    timer = setTimeout(function () { if (a.readyState < 3) retry('Coupure'); }, 15000);
+  };
+  function start(u, n) { cands = build(u); idx = 0; good = -1; tries = 0; setName(n); go(); }
+  window.__core = { go: start };
+  start(url, name);
+}
+// adresse à ouvrir directement (mode http→https) : sur Shoutcast, la racine est une page web, pas du son
+function capDirectUrl(u) {
+  try { const x = new URL(u); if (x.pathname === '/' || x.pathname === '') return x.origin + '/;'; } catch (e) {}
+  return u;
 }
 function openStreamTab(url, name) {
   const w = window.open('', '_blank');
@@ -2099,7 +2134,7 @@ function openStreamTab(url, name) {
   // page en https + flux en http : le navigateur bloquerait l'audio intégré → on ouvre le flux directement
   capDirect = location.protocol === 'https:' && /^http:\/\//i.test(url);
   try {
-    if (capDirect) { w.location.href = url; }
+    if (capDirect) { w.location.href = capDirectUrl(url); }
     else {
       const J = v => JSON.stringify(v).replace(/</g, '\\u003c');
       w.document.open();
@@ -2109,17 +2144,18 @@ function openStreamTab(url, name) {
         + '<h2 id="n" style="margin:.3em 0">…</h2><p id="s" style="color:#B9FF45;min-height:1.5em">Connexion…</p>'
         + '<button id="b" style="display:none;font:inherit;padding:14px 28px;border-radius:99px;border:0;background:#2FE7FF;color:#03121A;font-weight:700;cursor:pointer">▶ Lancer le son</button>'
         + '<audio id="a" controls style="display:block;margin:18px auto 0;width:100%"></audio>'
+        + '<p id="d" style="opacity:.45;font-size:13px;word-break:break-all;margin:10px 0 0"></p>'
         + '<p style="opacity:.55;font-size:14px;margin-top:22px">Laisse cet onglet ouvert : son son est envoyé à Radio The Core (EQ + effets).</p></div>'
         + '<scr' + 'ipt>(' + capPopupMain.toString() + ')(' + J(url) + ',' + J(name) + ');</scr' + 'ipt></body></html>');
       w.document.close();
     }
-  } catch (e) { try { w.location.href = url; capDirect = true; } catch (e2) {} }
+  } catch (e) { try { w.location.href = capDirectUrl(url); capDirect = true; } catch (e2) {} }
   return w;
 }
 // changer de station sans refaire le partage : on change juste le flux dans l'onglet déjà partagé
 function capSwitch(st) {
   try {
-    if (capDirect) capPopup.location.href = st.u;
+    if (capDirect) capPopup.location.href = capDirectUrl(st.u);
     else capPopup.__core.go(st.u, st.n);
   } catch (e) { return false; }
   capOpenedUrl = st.u;
@@ -2278,7 +2314,9 @@ function title(t) { npName.textContent = t; }
 function render() {
   const p = isPlaying;
   const yb = document.getElementById('openYT');
-  if (yb) { const ytLive = ytCaptureActive && !capStream; yb.classList.toggle('live', ytLive); yb.textContent = ytLive ? '● On air' : '▶ YouTube'; }
+  if (yb) { const ytLive = ytCaptureActive && !capStream && !capSnif; yb.classList.toggle('live', ytLive); yb.textContent = ytLive ? '● On air' : '▶ YouTube'; }
+  const sb = document.getElementById('snif');
+  if (sb) { sb.classList.toggle('live', capSnif); sb.textContent = capSnif ? '● Snif ON' : '👂 Snif Audio'; }
   waveEl.classList.toggle('on', p);
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
@@ -3589,8 +3627,8 @@ function normalizeYT(raw) {
   return null;
 }
 async function stopYT(showStatus) {
-  const wasStream = capStream;
-  capStream = false; capOpenedUrl = '';
+  const wasStream = capStream || capSnif;
+  capSnif = false; capStream = false; capOpenedUrl = '';
   if (capPopup) { try { capPopup.close(); } catch (e) {} capPopup = null; }
   ytCaptureActive = false;
   ytTabs.slice().forEach(ytRemoveTab); ytTabCount = 0;
@@ -3642,6 +3680,42 @@ async function startYT() {
     render();
   }
 }
+
+/* =========================================================
+   SNIF AUDIO — un seul bouton, sans lien à coller :
+   on choisit un onglet (ou une fenêtre) et son son passe dans l'EQ + les effets.
+   Un 2e clic ajoute un autre onglet, mélangé au premier.
+   ========================================================= */
+async function snifAudio() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    setStatus('⚠ Capture indisponible : utilise Chrome ou Edge sur ordinateur.'); return;
+  }
+  const first = !ytCaptureActive;
+  try {
+    if (first) {
+      if (isPlaying) {                                       // coupe la radio en cours
+        isPlaying = false; sessionId++;
+        [mixEl, player].forEach(el => { try { if (el) { el.pause(); el.removeAttribute('src'); el.load(); } } catch (e) {} });
+      }
+      buildGraph();
+    }
+    setStatus('👆 Choisis l’onglet puis coche « Partager l’audio »');
+    await ytCapture();
+    applyAll();
+    if (first) {
+      ytCaptureActive = true; capSnif = true; capStream = false; isPlaying = true; usingMix = true;
+      currentStation = { n: 'Snif Audio', g: 'Capture onglet', u: 'capture://snif', alts: [] };
+      title('Snif Audio');
+    }
+    setStatus('● Snif Audio · ' + ytTabs.length + ' onglet' + (ytTabs.length > 1 ? 's' : '') + ' · EQ + pédales');
+    render();
+  } catch (e) {
+    const nm = String(e && e.name ? e.name : ''), msg = String(e && e.message ? e.message : e);
+    setStatus(/NotAllowed|denied|cancel|abort/i.test(nm + ' ' + msg) ? '⚠ Partage annulé. Touche Snif Audio pour réessayer.' : '⚠ ' + msg);
+    render();
+  }
+}
+document.getElementById('snif').addEventListener('click', snifAudio);
 document.getElementById('ytMainButton').addEventListener('click', startYT);
 document.getElementById('ytAddTab').addEventListener('click', ytAddTab);
 document.getElementById('ytUrl').addEventListener('keydown', e => { if (e.key === 'Enter') startYT(); });
