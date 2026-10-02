@@ -1510,7 +1510,7 @@ let echoChain = null;
 let chorusChain = null, chorusOn = false;
 let fxMasterOn = true;   // interrupteur général du bouton Effets
 let ytCaptureActive = false, lastRadio = null;
-let capSnif = false, capStream = false, capPopup = null, capOpenedUrl = '', capDirect = false;   // flux radio lu dans un onglet, son partagé à l'app
+let capBroken = false, capSnif = false, capStream = false, capPopup = null, capOpenedUrl = '', capDirect = false;   // flux radio lu dans un onglet, son partagé à l'app
 
 let graphBuilt = false;
 let isPlaying = false;
@@ -2169,14 +2169,22 @@ async function startStreamCapture(st) {
   if (!(capPopup && !capPopup.closed && capOpenedUrl === st.u)) {
     capPopup = openStreamTab(st.u, st.n); capOpenedUrl = st.u;
   }
-  if (!capPopup) {
-    capOpenedUrl = ''; setStatus('⚠ Pop-up bloquée : autorise-les pour cette page puis réessaie.'); render(); return;
+  if (!capPopup) {                                     // pas de 2e onglet possible (ex. navigateur intégré de Second Life)
+    capOpenedUrl = ''; capBroken = true;
+    setStatus('ℹ Pas d’onglet possible ici → lecture classique (proxy)');
+    return false;
   }
   setStatus('👆 Choisis l’onglet du flux et coche « Partager l’audio »');
+  const t0 = performance.now();
   try {
     await ytCapture();
   } catch (e) {
     const msg = String(e && e.message ? e.message : e), nm = String(e && e.name ? e.name : '');
+    if (performance.now() - t0 < 700 && !/activation|gesture/i.test(msg)) {   // refus instantané = aucune fenêtre de partage = pas géré ici
+      try { capPopup.close(); } catch (_) {} capPopup = null; capOpenedUrl = ''; capBroken = true;
+      setStatus('ℹ Partage d’onglet indisponible ici → lecture classique (proxy)');
+      return false;
+    }
     if (/denied|cancel|abort/i.test(nm + ' ' + msg)) {           // partage refusé : on ferme l'onglet
       try { capPopup.close(); } catch (_) {} capPopup = null; capOpenedUrl = '';
       setStatus('⚠ Partage annulé. Touche Écouter pour réessayer.');
@@ -2185,9 +2193,9 @@ async function startStreamCapture(st) {
     } else {
       setStatus('⚠ ' + msg);
     }
-    render(); return;
+    render(); return true;
   }
-  if (sessionId !== mySession) { ytTabs.slice().forEach(ytRemoveTab); return; }
+  if (sessionId !== mySession) { ytTabs.slice().forEach(ytRemoveTab); return true; }
   applyAll();
   ytCaptureActive = true; capStream = true; isPlaying = true; usingMix = true; currentStation = st;
   title(st.n); setStatus('● En direct · onglet partagé · EQ + pédales');
@@ -2199,6 +2207,7 @@ async function startStreamCapture(st) {
     let s = 0; for (let i = 0; i < d.length; i++) s += d[i] * d[i];
     if (Math.sqrt(s / d.length) < 0.0005) setStatus('⚠ Pas de son : regarde l’onglet du flux (bouton ▶ ?)');
   }, 8000);
+  return true;
 }
 
 async function togglePlay(station) {
@@ -2217,9 +2226,9 @@ async function togglePlay(station) {
   if (!station || /^capture:/.test(station.u)) { setStatus('⚠️ Aucune station.'); return; }
 
   // flux « anti-coupure » : lu par le navigateur dans un onglet, dont on partage le son (comme YouTube)
-  if (station.cap && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-    await startStreamCapture(station);
-    return;
+  if (station.cap && !capBroken && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+    if (await startStreamCapture(station)) return;
+    // sinon (navigateur sans partage d'onglet, ex. Second Life) : lecture classique ci-dessous
   }
 
   currentStation = station;
@@ -3691,6 +3700,7 @@ async function snifAudio() {
     setStatus('⚠ Capture indisponible : utilise Chrome ou Edge sur ordinateur.'); return;
   }
   const first = !ytCaptureActive;
+  let tSnif = performance.now();
   try {
     if (first) {
       if (isPlaying) {                                       // coupe la radio en cours
@@ -3700,6 +3710,7 @@ async function snifAudio() {
       buildGraph();
     }
     setStatus('👆 Choisis l’onglet puis coche « Partager l’audio »');
+    tSnif = performance.now();
     await ytCapture();
     applyAll();
     if (first) {
@@ -3711,11 +3722,18 @@ async function snifAudio() {
     render();
   } catch (e) {
     const nm = String(e && e.name ? e.name : ''), msg = String(e && e.message ? e.message : e);
-    setStatus(/NotAllowed|denied|cancel|abort/i.test(nm + ' ' + msg) ? '⚠ Partage annulé. Touche Snif Audio pour réessayer.' : '⚠ ' + msg);
+    if (performance.now() - tSnif < 700 || /NotSupported/i.test(nm)) {
+      setStatus('⚠ Snif Audio impossible ici (navigateur intégré, ex. Second Life) : ouvre la page dans Chrome ou Edge, ou utilise ☰ Stations.');
+    } else {
+      setStatus(/NotAllowed|denied|cancel|abort/i.test(nm + ' ' + msg) ? '⚠ Partage annulé. Touche Snif Audio pour réessayer.' : '⚠ ' + msg);
+    }
     render();
   }
 }
 document.getElementById('snif').addEventListener('click', snifAudio);
+if (!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia)) {
+  const sb = document.getElementById('snif'); sb.style.opacity = '.45'; sb.title = 'Indisponible dans ce navigateur (Chrome ou Edge sur ordinateur)';
+}
 document.getElementById('ytMainButton').addEventListener('click', startYT);
 document.getElementById('ytAddTab').addEventListener('click', ytAddTab);
 document.getElementById('ytUrl').addEventListener('keydown', e => { if (e.key === 'Enter') startYT(); });
