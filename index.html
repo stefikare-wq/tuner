@@ -726,6 +726,21 @@
 #julia{position:fixed;inset:0;width:100%;height:100%;z-index:-2;pointer-events:none;background:#000}
 html.julia-on body{background:transparent}
 html.julia-on{background:#000}
+/* Logo-interrupteur : rouge = fond fractal coupé (par défaut) */
+.orb{cursor:pointer;transition:border-color .2s,box-shadow .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.orb::after{transition:background .2s,box-shadow .2s}
+.orb:active{transform:scale(.92)}
+html.julia-off .orb{border-color:#FF2D3F;box-shadow:0 0 10px rgba(255,45,63,.55)}
+html.julia-off .orb::after{background:#FF2D3F;box-shadow:0 0 8px #FF2D3F}
+html.julia-off #julia{display:none}
+/* 3e état (violet) : l'interface disparaît, il ne reste que le fond et le logo pour revenir */
+html.ui-hidden .orb{border-color:#B26BFF;box-shadow:0 0 12px rgba(178,107,255,.7)}
+html.ui-hidden .orb::after{background:#B26BFF;box-shadow:0 0 8px #B26BFF}
+html.ui-hidden body>*:not(canvas){visibility:hidden!important}
+html.ui-hidden .orb{visibility:visible!important}
+html.julia-on.julia-off{background:var(--void)}
+html.julia-on.julia-off body{background:radial-gradient(70% 44% at 10% -6%,rgba(47,231,255,.13),transparent 62%),
+  radial-gradient(64% 42% at 94% 2%,rgba(255,61,158,.11),transparent 60%),var(--void)}
 html.julia-on .card{background:linear-gradient(180deg,rgba(10,14,28,.86),rgba(6,9,18,.90))!important}
 html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(safe-area-inset-bottom) + 22px) 22px}
 
@@ -759,7 +774,7 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
 <div class="app">
   <div class="card topbar">
     <div class="brand-row">
-      <span class="orb"></span>
+      <span class="orb" id="orb" role="button" tabindex="0" title="Fond fractal coupé (touche pour l’allumer)"></span>
       <span class="brand">RADIO THE CORE <small>• ESSAI · V5.0</small></span>
       <div class="rec-wrap" id="recWrap">
         <button class="rec-fmt" id="recFmt" type="button" title="Format de l’enregistrement : WEBM / WAV / MP3 (touche pour changer)">MP3</button>
@@ -1151,6 +1166,7 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform vec2 u_lv;      // niveau vu-mètre gauche / droite (0..1)
 uniform float u_bass;   // énergie des graves (0..1)
+uniform float u_rec;    // 0 = normal, 1 = enregistrement : 80 % noir / 20 % rouge
 out vec4 fragColor;
 
 float hash21(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
@@ -1165,7 +1181,7 @@ vec4 finish(vec3 c){
 
 mat2 rot(float a){ float s=sin(a), c=cos(a); return mat2(c,-s,s,c); }
 
-vec3 layer(vec2 uv, vec2 c, vec3 phase, float speed){
+vec3 layer(vec2 uv, vec2 c, vec3 phase, float speed, out float band){
   vec2 z = uv;
   float it = 0.0;
   float trapC = 1e9;
@@ -1178,16 +1194,22 @@ vec3 layer(vec2 uv, vec2 c, vec3 phase, float speed){
     it += 1.0;
   }
   float glow = exp(-trapC*26.0) + 0.6*exp(-trapX*34.0);
+  float sm = 0.0;
   vec3 col;
   if(it > 99.5){
     col = (0.5 + 0.5*cos(6.2831*(trapC*1.5 + phase) + u_time*speed)) * glow * 0.7;
   } else {
-    float sm = it + 1.0 - log2(max(log2(dot(z,z))*0.5, 1e-3));
+    sm = it + 1.0 - log2(max(log2(dot(z,z))*0.5, 1e-3));
     float f = clamp(sm / 100.0, 0.0, 1.0);
     vec3 hue = 0.5 + 0.5*cos(6.2831*(f*2.2 + phase) + u_time*speed);
     col = hue * pow(f, 4.5) * 8.5;
     col += 0.12*glow*hue*f;
   }
+  // Bandes de niveau de la fractale : 20 % du motif en rouge, 80 % en noir (utilisé pendant l'enregistrement)
+  float s = ((it > 99.5) ? length(uv)*2.5 + atan(z.y, z.x)/6.2831*0.6 : sm*0.07) - u_time*0.08;
+  float fw = clamp(fwidth(s), 0.02, 0.5);
+  float bf = fract(s);
+  band = smoothstep(0.0, fw, bf) * (1.0 - smoothstep(0.2, 0.2 + fw, bf));
   return col;
 }
 
@@ -1231,9 +1253,12 @@ void main(){
 
   // Le niveau décale aussi les couleurs
   vec3 sh = vec3(0.45, 0.30, 0.60) * smoothstep(0.0, 1.0, lv);
-  vec3 col = layer(rot( t*0.04) * p,                c0, vec3(0.00, 0.15, 0.30) + sh, 0.10);
-  col     += 0.55 * layer(rot(-t*0.07) * p * 1.35,  c1, vec3(0.45, 0.60, 0.75) + sh, 0.17);
-  col     += 0.35 * layer(rot( t*0.11 + 1.0) * p * 0.8, c2, vec3(0.70, 0.85, 0.20) + sh, 0.23);
+  float b0, b1, b2;
+  vec3 col = layer(rot( t*0.04) * p,                c0, vec3(0.00, 0.15, 0.30) + sh, 0.10, b0);
+  col     += 0.55 * layer(rot(-t*0.07) * p * 1.35,  c1, vec3(0.45, 0.60, 0.75) + sh, 0.17, b1);
+  col     += 0.35 * layer(rot( t*0.11 + 1.0) * p * 0.8, c2, vec3(0.70, 0.85, 0.20) + sh, 0.23, b2);
+  // Enregistrement : fractale 80 % noir / 20 % rouge
+  col = mix(col, vec3(1.0, 0.015, 0.03) * 0.55 * b0, u_rec);
 
   float gain = pow(lv, 1.35) * 2.0;                      // 0 = noir (volume faible) -> couleur pleine
   float mask = pow(edge, 1.2) * (1.2 + 1.2*wave) * gain;
@@ -1246,8 +1271,30 @@ void main(){
 <script>
 (function () {
   var canvas = document.getElementById('julia');
+  var root = document.documentElement, orb = document.getElementById('orb');
+  var wake = function () {};
+  // Logo = interrupteur du fond, choix mémorisé. 3 états : 0 = rouge (fond coupé, par défaut) · 1 = cyan (fond allumé) · 2 = violet (fond seul, interface cachée)
+  var mode = 0, juliaOn = false;
+  try { var sv = localStorage.getItem('core_julia'); mode = sv === 'ui' ? 2 : (sv === 'on' ? 1 : 0); } catch (e) {}
+  var ORB_TITLES = ['Fond fractal coupé (touche pour l’allumer)', 'Fond fractal allumé (touche : fond seul, sans interface)', 'Fond seul : interface cachée (touche pour la revenir et couper le fond)'];
+  function paintOrb() {
+    if (mode === 2 && !gl) mode = 1;                       // pas de fractale possible : on ne cache pas l'interface
+    juliaOn = mode > 0;
+    root.classList.toggle('julia-off', mode === 0);
+    root.classList.toggle('ui-hidden', mode === 2);
+    orb.title = ORB_TITLES[mode];
+    orb.setAttribute('aria-label', ORB_TITLES[mode]);
+  }
+  function toggleJulia() {
+    mode = (mode + 1) % 3;
+    try { localStorage.setItem('core_julia', ['off', 'on', 'ui'][mode]); } catch (e) {}
+    paintOrb(); if (juliaOn) wake();
+  }
   var gl = canvas.getContext('webgl2', { antialias: false, alpha: false });
-  window.juliaFx = { level: function () {} };
+  paintOrb();
+  orb.addEventListener('click', toggleJulia);
+  orb.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleJulia(); } });
+  window.juliaFx = { level: function () {}, rec: function () {} };
   if (!gl) return;
   var fsSrc = document.getElementById('julia-fs').textContent;
   var vsSrc = '#version 300 es\nin vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
@@ -1264,7 +1311,7 @@ void main(){
     gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fsSrc));
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
-  } catch (e) { console.warn('Julia shader:', e.message); return; }
+  } catch (e) { console.warn('Julia shader:', e.message); gl = null; paintOrb(); return; }
   document.documentElement.classList.add('julia-on');
   gl.useProgram(prog);
   var buf = gl.createBuffer();
@@ -1277,6 +1324,8 @@ void main(){
   var uTime = gl.getUniformLocation(prog, 'u_time');
   var uLv = gl.getUniformLocation(prog, 'u_lv');
   var uBass = gl.getUniformLocation(prog, 'u_bass');
+  var uRec = gl.getUniformLocation(prog, 'u_rec');
+  var recTgt = 0, recCur = 0;
 
   // Niveaux cibles envoyés par le vu-mètre ; on lisse (attaque rapide, retombée douce)
   var tgt = [0, 0, 0], cur = [0, 0, 0];
@@ -1285,7 +1334,8 @@ void main(){
       tgt[0] = Math.tanh((l || 0) * 3.4 * 1.1);
       tgt[1] = Math.tanh((r || 0) * 3.4 * 1.1);
       tgt[2] = Math.min(1, (bass || 0));
-    }
+    },
+    rec: function (on) { recTgt = on ? 1 : 0; }   // enregistrement en cours : fractale rouge / noir
   };
 
   // Résolution réduite : la fractale est douce, ça économise la batterie/GPU
@@ -1300,13 +1350,18 @@ void main(){
   }
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var t0 = performance.now(), last = t0;
+  var running = true;
+  wake = function () { if (!running) { running = true; last = performance.now(); requestAnimationFrame(frame); } };
   function frame(now) {
+    if (!juliaOn) { running = false; return; }   // fond coupé : plus aucun calcul GPU
     resize();
     var dt = Math.min(0.1, (now - last) / 1000); last = now;
     var up = 1 - Math.exp(-dt * 10), down = 1 - Math.exp(-dt * 3);
     for (var i = 0; i < 3; i++) cur[i] += (tgt[i] - cur[i]) * (tgt[i] > cur[i] ? up : down);
     gl.uniform2f(uLv, cur[0], cur[1]);
     gl.uniform1f(uBass, cur[2]);
+    recCur += (recTgt - recCur) * (1 - Math.exp(-dt * 4));
+    gl.uniform1f(uRec, recCur);
     gl.uniform2f(uRes, canvas.width, canvas.height);
     gl.uniform1f(uTime, reduce ? 0 : (now - t0) / 1000);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -4336,6 +4391,7 @@ async function recSave(blob, ext) {
   }
 }
 function recUi(on) {
+  if (window.juliaFx && window.juliaFx.rec) window.juliaFx.rec(on);   // le fond fractal passe en rouge / noir
   recWrap.classList.toggle('on', on);
   document.getElementById('recBtn').title = on ? 'Arrêter l’enregistrement et l’écrire sur le disque dur' : REC_TITLE_OFF;
   if (on) { recT0 = performance.now(); recPaint(); recTick = setInterval(recPaint, 500); }
