@@ -1594,6 +1594,10 @@ function buildGraph() {
     catch (e2) { audioCtx = new AC(); }
   }
 
+  audioCtx.addEventListener('statechange', () => {      // iOS « interrupted » / Android suspendu : on relance la lecture
+    if (isPlaying && audioCtx.state !== 'running' && audioCtx.state !== 'closed') audioCtx.resume().catch(() => {});
+  });
+
   mixEl = new Audio();
   mixEl.crossOrigin = 'anonymous';
   mixEl.setAttribute('playsinline', '');
@@ -2020,7 +2024,11 @@ function tryPlayBuffered(url, mySession) {
               render();
             } catch (e) { finish(false); return; }
           } else if (started && ahead > STREAM_BUFFER_MAX_S) {
-            await new Promise(r => setTimeout(r, 500));   // freine le téléchargement : le tampon est déjà large
+            await new Promise(r => {                       // freine le téléchargement : le tampon est déjà large
+              const done = () => { mixEl.removeEventListener('timeupdate', done); r(); };
+              mixEl.addEventListener('timeupdate', done);   // la lecture continue d'émettre ça même en arrière-plan
+              setTimeout(done, 500);
+            });
           }
         }
       } catch (e) { finish(started); }
@@ -2348,9 +2356,13 @@ const favsList = document.getElementById('favsList');
 const favsMsg = document.getElementById('favsMsg');
 
 function setStatus(msg) { npState.textContent = msg; statusMini.textContent = msg; }
-function title(t) { npName.textContent = t; }
+function title(t) {
+  npName.textContent = t;
+  try { if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: t, artist: 'Radio The Core' }); } catch (e) {}
+}
 function render() {
   const p = isPlaying;
+  try { if ('mediaSession' in navigator) navigator.mediaSession.playbackState = p ? 'playing' : 'paused'; } catch (e) {}
   const sb = document.getElementById('snif');
   if (sb) { sb.classList.toggle('live', capSnif); sb.textContent = capSnif ? '● Snif ON' : '👂 Snif Audio'; }
   waveEl.classList.toggle('on', p);
@@ -2700,6 +2712,14 @@ document.getElementById('power').addEventListener('click', () => {
   const st = (currentStation && !/^capture:/.test(currentStation.u)) ? currentStation : (lastRadio || CORE[0]);
   togglePlay(st);
 });
+try {                                                   // boutons du centre de notifications / écran verrouillé
+  const ms = navigator.mediaSession;
+  if (ms) {
+    ms.setActionHandler('play', () => { if (!isPlaying) document.getElementById('power').click(); });
+    ms.setActionHandler('pause', () => { if (isPlaying) document.getElementById('power').click(); });
+    ms.setActionHandler('stop', () => { if (isPlaying) document.getElementById('power').click(); });
+  }
+} catch (e) {}
 
 /* Mémoire d'équilibre : positions retenues pour les boutons de l'égaliseur */
 const EQ_MEMO_KEY = 'core_eq_memo';
@@ -2740,6 +2760,19 @@ function saveLoops() { try { localStorage.setItem(SLOT_KEY, JSON.stringify(loopS
 const KnobLoops = new Map();      // clé → { pts:[[t,v]], dur, t0, api }
 const autoMarks = [];             // repères d'automatisation des blocs (remplis plus bas)
 let loopTimer = null;
+// Minuteur dans un Worker : le navigateur ne le ralentit pas quand l'appli est réduite (un setInterval normal tombe à ~1 tick/s)
+function startTicker(fn, ms) {
+  let w = null, iv = null;
+  const fallback = () => { if (!iv) iv = setInterval(fn, ms); };
+  try {
+    const src = 'let id=null;onmessage=function(e){if(e.data==="start"){if(!id)id=setInterval(function(){postMessage(0)},' + ms + ')}else{clearInterval(id);id=null}}';
+    const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+    w = new Worker(url); URL.revokeObjectURL(url);
+    w.onmessage = fn; w.onerror = () => { try { w.terminate(); } catch (e) {} w = null; fallback(); };
+    w.postMessage('start');
+  } catch (e) { w = null; fallback(); }
+  return { stop() { if (w) { try { w.postMessage('stop'); w.terminate(); } catch (e) {} w = null; } if (iv) { clearInterval(iv); iv = null; } } };
+}
 function sampleLoop(pts, tt) {
   if (tt <= pts[0][0]) return pts[0][1];
   for (let i = 1; i < pts.length; i++) {
@@ -2753,9 +2786,9 @@ function sampleLoop(pts, tt) {
 let loopLast = 0;
 let dimOn = true;   // interrupteur Dimension : OFF = boucles en pause, boutons à leur point de départ
 function loopTick() {
-  if (!KnobLoops.size) { clearInterval(loopTimer); loopTimer = null; loopLast = 0; return; }
+  if (!KnobLoops.size) { if (loopTimer) loopTimer.stop(); loopTimer = null; loopLast = 0; return; }
   const now = performance.now(); let changed = false;
-  const dt = loopLast ? Math.min(200, now - loopLast) : 0; loopLast = now;
+  const dt = loopLast ? Math.min(1000, now - loopLast) : 0; loopLast = now;   // les boucles suivent l'horloge même si un tick est en retard
   const dim = (P.dimension !== undefined ? P.dimension : 100) / 100;   // rond central : amplitude
   const spd = (P.dimSpeed !== undefined ? P.dimSpeed : 100) / 100;     // anneau externe : vitesse
   KnobLoops.forEach(L => {
@@ -2777,7 +2810,7 @@ function loopTick() {
   if (changed) applyAll();
 }
 // un minuteur (et non l'affichage) : les boucles continuent même si tu es sur un autre onglet
-function ensureLoopTimer() { if (!loopTimer) loopTimer = setInterval(loopTick, 30); }
+function ensureLoopTimer() { if (!loopTimer) loopTimer = startTicker(loopTick, 30); }
 
 /* couleur « chaleur » : 0 = vert, 0,45 = jaune, 0,75 = orange, 1 = rouge */
 function heatColor(t) {
@@ -4562,6 +4595,11 @@ document.getElementById('recBtn').addEventListener('click', () => { if (recBusy)
 window.addEventListener('beforeunload', e => { if (recorder || recPcm) { e.preventDefault(); e.returnValue = ''; } });
 recFmtPaint();
 if (recFmt === 'mp3') loadLame();
+
+document.addEventListener('visibilitychange', () => {
+  loopLast = 0;                                          // pas de saut des boucles au retour
+  if (audioCtx && isPlaying && audioCtx.state !== 'running' && audioCtx.state !== 'closed') audioCtx.resume().catch(() => {});
+});
 
 initFxFavButtons();
 paintFxFavButtons();
