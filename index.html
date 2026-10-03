@@ -738,7 +738,7 @@ html.ui-hidden .orb{border-color:#B26BFF;box-shadow:0 0 12px rgba(178,107,255,.7
 html.ui-hidden .orb::after{background:#B26BFF;box-shadow:0 0 8px #B26BFF}
 html.ui-hidden body>*:not(canvas){visibility:hidden!important}
 html.ui-hidden .orb{visibility:visible!important}
-/* 4e état (blanc) : écran noir, rien d'affiché, le son et ses réglages continuent */
+/* 4e état (blanc) : écran noir, rien n'est affiché, le son et ses réglages continuent */
 html.screen-off,html.screen-off body{background:#000!important}
 html.screen-off #julia{display:none}
 html.screen-off body>*:not(canvas){visibility:hidden!important}
@@ -780,10 +780,10 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
 <div class="app">
   <div class="card topbar">
     <div class="brand-row">
-      <span class="orb" id="orb" role="button" tabindex="0" title="Fond fractal coupé (touche pour l’allumer)"></span>
+      <span class="orb" id="orb" role="button" tabindex="0" title="Fond fractal coupé (touche pour l'allumer)"></span>
       <span class="brand">RADIO THE CORE <small>• ESSAI · V5.0</small></span>
       <div class="rec-wrap" id="recWrap">
-        <button class="rec-fmt" id="recFmt" type="button" title="Format de l’enregistrement : WEBM / WAV / MP3 (touche pour changer)">MP3</button>
+        <button class="rec-fmt" id="recFmt" type="button" title="Format de l'enregistrement : WEBM / WAV / MP3 (touche pour changer)">MP3</button>
         <span class="rec-time" id="recTime">00:00</span>
         <button class="rec-btn" id="recBtn" type="button" title="Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur"><i></i><i></i></button>
       </div>
@@ -1000,7 +1000,7 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
                autocorrect="off" placeholder="Nom (facultatif)">
         <button class="pill" id="addUrl" style="flex:0 0 auto;padding:0 26px">＋ Ajouter</button>
       </div>
-      <label class="capopt"><input type="checkbox" id="capDefault" checked><span>Anti-coupure : partager le son de l’onglet <small>(comme Snif Audio)</small></span></label>
+      <label class="capopt"><input type="checkbox" id="capDefault" checked><span>Anti-coupure : partager le son de l'onglet <small>(comme Snif Audio)</small></span></label>
     </div>
     <div class="searchbox">
       <input type="text" class="txtin" id="search" placeholder="Chercher une station…"
@@ -1280,9 +1280,9 @@ void main(){
   var root = document.documentElement, orb = document.getElementById('orb');
   var wake = function () {};
   // Logo = interrupteur du fond, choix mémorisé. 4 états : 0 = rouge (fond coupé, par défaut) · 1 = cyan (fond allumé) · 2 = violet (fond seul, interface cachée)
-  var mode = 0, juliaOn = false;   // 3 = blanc : écran noir, rien d'affiché
+  var mode = 0, juliaOn = false;   // 3 = blanc : écran noir, rien n'est affiché
   try { var sv = localStorage.getItem('core_julia'); mode = sv === 'ui' ? 2 : (sv === 'on' ? 1 : 0); } catch (e) {}
-  var ORB_TITLES = ['Fond fractal coupé (touche pour l’allumer)', 'Fond fractal allumé (touche : fond seul, sans interface)', 'Fond seul : interface cachée (touche : écran noir)', 'Écran noir : le son continue (touche pour tout réafficher)'];
+  var ORB_TITLES = ['Fond fractal coupé (touche pour l'allumer)', 'Fond fractal allumé (touche : fond seul, sans interface)', 'Fond seul : interface cachée (touche : écran noir)', 'Écran noir : le son continue (touche pour tout réafficher)'];
   function paintOrb() {
     if (mode === 2 && !gl) mode = 1;                       // pas de fractale possible : on ne cache pas l'interface
     juliaOn = mode === 1 || mode === 2;                     // la fractale ne tourne que dans ces deux états
@@ -1392,6 +1392,14 @@ function proxify(u) {
   if (u.indexOf('http://') === 0) return CORS_PROXY + encodeURIComponent(u);
   return u;
 }
+
+/* ===== Détection mobile (module global, utilisé par Snif) ===== */
+const IS_MOBILE = (() => {
+  const ua = navigator.userAgent || '';
+  if (/Android|iPhone|iPad|iPod|Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua)) return true;
+  if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return true;   // iPad récent
+  return false;
+})();
 
 let audioCtx = null;
 let mixEl = null, player = null;
@@ -2207,10 +2215,10 @@ async function startStreamCapture(st) {
   }
   if (!capPopup) {                                     // pas de 2e onglet possible (ex. navigateur intégré de Second Life)
     capOpenedUrl = ''; capBroken = true;
-    setStatus('ℹ Pas d’onglet possible ici → lecture classique (proxy)');
+    setStatus('ℹ Pas d'onglet possible ici → lecture classique (proxy)');
     return false;
   }
-  setStatus('👆 Choisis l’onglet du flux et coche « Partager l’audio »');
+  setStatus('👆 Choisis l'onglet du flux et coche « Partager l'audio »');
   const t0 = performance.now();
   try {
     await tabCapture();
@@ -2218,14 +2226,14 @@ async function startStreamCapture(st) {
     const msg = String(e && e.message ? e.message : e), nm = String(e && e.name ? e.name : '');
     if (performance.now() - t0 < 700 && !/activation|gesture/i.test(msg)) {   // refus instantané = aucune fenêtre de partage = pas géré ici
       try { capPopup.close(); } catch (_) {} capPopup = null; capOpenedUrl = ''; capBroken = true;
-      setStatus('ℹ Partage d’onglet indisponible ici → lecture classique (proxy)');
+      setStatus('ℹ Partage d'onglet indisponible ici → lecture classique (proxy)');
       return false;
     }
     if (/denied|cancel|abort/i.test(nm + ' ' + msg)) {           // partage refusé : on ferme l'onglet
       try { capPopup.close(); } catch (_) {} capPopup = null; capOpenedUrl = '';
       setStatus('⚠ Partage annulé. Touche Écouter pour réessayer.');
     } else if (/activation|gesture/i.test(msg)) {
-      setStatus('⚠ Touche encore Écouter : l’onglet du flux est déjà ouvert.');
+      setStatus('⚠ Touche encore Écouter : l'onglet du flux est déjà ouvert.');
     } else {
       setStatus('⚠ ' + msg);
     }
@@ -2241,7 +2249,7 @@ async function startStreamCapture(st) {
     if (!(tabCaptureActive && capStream && agAna)) return;
     const d = new Float32Array(agAna.fftSize); agAna.getFloatTimeDomainData(d);
     let s = 0; for (let i = 0; i < d.length; i++) s += d[i] * d[i];
-    if (Math.sqrt(s / d.length) < 0.0005) setStatus('⚠ Pas de son : regarde l’onglet du flux (bouton ▶ ?)');
+    if (Math.sqrt(s / d.length) < 0.0005) setStatus('⚠ Pas de son : regarde l'onglet du flux (bouton ▶ ?)');
   }, 8000);
   return true;
 }
@@ -2364,7 +2372,11 @@ function render() {
   const p = isPlaying;
   try { if ('mediaSession' in navigator) navigator.mediaSession.playbackState = p ? 'playing' : 'paused'; } catch (e) {}
   const sb = document.getElementById('snif');
-  if (sb) { sb.classList.toggle('live', capSnif); sb.textContent = capSnif ? '● Snif ON' : '👂 Snif Audio'; }
+  if (sb) {
+    sb.classList.toggle('live', capSnif);
+    sb.textContent = capSnif ? (IS_MOBILE ? '● Snif Micro' : '● Snif ON')
+                             : (IS_MOBILE ? '👂 Snif Micro' : '👂 Snif Audio');
+  }
   waveEl.classList.toggle('on', p);
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
@@ -2625,7 +2637,7 @@ function addStream(urlValue, nameValue, urlBox, nameBox) {
     playStation(existing);
     return;
   }
-  const st = { n: name, g: useCap ? 'Flux ajouté (partage d’onglet)' : (wasHttp ? 'Flux ajouté (proxy auto)' : 'Flux ajouté'),
+  const st = { n: name, g: useCap ? 'Flux ajouté (partage d'onglet)' : (wasHttp ? 'Flux ajouté (proxy auto)' : 'Flux ajouté'),
     c: 'all', q: '', u: u, alts: [], custom: true, cap: useCap };
   CORE.push(st);
   customStations.push(st);
@@ -2633,7 +2645,7 @@ function addStream(urlValue, nameValue, urlBox, nameBox) {
   if (urlBox) urlBox.value = '';
   if (nameBox) nameBox.value = '';
   listMsg.innerHTML = useCap
-    ? '<b>✓ « ' + name + ' » ajoutée.</b> Choisis l’onglet du flux et coche « Partager l’audio ».'
+    ? '<b>✓ « ' + name + ' » ajoutée.</b> Choisis l'onglet du flux et coche « Partager l'audio ».'
     : (wasHttp ? '<b>✓ « ' + name + ' » ajoutée.</b> HTTP → proxy HTTPS auto.'
                : '<b>✓ « ' + name + ' » ajoutée.</b>');
   tab = 'custom';
@@ -3060,7 +3072,7 @@ function createKnob(knobEl, format) {
         L.rateLoop = { pts: pts.map(q => [Math.round(q[0]), q[1]]), dur: Math.max(150, Math.round(t)) }; L.rph = 0;
         if (savedLoops[key]) savedLoops[key].rateLoop = L.rateLoop;
         rateEl.classList.add('rloop'); paintAutoMarks();
-        showMemoToast('↻ ' + lbl + ' : temps en boucle (' + (t / 1000).toFixed(1) + ' s) · touche la pastille pour l’arrêter', '#FF2D3F', true);
+        showMemoToast('↻ ' + lbl + ' : temps en boucle (' + (t / 1000).toFixed(1) + ' s) · touche la pastille pour l'arrêter', '#FF2D3F', true);
       }
       saveLoops();
     } else if (rateDrag && !rateDrag.moved && L && L.rateLoop) stopRateLoop(L, true);   // simple touche = arrêter
@@ -3108,7 +3120,7 @@ function createKnob(knobEl, format) {
     // allège la boucle (max ~400 points)
     let pts = r.pts; if (pts.length > 400) { const k = pts.length / 400; pts = pts.filter((_, i) => i % Math.ceil(k) === 0).concat([r.pts[r.pts.length - 1]]); }
     startLoop(pts.map(p => [Math.round(p[0]), p[1]]), Math.max(150, t));
-    showMemoToast('↻ ' + lbl + ' : boucle de ' + (t / 1000).toFixed(1) + ' s · touche le bouton pour l’arrêter', '#FF2D3F', true);
+    showMemoToast('↻ ' + lbl + ' : boucle de ' + (t / 1000).toFixed(1) + ' s · touche le bouton pour l'arrêter', '#FF2D3F', true);
   }
 
   dial.addEventListener('pointerdown', (e) => {
@@ -3322,7 +3334,7 @@ function blockName(box) {
 }
 function addAutoMark(box, head, before, global) {
   const el = document.createElement('span'); el.className = 'auto-mark';
-  el.innerHTML = '<b title="Boutons qui ont une boucle d’automatisation">↻ 0</b>'
+  el.innerHTML = '<b title="Boutons qui ont une boucle d'automatisation">↻ 0</b>'
                + '<button type="button" title="Choisir le reset">⟲ ' + (global ? 'TOUT RESET' : 'RESET') + ' ▾</button>';
   const m = { box, el, count: el.querySelector('b'), btn: el.querySelector('button') };
   m.btn.addEventListener('pointerdown', e => e.stopPropagation());
@@ -3606,7 +3618,7 @@ async function tabCapture() {
   });
   if (!stream.getAudioTracks().length) {
     stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
-    throw new Error('Aucun son reçu. Choisis l’onglet et coche « Partager l’audio de cet onglet ».');
+    throw new Error('Aucun son reçu. Choisis l'onglet et coche « Partager l'audio de cet onglet ».');
   }
   stream.getVideoTracks().forEach(t => { try { t.stop(); } catch (e) {} });
   if (audioCtx.state === 'suspended') await audioCtx.resume();
@@ -3640,8 +3652,10 @@ async function stopCapture() {
    SNIF AUDIO — un seul bouton, sans lien à coller :
    on choisit un onglet (ou une fenêtre) et son son passe dans l'EQ + les effets.
    Un 2e clic ajoute un autre onglet, mélangé au premier.
+   Sur mobile, la branche « Micro » est utilisée à la place.
    ========================================================= */
 async function snifAudio() {
+  if (IS_MOBILE) return snifAudioMic();
   if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
     setStatus('⚠ Capture indisponible : utilise Chrome ou Edge sur ordinateur.'); return;
   }
@@ -3655,7 +3669,7 @@ async function snifAudio() {
       }
       buildGraph();
     }
-    setStatus('👆 Choisis l’onglet puis coche « Partager l’audio »');
+    setStatus('👆 Choisis l'onglet puis coche « Partager l'audio »');
     tSnif = performance.now();
     await tabCapture();
     applyAll();
@@ -3676,10 +3690,75 @@ async function snifAudio() {
     render();
   }
 }
-document.getElementById('snif').addEventListener('click', snifAudio);
-if (!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia)) {
-  const sb = document.getElementById('snif'); sb.style.opacity = '.45'; sb.title = 'Indisponible dans ce navigateur (Chrome ou Edge sur ordinateur)';
+
+/* =========================================================
+   SNIF MICRO (mobile) — capte le son ambiant via le micro
+   et le fait passer dans l'EQ + les pédales.
+   Conseils : utilise des écouteurs pour éviter le larsen,
+   ou fais jouer la source sur un autre appareil / une enceinte.
+   ========================================================= */
+async function snifAudioMic() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    setStatus('⚠ Micro indisponible dans ce navigateur.'); return;
+  }
+  const first = !tabCaptureActive;
+  try {
+    if (first) {
+      if (isPlaying) {                                       // coupe la radio en cours
+        isPlaying = false; sessionId++;
+        [mixEl, player].forEach(el => { try { if (el) { el.pause(); el.removeAttribute('src'); el.load(); } } catch (e) {} });
+      }
+      buildGraph();
+    }
+    setStatus('👆 Autorise le micro pour capter le son');
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: false,      // sinon le navigateur annule le son de l'enceinte
+        noiseSuppression: false,      // sinon la musique est prise pour du bruit
+        autoGainControl: false,       // sinon le niveau bouge tout seul
+        channelCount: 2
+      },
+      video: false
+    });
+    if (!stream.getAudioTracks().length) {
+      stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+      throw new Error('Aucune piste micro reçue.');
+    }
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+    const src = audioCtx.createMediaStreamSource(stream), gain = audioCtx.createGain();
+    src.connect(gain); gain.connect(inBus);
+    const tab = { stream, src, gain, n: ++capTabCount, muted: false };
+    capTabs.push(tab); tabRegain();
+    stream.getAudioTracks().forEach(t => t.addEventListener('ended', () => tabRemove(tab), { once: true }));
+    applyAll();
+    if (first) {
+      tabCaptureActive = true; capSnif = true; capStream = false; isPlaying = true; usingMix = true;
+      currentStation = { n: 'Snif Micro', g: 'Capture micro', u: 'capture://mic', alts: [] };
+      title('Snif Micro');
+    }
+    setStatus('● Snif Micro · ' + capTabs.length + ' source' + (capTabs.length > 1 ? 's' : '') + ' · EQ + pédales');
+    render();
+  } catch (e) {
+    const nm = String(e && e.name ? e.name : ''), msg = String(e && e.message ? e.message : e);
+    if (/NotAllowed|denied/i.test(nm)) setStatus('⚠ Micro refusé. Autorise l'accès puis retouche Snif.');
+    else setStatus('⚠ Snif Micro impossible : ' + (msg || nm));
+    render();
+  }
 }
+
+document.getElementById('snif').addEventListener('click', snifAudio);
+/* ===== Bouton Snif : libellé et état, selon la plateforme ===== */
+(function initSnifButton() {
+  const sb = document.getElementById('snif');
+  if (!sb) return;
+  if (IS_MOBILE) {
+    sb.textContent = '👂 Snif Micro';
+    sb.title = 'Capter le son ambiant (enceinte, autre appareil, autre appli) et le passer dans l'EQ + les effets';
+  } else if (!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia)) {
+    sb.style.opacity = '.45';
+    sb.title = 'Indisponible dans ce navigateur (Chrome ou Edge sur ordinateur)';
+  }
+})();
 
 
 /* =========================================================
@@ -4231,12 +4310,12 @@ function agReport(a, pl) {
   if (pl.fx.chor) fxl.push('Chichorus ' + WAVES[pl.fx.chor.chorWave].n.toLowerCase() + ', mix ' + pl.fx.chor.chorMix);
   const lp = { rvbMix: 'réverb qui respire', spatial: 'son qui voyage', echMix: 'écho qui pulse', highL: 'brillance L', highR: 'brillance R', fxMix: 'respiration brut ↔ effets' };
   const el = document.getElementById('agReport'); el.classList.add('show');
-  el.innerHTML = '<h5>🎧 Ce que j\'ai entendu</h5><ul>'
+  el.innerHTML = '<h5>🎧 Ce que j'ai entendu</h5><ul>'
     + '<li>Style : <b>' + pl.genre + '</b> → sous-genre le plus proche : <b>' + pl.sub + '</b></li>'
     + '<li>Tempo : <b>' + pl.bpm + ' BPM</b>' + (pl.sure ? '' : ' (incertain)') + ' · dynamique ' + a.crest.toFixed(1) + ' dB · niveau ' + a.rmsDb.toFixed(1) + ' dBFS</li>'
     + '<li>Graves ' + words[0] + ', bas-médium ' + words[1] + ', aigus ' + words[3] + ' / ' + words[4] + '</li>'
     + '<li>Stéréo : ' + (a.corr > 0.97 ? 'presque mono' : a.corr > 0.7 ? 'normale' : 'très large') + (pl.balance ? ' · balance corrigée ' + pl.balance : '') + '</li></ul>'
-    + '<h5 style="margin-top:10px">🎚 Ce que j\'ai réglé</h5><div class="ag-bands">' + bands + '</div><ul>'
+    + '<h5 style="margin-top:10px">🎚 Ce que j'ai réglé</h5><div class="ag-bands">' + bands + '</div><ul>'
     + '<li>Volume ' + (pl.gain > 0 ? '+' : '') + pl.gain + ' dB · ' + fxl.join(' · ') + '</li>'
     + (pl.loops.length ? '<li>Automatisations (étoile allumée) : ' + pl.loops.map(L => lp[L.key] + ' ' + Math.round(L.dur / (240000 / pl.bpm)) + ' mes.').join(', ') + '</li>' : '')
     + '</ul>';
@@ -4247,11 +4326,11 @@ function agExplore(strength) {
 }
 async function agRun(strength) {
   if (agBusy || !agOn) return;
-  if (!graphBuilt || !agAna || !isPlaying) { showMemoToast('🤖 Lance d\'abord la radio ou Snif Audio : l\'agent doit écouter la musique', '#FFC23D', true); return; }
+  if (!graphBuilt || !agAna || !isPlaying) { showMemoToast('🤖 Lance d'abord la radio ou Snif Audio : l'agent doit écouter la musique', '#FFC23D', true); return; }
   agBusy = true; const go = document.getElementById('agGo'); go.disabled = true;
   if (audioCtx.state === 'suspended') await audioCtx.resume();
   const a = await agListen(8000);
-  if (a.rmsDb < -60) { agSt('silence : rien entendu'); showMemoToast('🤖 Je n\'entends rien : monte le son de la source', '#FFC23D', true); go.disabled = false; agBusy = false; return; }
+  if (a.rmsDb < -60) { agSt('silence : rien entendu'); showMemoToast('🤖 Je n'entends rien : monte le son de la source', '#FFC23D', true); go.disabled = false; agBusy = false; return; }
   const sel = document.getElementById('agGenre').value, genre = sel === 'auto' ? agGuessGenre(a) : sel;
   const pl = agPlan(a, genre, agExplore(strength));
   agApply(pl); agReport(a, pl);
@@ -4310,7 +4389,7 @@ document.getElementById('agTweak').onclick = () => {
   const mixes = ['rvbMix', 'echMix', 'drvMix', 'chorMix'].filter(k => was[k] > 0);
   if (mixes.length) { const ratio = mixes.reduce((s, k) => s + (now[k] + 1) / (was[k] + 1), 0) / mixes.length; t.fx = clamp(t.fx * (1 + 0.6 * (ratio - 1)), 0.4, 2); }
   agMem.votes++; agSave(); agLearnPaint(); agLast.pl.applied = agSnapshot();
-  showMemoToast('✍ J\'ai appris tes retouches pour le style ' + agLast.pl.genre, '#B9FF45', true);
+  showMemoToast('✍ J'ai appris tes retouches pour le style ' + agLast.pl.genre, '#B9FF45', true);
 };
 document.getElementById('agKeep').onclick = () => {
   if (!agLast) return;
@@ -4345,7 +4424,7 @@ document.getElementById('agPopYes').onclick = () => {
   if (mode === 'agent' && agLast) {
     document.getElementById('agYes').click();
     agSaveAuto(agLast.pl.genre + ' · ' + agLast.pl.sub + ' · ' + agLast.pl.bpm + ' BPM');
-    showMemoToast('✔ Enregistré dans les presets de l’agent, et appris 👍', '#B9FF45', true);
+    showMemoToast('✔ Enregistré dans les presets de l'agent, et appris 👍', '#B9FF45', true);
   } else if (mode === 'manual') {
     // réglage fait à la main : on l'enregistre et on apprend l'égaliseur pour le style en cours
     const g = agLast ? agLast.pl.genre : (document.getElementById('agGenre').value !== 'auto' ? document.getElementById('agGenre').value : null);
@@ -4385,7 +4464,7 @@ document.getElementById('agPopX').onclick = agPopClose;
 const agApplyOrig = agApply;
 agApply = function (pl) {
   agApplyOrig(pl); agManualDirty = false; agPopClose(); clearTimeout(agPopTimer);
-  agPopTimer = setTimeout(() => { if (isPlaying) agAsk('agent', 'Preset ' + pl.genre + ' · ' + pl.sub + '. Oui = je l’enregistre et je retiens. Non = je te propose une autre version.'); }, 15000);
+  agPopTimer = setTimeout(() => { if (isPlaying) agAsk('agent', 'Preset ' + pl.genre + ' · ' + pl.sub + '. Oui = je l'enregistre et je retiens. Non = je te propose une autre version.'); }, 15000);
 };
 // réglages faits à la main : après 25 s sans toucher (musique en cours), on demande
 document.addEventListener('pointerup', e => {
@@ -4395,7 +4474,7 @@ setInterval(() => {
   if (!agOn || !agManualDirty || !isPlaying || agBusy) return;
   if (Date.now() - agManualAt < 25000 || Date.now() - agLastAsk < 120000) return;
   agManualDirty = false;
-  agAsk('manual', 'Tu viens de régler les boutons. Oui = j’enregistre ce réglage et j’apprends tes goûts.');
+  agAsk('manual', 'Tu viens de régler les boutons. Oui = j'enregistre ce réglage et j'apprends tes goûts.');
 }, 5000);
 
 /* =========================================================
@@ -4435,7 +4514,7 @@ async function recSave(blob, ext) {
 function recUi(on) {
   if (window.juliaFx && window.juliaFx.rec) window.juliaFx.rec(on);   // le fond fractal passe en rouge / noir
   recWrap.classList.toggle('on', on);
-  document.getElementById('recBtn').title = on ? 'Arrêter l’enregistrement et l’écrire sur le disque dur' : REC_TITLE_OFF;
+  document.getElementById('recBtn').title = on ? 'Arrêter l'enregistrement et l'écrire sur le disque dur' : REC_TITLE_OFF;
   if (on) { recT0 = performance.now(); recPaint(); recTick = setInterval(recPaint, 500); }
   else { clearInterval(recTick); recTick = null; }
 }
@@ -4542,7 +4621,7 @@ async function recStopPcm() {
   const st = recPcm; recPcm = null;
   recUi(false);
   await st.tap.stop(); st.tap.close();
-  if (!st.frames) { showMemoToast('○ Rien d’enregistré', '#FF2D3F', true); return; }
+  if (!st.frames) { showMemoToast('○ Rien d'enregistré', '#FF2D3F', true); return; }
   if (st.enc) {
     const tail = st.enc.flush(); if (tail.length) st.parts.push(new Uint8Array(tail));
     recSave(new Blob(st.parts, { type: 'audio/mpeg' }), 'mp3');
@@ -4589,7 +4668,7 @@ recFmtBtn.addEventListener('click', () => {
   try { localStorage.setItem('core_rec_fmt', recFmt); } catch (e) {}
   recFmtPaint();
   if (recFmt === 'mp3') loadLame();
-  showMemoToast('Format d’enregistrement : ' + recFmt.toUpperCase(), '#FF2D3F', true);
+  showMemoToast('Format d'enregistrement : ' + recFmt.toUpperCase(), '#FF2D3F', true);
 });
 document.getElementById('recBtn').addEventListener('click', () => { if (recBusy) return; (recorder || recPcm) ? recStop() : recStart(); });
 window.addEventListener('beforeunload', e => { if (recorder || recPcm) { e.preventDefault(); e.returnValue = ''; } });
