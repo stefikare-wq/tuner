@@ -738,6 +738,12 @@ html.ui-hidden .orb{border-color:#B26BFF;box-shadow:0 0 12px rgba(178,107,255,.7
 html.ui-hidden .orb::after{background:#B26BFF;box-shadow:0 0 8px #B26BFF}
 html.ui-hidden body>*:not(canvas){visibility:hidden!important}
 html.ui-hidden .orb{visibility:visible!important}
+/* 4e état (blanc) : écran noir, rien d'affiché, le son et ses réglages continuent */
+html.screen-off,html.screen-off body{background:#000!important}
+html.screen-off #julia{display:none}
+html.screen-off body>*:not(canvas){visibility:hidden!important}
+html.screen-off .orb{visibility:visible!important;border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,.45)}
+html.screen-off .orb::after{background:#fff;box-shadow:0 0 8px rgba(255,255,255,.8)}
 html.julia-on.julia-off{background:var(--void)}
 html.julia-on.julia-off body{background:radial-gradient(70% 44% at 10% -6%,rgba(47,231,255,.13),transparent 62%),
   radial-gradient(64% 42% at 94% 2%,rgba(255,61,158,.11),transparent 60%),var(--void)}
@@ -1273,21 +1279,23 @@ void main(){
   var canvas = document.getElementById('julia');
   var root = document.documentElement, orb = document.getElementById('orb');
   var wake = function () {};
-  // Logo = interrupteur du fond, choix mémorisé. 3 états : 0 = rouge (fond coupé, par défaut) · 1 = cyan (fond allumé) · 2 = violet (fond seul, interface cachée)
-  var mode = 0, juliaOn = false;
+  // Logo = interrupteur du fond, choix mémorisé. 4 états : 0 = rouge (fond coupé, par défaut) · 1 = cyan (fond allumé) · 2 = violet (fond seul, interface cachée)
+  var mode = 0, juliaOn = false;   // 3 = blanc : écran noir, rien d'affiché
   try { var sv = localStorage.getItem('core_julia'); mode = sv === 'ui' ? 2 : (sv === 'on' ? 1 : 0); } catch (e) {}
-  var ORB_TITLES = ['Fond fractal coupé (touche pour l’allumer)', 'Fond fractal allumé (touche : fond seul, sans interface)', 'Fond seul : interface cachée (touche pour la revenir et couper le fond)'];
+  var ORB_TITLES = ['Fond fractal coupé (touche pour l’allumer)', 'Fond fractal allumé (touche : fond seul, sans interface)', 'Fond seul : interface cachée (touche : écran noir)', 'Écran noir : le son continue (touche pour tout réafficher)'];
   function paintOrb() {
     if (mode === 2 && !gl) mode = 1;                       // pas de fractale possible : on ne cache pas l'interface
-    juliaOn = mode > 0;
+    juliaOn = mode === 1 || mode === 2;                     // la fractale ne tourne que dans ces deux états
     root.classList.toggle('julia-off', mode === 0);
     root.classList.toggle('ui-hidden', mode === 2);
+    root.classList.toggle('screen-off', mode === 3);
     orb.title = ORB_TITLES[mode];
     orb.setAttribute('aria-label', ORB_TITLES[mode]);
   }
   function toggleJulia() {
-    mode = (mode + 1) % 3;
-    try { localStorage.setItem('core_julia', ['off', 'on', 'ui'][mode]); } catch (e) {}
+    mode = (mode + 1) % 4;
+    if (mode === 2 && !gl) mode = 3;                       // pas de fractale possible : on saute le violet
+    try { localStorage.setItem('core_julia', ['off', 'on', 'ui', 'off'][mode]); } catch (e) {}   // l'écran noir n'est pas mémorisé
     paintOrb(); if (juliaOn) wake();
   }
   var gl = canvas.getContext('webgl2', { antialias: false, alpha: false });
@@ -3488,6 +3496,7 @@ let idle = 0, lastFrame = 0;
   const t = now || performance.now();
   if (t - lastFrame < 40) return;
   lastFrame = t;
+  if (document.documentElement.classList.contains('screen-off')) return;   // écran noir : aucun dessin, le son continue
 
   const playing = isPlaying;
   const live = playing && usingMix && analyser && _waveData;
