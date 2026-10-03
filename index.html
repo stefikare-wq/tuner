@@ -763,6 +763,25 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
   /* ===== Snif Audio : 6e bouton de la barre ===== */
   .tb-btns #power,.tb-btns #snif{grid-column:span 3}
   .pill.snif-btn{background:linear-gradient(135deg,#B9FF45,#4FA81A);color:#08150A}
+  #snifSheet{position:fixed;left:0;right:0;bottom:0;z-index:60;max-height:86vh;max-height:86dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    background:linear-gradient(180deg,#0B1020,#06080F);border-top:1px solid rgba(185,255,69,.5);border-radius:24px 24px 0 0;
+    padding:20px 18px calc(env(safe-area-inset-bottom,0px) + 20px);box-shadow:0 -20px 60px rgba(0,0,0,.65);
+    transform:translateY(110%);transition:transform .32s var(--e);visibility:hidden}
+  #snifSheet.open{transform:none;visibility:visible}
+  #snifSheet h3{margin:0 0 6px;font-size:24px;color:var(--lime)}
+  #snifSheet p{margin:0 0 14px;font-size:17px;line-height:1.45;color:var(--muted)}
+  #snifSheet .srow{display:flex;gap:10px;margin-bottom:12px}
+  #snifSheet input{flex:1;min-width:0;min-height:56px;font:inherit;font-size:19px;padding:0 16px;border-radius:16px;color:var(--ice);
+    background:rgba(234,241,255,.06);border:1px solid var(--edge2);outline:none;user-select:text;-webkit-user-select:text}
+  #snifSheet input:focus{border-color:var(--lime)}
+  #snifSheet .pill{min-height:56px;font-size:19px}
+  #snifSheet .pill.go{background:linear-gradient(135deg,#B9FF45,#4FA81A);color:#08150A}
+  #snifSheet .close{position:absolute;right:14px;top:12px;width:44px;height:44px;font-size:24px;color:var(--muted)}
+  #snifRes{font-size:18px;color:var(--muted);line-height:1.5}
+  #snifRes b{color:var(--ice)}
+  #snifRes .hit{display:block;width:100%;text-align:left;padding:14px 16px;margin-top:8px;border-radius:14px;color:var(--ice);
+    background:rgba(185,255,69,.08);border:1px solid rgba(185,255,69,.35);word-break:break-all;font-size:17px}
+  #snifRes .hit small{display:block;color:var(--muted);margin-top:2px}
   .pill.snif-btn.live{box-shadow:0 0 0 3px rgba(185,255,69,.25),0 0 26px rgba(185,255,69,.6)}
   @media (min-width:900px){ .tb-btns{grid-template-columns:repeat(5,1fr)!important} .tb-btns .pill,.tb-btns #power,.tb-btns #snif{grid-column:auto} }
   @media (max-width:700px){ .tb-btns #snif{font-size:17px} }
@@ -1382,8 +1401,8 @@ void main(){
 (function(){
 "use strict";
 
-// Snif Audio : sur ordinateur = partage du son d'un onglet ; sur téléphone ce partage n'existe pas → on capte l'entrée audio (micro, casque, interface USB)
-const SNIF_TAB = !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+// Snif Audio : sur ordinateur = partage du son d'un onglet ; sur téléphone ce partage n'existe pas → « Snif Page » (on trouve le flux audio d'une page web)
+const SNIF_PHONE = !(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
 const CORS_PROXY = 'https://soft-brook-0e52.stefikare.workers.dev/?url=';
 
 function proxify(u) {
@@ -2385,7 +2404,7 @@ function render() {
   const p = isPlaying;
   try { if ('mediaSession' in navigator) navigator.mediaSession.playbackState = p ? 'playing' : 'paused'; } catch (e) {}
   const sb = document.getElementById('snif');
-  if (sb) { sb.classList.toggle('live', capSnif); sb.textContent = SNIF_TAB ? (capSnif ? '● Snif ON' : '👂 Snif Audio') : (capSnif ? '● Entrée ON' : '🎤 Entrée audio'); }
+  if (sb) { sb.classList.toggle('live', capSnif); sb.textContent = SNIF_PHONE ? '👂 Snif Page' : (capSnif ? '● Snif ON' : '👂 Snif Audio'); }
   waveEl.classList.toggle('on', p);
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
@@ -3736,9 +3755,6 @@ async function tabCapture() {
     throw new Error('Aucun son reçu. Choisis l’onglet et coche « Partager l’audio de cet onglet ».');
   }
   stream.getVideoTracks().forEach(t => { try { t.stop(); } catch (e) {} });
-  return tabFromStream(stream);
-}
-async function tabFromStream(stream) {
   if (audioCtx.state === 'suspended') await audioCtx.resume();
   const src = audioCtx.createMediaStreamSource(stream), gain = audioCtx.createGain();
   src.connect(gain); gain.connect(inBus);
@@ -3746,13 +3762,6 @@ async function tabFromStream(stream) {
   capTabs.push(tab); tabRegain();
   stream.getAudioTracks().forEach(t => t.addEventListener('ended', () => tabRemove(tab), { once: true }));
   return tab;
-}
-// Téléphone : entrée audio brute (micro, prise casque, interface USB), sans traitement du navigateur
-async function inputCapture(deviceId) {
-  const audio = { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: { ideal: 2 } };
-  if (deviceId) audio.deviceId = { exact: deviceId };
-  const stream = await navigator.mediaDevices.getUserMedia({ audio });
-  return tabFromStream(stream);
 }
 function tabRemove(tab) {
   const i = capTabs.indexOf(tab); if (i < 0) return;
@@ -3813,61 +3822,181 @@ async function snifAudio() {
     render();
   }
 }
-
-/* ---- Téléphone : « Snif » = entrée audio (micro, casque micro, interface USB) → EQ + pédales.
-   Un navigateur de téléphone ne peut pas capter le son d'une autre appli ou d'un autre onglet : on capte donc ce qui entre.
-   2e appui = entrée suivante (si plusieurs). Arrêt = bouton Stop. ---- */
-async function snifInput() {
-  if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    setStatus('⚠ Entrée audio impossible : la page doit être ouverte en https (ou localhost) pour que le navigateur autorise le micro.'); return;
-  }
-  const first = !tabCaptureActive;
-  let deviceId = null, old = null;
-  try {
-    if (first) {
-      if (isPlaying) {                                       // coupe la radio en cours
-        isPlaying = false; sessionId++;
-        [mixEl, player].forEach(el => { try { if (el) { el.pause(); el.removeAttribute('src'); el.load(); } } catch (e) {} });
-      }
-      buildGraph();
-    } else {                                                 // 2e appui : on passe à l'entrée suivante
-      const devs = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'audioinput' && d.deviceId && d.deviceId !== 'communications');
-      if (devs.length < 2) { setStatus('ℹ Une seule entrée audio détectée. Branche un casque micro ou une interface USB pour en avoir une autre.'); return; }
-      old = capTabs[capTabs.length - 1];
-      const cur = old && old.stream.getAudioTracks()[0] && old.stream.getAudioTracks()[0].getSettings().deviceId;
-      const i = devs.findIndex(d => d.deviceId === cur);
-      deviceId = devs[(i + 1) % devs.length].deviceId;
-    }
-    setStatus('🎤 Autorise l’accès au micro / à l’entrée audio…');
-    const tab = await inputCapture(deviceId);
-    if (old) tabRemove(old);
-    applyAll();
-    if (first) {
-      tabCaptureActive = true; capSnif = true; capStream = false; isPlaying = true; usingMix = true;
-      currentStation = { n: 'Entrée audio', g: 'Micro / interface', u: 'capture://snif', alts: [] };
-      title('Entrée audio');
-    }
-    const tr = tab.stream.getAudioTracks()[0];
-    const label = (tr && tr.label ? tr.label : 'entrée').replace(/\s*\(.*?\)\s*$/, '').slice(0, 28);
-    setStatus('● Entrée audio · ' + label + ' · EQ + pédales · 🎧 mets un casque (sinon larsen)');
-    render();
-  } catch (e) {
-    const nm = String(e && e.name ? e.name : ''), msg = String(e && e.message ? e.message : e);
-    setStatus(/NotAllowed|Permission/i.test(nm) ? '⚠ Micro refusé : autorise-le dans les réglages du site (cadenas du navigateur), puis réessaie.'
-      : /NotFound|Overconstrained/i.test(nm) ? '⚠ Aucune entrée audio trouvée sur cet appareil.'
-      : /NotReadable|Abort/i.test(nm) ? '⚠ Entrée audio occupée par une autre appli (appel, enregistreur…).'
-      : '⚠ ' + msg);
-    render();
-  }
-}
-document.getElementById('snif').addEventListener('click', SNIF_TAB ? snifAudio : snifInput);
-if (!SNIF_TAB) {
+document.getElementById('snif').addEventListener('click', () => { if (SNIF_PHONE) { if (window.snifSheetOpen) window.snifSheetOpen(); } else snifAudio(); });
+if (SNIF_PHONE) {
   const sb = document.getElementById('snif');
-  sb.textContent = '🎤 Entrée audio';
-  sb.title = 'Téléphone : capte le micro, la prise casque ou une interface USB et le passe dans l’EQ + les effets (2e appui : entrée suivante)';
-  if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { sb.style.opacity = '.45'; sb.title = 'Indisponible : ouvre la page en https (ou localhost)'; }
+  sb.textContent = '👂 Snif Page';
+  sb.title = 'Colle l’adresse d’une page web : l’appli trouve son flux audio et le passe dans l’EQ + les effets';
 }
 
+
+/* =========================================================
+   SNIF PAGE (téléphone) — colle l'adresse d'une page web (ou d'un lien de flux) : l'appli y cherche le flux audio
+   et le joue dans l'EQ + les pédales. Le son d'un autre onglet ou d'une autre appli n'est pas captable depuis un
+   navigateur de téléphone ; on récupère donc directement le flux à la source.
+   ========================================================= */
+const SNIF_AUDIO_EXT = /\.(?:mp3|aac|m4a|ogg|oga|opus|flac|wav|m3u8)(?:[?#]|$)/i;
+const SNIF_LIST_EXT = /\.(?:m3u|pls)(?:[?#]|$)/i;
+const SNIF_JUNK = /\.(?:js|css|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|json|xml|html?)(?:[?#]|$)/i;
+const SNIF_ADS = /doubleclick|googlesyndication|google-analytics|adswizz|adsrvr|facebook\.|twitter\.|\/ads?\/|[\/_.-]preroll|[\/_.-]midroll|tracker|pixel/i;
+function snifScore(u) {
+  if (/\.(?:mp3|aac)(?:[?#]|$)/i.test(u)) return 10;
+  if (/\.(?:ogg|oga|opus|m4a|flac)(?:[?#]|$)/i.test(u)) return 8;
+  if (SNIF_LIST_EXT.test(u)) return 7;
+  if (/\.m3u8(?:[?#]|$)/i.test(u)) return 5;
+  return 4;
+}
+function snifExtract(text, base) {
+  const t = String(text || '').replace(/\\u0026/gi, '&').replace(/\\u002F/gi, '/').replace(/\\\//g, '/').replace(/&amp;/g, '&').replace(/&#x2F;/gi, '/').replace(/&#47;/g, '/');
+  const found = new Map();
+  const add = (raw, score) => {
+    let u;
+    try { u = new URL(String(raw).trim().replace(/[)\],.;]+$/, ''), base).href; } catch (e) { return; }
+    if (!/^https?:/i.test(u) || SNIF_ADS.test(u) || SNIF_JUNK.test(u) && !SNIF_AUDIO_EXT.test(u) && !SNIF_LIST_EXT.test(u)) return;
+    if (found.has(u)) { if (score > found.get(u)) found.set(u, score); return; }
+    found.set(u, score);
+  };
+  let m;
+  const re1 = /https?:\/\/[^\s"'<>\\`]+?\.(?:mp3|aac|m4a|ogg|oga|opus|flac|m3u8|m3u|pls)(?:\?[^\s"'<>\\`]*)?/gi;
+  while ((m = re1.exec(t))) add(m[0], snifScore(m[0]));
+  const re2 = /(?:src|href|data-[\w-]+|content|file|url|stream|source)\s*[=:]\s*["']([^"'<>]+?\.(?:mp3|aac|m4a|ogg|opus|m3u8|m3u|pls)(?:\?[^"'<>]*)?)["']/gi;
+  while ((m = re2.exec(t))) add(m[1], snifScore(m[1]));
+  const re3 = /<(?:audio|source)\b[^>]*?\bsrc\s*=\s*["']([^"']+)["']|<meta[^>]+property=["']og:audio(?::url|:secure_url)?["'][^>]*content=["']([^"']+)["']/gi;
+  while ((m = re3.exec(t))) add(m[1] || m[2], 9);
+  const re4 = /["']?\b(?:stream|streamurl|stream_url|listen_url|listenurl|audio_url|audiourl|mount|url_resolved)\b["']?\s*[:=]\s*["'](https?:\/\/[^"']+)["']/gi;
+  while ((m = re4.exec(t))) add(m[1], 6);
+  const re4b = /["'](?:audio|file|src)["']\s*:\s*["'](https?:\/\/[^"']+)["']/gi;
+  while ((m = re4b.exec(t))) add(m[1], 5);
+  const re5 = /https?:\/\/[^\s"'<>\\`]*?(?:icecast|shoutcast|streamtheworld|streaming\.radio\.co|zeno\.fm|streamguys|radiojar|infomaniak|stream\.)[^\s"'<>\\`]*/gi;
+  while ((m = re5.exec(t))) add(m[0], 3);
+  return Array.from(found.entries()).map(([url, score], i) => ({ url, score, i }))
+    .sort((a, b) => b.score - a.score || a.i - b.i).map(x => x.url);
+}
+function snifParseList(text, base) {
+  const out = [], t = String(text || '');
+  let m; const re = /^\s*File\d+\s*=\s*(\S+)\s*$/gim;
+  while ((m = re.exec(t))) out.push(m[1]);
+  if (!out.length && !/#EXT-X-/i.test(t)) t.split(/\r?\n/).forEach(l => { l = l.trim(); if (l && l[0] !== '#') out.push(l); });
+  const res = [];
+  out.forEach(u => { try { const a = new URL(u, base).href; if (/^https?:/i.test(a)) res.push(a); } catch (e) {} });
+  return res;
+}
+async function snifGet(url) {
+  const once = async (u) => {
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 10000);
+    try {
+      const res = await fetch(u, { signal: ctl.signal });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const ct = (res.headers.get('content-type') || '').toLowerCase();
+      if (/^audio\//.test(ct) && !/mpegurl|scpls/.test(ct)) { ctl.abort(); return { audio: true }; }
+      const rd = res.body && res.body.getReader ? res.body.getReader() : null;
+      if (!rd) return { text: await res.text() };
+      const chunks = []; let got = 0, first = true;
+      while (got < 700000) {
+        const r = await rd.read(); if (r.done) break;
+        const b = r.value;
+        if (first) {
+          first = false;
+          const sig = String.fromCharCode(b[0] || 0, b[1] || 0, b[2] || 0);
+          if (sig === 'ID3' || sig === 'Ogg' || sig === 'ICY' || (b[0] === 0xFF && (b[1] & 0xE0) === 0xE0)) { ctl.abort(); return { audio: true }; }
+        }
+        chunks.push(b); got += b.length;
+      }
+      try { ctl.abort(); } catch (e) {}
+      return { text: await new Blob(chunks).text() };
+    } finally { clearTimeout(to); }
+  };
+  try { return await once(CORS_PROXY + encodeURIComponent(url)); }      // le proxy passe les blocages CORS
+  catch (e) { return await once(url); }
+}
+async function snifRun(raw) {
+  let url = String(raw || '').trim();
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  const host = new URL(url).hostname.replace(/^www\./, '');
+  if (SNIF_AUDIO_EXT.test(url)) return { name: host, streams: [url] };                    // lien de flux direct
+  let list = [], name = host;
+  if (SNIF_LIST_EXT.test(url)) {
+    const g = await snifGet(url);
+    list = g.audio ? [url] : snifParseList(g.text, url);
+  } else {
+    const g = await snifGet(url);
+    if (g.audio) return { name: host, streams: [url] };                                    // le lien était déjà un flux
+    const tm = /<meta[^>]+property=["']og:title["'][^>]*content=["']([^"']+)["']/i.exec(g.text) || /<title[^>]*>([^<]{1,80})<\/title>/i.exec(g.text);
+    if (tm) name = tm[1].replace(/\s+/g, ' ').trim().slice(0, 40) || host;
+    list = snifExtract(g.text, url);
+  }
+  // les listes de lecture (.m3u / .pls) sont ouvertes pour en sortir le vrai flux
+  const lists = list.filter(u => SNIF_LIST_EXT.test(u)).slice(0, 3), direct = list.filter(u => !SNIF_LIST_EXT.test(u));
+  for (const l of lists) {
+    try { const g = await snifGet(l); if (g.text) snifParseList(g.text, l).forEach(u => { if (!SNIF_ADS.test(u) && (!SNIF_JUNK.test(u) || SNIF_AUDIO_EXT.test(u))) direct.push(u); }); } catch (e) {}
+  }
+  const seen = {}, streams = [];
+  direct.forEach(u => { if (!seen[u]) { seen[u] = 1; streams.push(u); } });
+  return { name, streams: streams.slice(0, 8) };
+}
+function snifPlay(url, name) {
+  let st = CORE.find(x => x.u === url);
+  if (!st) {
+    st = { n: name, g: 'Snif Page', c: 'all', q: '', u: url, alts: [], custom: true, cap: false };
+    CORE.push(st); customStations.push(st); saveCustomStations();
+  }
+  playStation(st);
+}
+(function snifSheetInit() {
+  if (!SNIF_PHONE) return;
+  const sh = document.createElement('div'); sh.id = 'snifSheet';
+  sh.innerHTML = '<button class="close" id="snifClose" aria-label="Fermer">✕</button>'
+    + '<h3>👂 Snif Page</h3>'
+    + '<p>Copie l’adresse d’une page web (ou d’un lien de flux .mp3, .aac, .m3u, .pls), colle-la ici : je trouve le flux audio et je le passe dans l’EQ + les pédales.</p>'
+    + '<div class="srow"><input id="snifUrl" type="url" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://…">'
+    + '<button class="pill ghost" id="snifPaste">Coller</button></div>'
+    + '<div class="srow"><button class="pill go" id="snifGo" style="flex:1">Sniffer</button></div>'
+    + '<div id="snifRes"></div>';
+  document.body.appendChild(sh);
+  const inp = sh.querySelector('#snifUrl'), res = sh.querySelector('#snifRes');
+  const open = () => {
+    sh.classList.add('open');
+    if (!inp.value && navigator.clipboard && navigator.clipboard.readText) {
+      navigator.clipboard.readText().then(t => { t = (t || '').trim(); if (/^https?:\/\/\S+$/i.test(t) && !inp.value) inp.value = t; }).catch(() => {});
+    }
+  };
+  const close = () => { sh.classList.remove('open'); inp.blur(); };
+  let busy = false;
+  const go = async () => {
+    if (busy) return;
+    const v = inp.value.trim();
+    if (!v) { res.innerHTML = '<b>Colle d’abord une adresse.</b>'; return; }
+    busy = true; res.innerHTML = '<b>Je cherche le flux audio…</b>';
+    try {
+      const r = await snifRun(v);
+      if (!r.streams.length) {
+        res.innerHTML = '<b>Aucun flux audio trouvé dans cette page.</b><br>Spotify, Deezer, YouTube… protègent leur son, et d’autres sites le chargent par script : ce n’est pas récupérable depuis un téléphone. '
+          + 'Essaie la page « écouter en direct » de la radio, ou colle directement le lien du flux (.mp3, .aac, .m3u, .pls).';
+      } else if (r.streams.length === 1) {
+        res.innerHTML = '<b>Flux trouvé.</b> Lecture…'; snifPlay(r.streams[0], r.name); setTimeout(close, 400);
+      } else {
+        res.innerHTML = '<b>' + r.streams.length + ' flux trouvés</b> — touche celui à écouter :';
+        r.streams.forEach(u => {
+          const b = document.createElement('button'); b.className = 'hit';
+          let tail = u; try { const x = new URL(u); tail = x.hostname + x.pathname.slice(0, 40); } catch (e) {}
+          b.textContent = tail; b.addEventListener('click', () => { snifPlay(u, r.name); close(); });
+          res.appendChild(b);
+        });
+      }
+    } catch (e) {
+      res.innerHTML = '<b>Page injoignable.</b> Vérifie l’adresse et ta connexion.';
+    }
+    busy = false;
+  };
+  sh.querySelector('#snifGo').addEventListener('click', go);
+  sh.querySelector('#snifClose').addEventListener('click', close);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+  sh.querySelector('#snifPaste').addEventListener('click', async () => {
+    try { const t = (await navigator.clipboard.readText() || '').trim(); if (t) { inp.value = t; go(); } else res.innerHTML = '<b>Le presse-papiers est vide.</b>'; }
+    catch (e) { res.innerHTML = '<b>Collage bloqué :</b> appuie longuement dans la case pour coller.'; }
+  });
+  window.snifSheetOpen = open;
+})();
 
 /* =========================================================
    CHORUS — accorde / désaccorde le son (change la tonalité)
