@@ -1382,6 +1382,8 @@ void main(){
 (function(){
 "use strict";
 
+// Snif Audio : sur ordinateur = partage du son d'un onglet ; sur téléphone ce partage n'existe pas → on capte l'entrée audio (micro, casque, interface USB)
+const SNIF_TAB = !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
 const CORS_PROXY = 'https://soft-brook-0e52.stefikare.workers.dev/?url=';
 
 function proxify(u) {
@@ -2383,7 +2385,7 @@ function render() {
   const p = isPlaying;
   try { if ('mediaSession' in navigator) navigator.mediaSession.playbackState = p ? 'playing' : 'paused'; } catch (e) {}
   const sb = document.getElementById('snif');
-  if (sb) { sb.classList.toggle('live', capSnif); sb.textContent = capSnif ? '● Snif ON' : '👂 Snif Audio'; }
+  if (sb) { sb.classList.toggle('live', capSnif); sb.textContent = SNIF_TAB ? (capSnif ? '● Snif ON' : '👂 Snif Audio') : (capSnif ? '● Entrée ON' : '🎤 Entrée audio'); }
   waveEl.classList.toggle('on', p);
   npState.classList.toggle('live', p);
   const btn = document.getElementById('power');
@@ -3734,6 +3736,9 @@ async function tabCapture() {
     throw new Error('Aucun son reçu. Choisis l’onglet et coche « Partager l’audio de cet onglet ».');
   }
   stream.getVideoTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+  return tabFromStream(stream);
+}
+async function tabFromStream(stream) {
   if (audioCtx.state === 'suspended') await audioCtx.resume();
   const src = audioCtx.createMediaStreamSource(stream), gain = audioCtx.createGain();
   src.connect(gain); gain.connect(inBus);
@@ -3741,6 +3746,13 @@ async function tabCapture() {
   capTabs.push(tab); tabRegain();
   stream.getAudioTracks().forEach(t => t.addEventListener('ended', () => tabRemove(tab), { once: true }));
   return tab;
+}
+// Téléphone : entrée audio brute (micro, prise casque, interface USB), sans traitement du navigateur
+async function inputCapture(deviceId) {
+  const audio = { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: { ideal: 2 } };
+  if (deviceId) audio.deviceId = { exact: deviceId };
+  const stream = await navigator.mediaDevices.getUserMedia({ audio });
+  return tabFromStream(stream);
 }
 function tabRemove(tab) {
   const i = capTabs.indexOf(tab); if (i < 0) return;
@@ -3801,9 +3813,59 @@ async function snifAudio() {
     render();
   }
 }
-document.getElementById('snif').addEventListener('click', snifAudio);
-if (!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia)) {
-  const sb = document.getElementById('snif'); sb.style.opacity = '.45'; sb.title = 'Indisponible dans ce navigateur (Chrome ou Edge sur ordinateur)';
+
+/* ---- Téléphone : « Snif » = entrée audio (micro, casque micro, interface USB) → EQ + pédales.
+   Un navigateur de téléphone ne peut pas capter le son d'une autre appli ou d'un autre onglet : on capte donc ce qui entre.
+   2e appui = entrée suivante (si plusieurs). Arrêt = bouton Stop. ---- */
+async function snifInput() {
+  if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    setStatus('⚠ Entrée audio impossible : la page doit être ouverte en https (ou localhost) pour que le navigateur autorise le micro.'); return;
+  }
+  const first = !tabCaptureActive;
+  let deviceId = null, old = null;
+  try {
+    if (first) {
+      if (isPlaying) {                                       // coupe la radio en cours
+        isPlaying = false; sessionId++;
+        [mixEl, player].forEach(el => { try { if (el) { el.pause(); el.removeAttribute('src'); el.load(); } } catch (e) {} });
+      }
+      buildGraph();
+    } else {                                                 // 2e appui : on passe à l'entrée suivante
+      const devs = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'audioinput' && d.deviceId && d.deviceId !== 'communications');
+      if (devs.length < 2) { setStatus('ℹ Une seule entrée audio détectée. Branche un casque micro ou une interface USB pour en avoir une autre.'); return; }
+      old = capTabs[capTabs.length - 1];
+      const cur = old && old.stream.getAudioTracks()[0] && old.stream.getAudioTracks()[0].getSettings().deviceId;
+      const i = devs.findIndex(d => d.deviceId === cur);
+      deviceId = devs[(i + 1) % devs.length].deviceId;
+    }
+    setStatus('🎤 Autorise l’accès au micro / à l’entrée audio…');
+    const tab = await inputCapture(deviceId);
+    if (old) tabRemove(old);
+    applyAll();
+    if (first) {
+      tabCaptureActive = true; capSnif = true; capStream = false; isPlaying = true; usingMix = true;
+      currentStation = { n: 'Entrée audio', g: 'Micro / interface', u: 'capture://snif', alts: [] };
+      title('Entrée audio');
+    }
+    const tr = tab.stream.getAudioTracks()[0];
+    const label = (tr && tr.label ? tr.label : 'entrée').replace(/\s*\(.*?\)\s*$/, '').slice(0, 28);
+    setStatus('● Entrée audio · ' + label + ' · EQ + pédales · 🎧 mets un casque (sinon larsen)');
+    render();
+  } catch (e) {
+    const nm = String(e && e.name ? e.name : ''), msg = String(e && e.message ? e.message : e);
+    setStatus(/NotAllowed|Permission/i.test(nm) ? '⚠ Micro refusé : autorise-le dans les réglages du site (cadenas du navigateur), puis réessaie.'
+      : /NotFound|Overconstrained/i.test(nm) ? '⚠ Aucune entrée audio trouvée sur cet appareil.'
+      : /NotReadable|Abort/i.test(nm) ? '⚠ Entrée audio occupée par une autre appli (appel, enregistreur…).'
+      : '⚠ ' + msg);
+    render();
+  }
+}
+document.getElementById('snif').addEventListener('click', SNIF_TAB ? snifAudio : snifInput);
+if (!SNIF_TAB) {
+  const sb = document.getElementById('snif');
+  sb.textContent = '🎤 Entrée audio';
+  sb.title = 'Téléphone : capte le micro, la prise casque ou une interface USB et le passe dans l’EQ + les effets (2e appui : entrée suivante)';
+  if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { sb.style.opacity = '.45'; sb.title = 'Indisponible : ouvre la page en https (ou localhost)'; }
 }
 
 
