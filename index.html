@@ -1594,6 +1594,10 @@ function buildGraph() {
     catch (e2) { audioCtx = new AC(); }
   }
 
+  audioCtx.addEventListener('statechange', () => {      // iOS « interrupted » / Android suspendu : on relance la lecture
+    if (isPlaying && audioCtx.state !== 'running' && audioCtx.state !== 'closed') audioCtx.resume().catch(() => {});
+  });
+
   mixEl = new Audio();
   mixEl.crossOrigin = 'anonymous';
   mixEl.setAttribute('playsinline', '');
@@ -2020,7 +2024,11 @@ function tryPlayBuffered(url, mySession) {
               render();
             } catch (e) { finish(false); return; }
           } else if (started && ahead > STREAM_BUFFER_MAX_S) {
-            await new Promise(r => setTimeout(r, 500));   // freine le téléchargement : le tampon est déjà large
+            await new Promise(r => {                       // freine le téléchargement : le tampon est déjà large
+              const done = () => { mixEl.removeEventListener('timeupdate', done); r(); };
+              mixEl.addEventListener('timeupdate', done);   // la lecture continue d'émettre ça même en arrière-plan
+              setTimeout(done, 500);
+            });
           }
         }
       } catch (e) { finish(started); }
@@ -2091,6 +2099,12 @@ async function streamSession(station, mySession) {
     try { player.pause(); } catch(e) {}
     try { player.removeAttribute('src'); player.load(); } catch(e) {}
     if (!isPlaying || sessionId !== mySession) return;
+    if (station.web && attempt >= plan.length * 2) {         // station de la bibliothèque en ligne qui ne répond plus
+      markDead(station);
+      isPlaying = false; render(); paintList();
+      setStatus('❌ « ' + station.n + ' » ne répond plus : retirée de la liste. Choisis-en une autre.');
+      return;
+    }
     const delay = Math.min(RETRY_BASE * Math.pow(1.6, Math.max(0, attempt - 1)), RETRY_MAX);
     await new Promise(r => setTimeout(r, delay + Math.random() * 500));
   }
@@ -2315,7 +2329,20 @@ const CORE = [
   rm('house','RauteMusik House','house','House, dance'),
   rm('trance','RauteMusik Trance','trance','Trance'),
   rm('rock','RauteMusik Rock','rock','Rock, alternatif'),
-  rp('global-192','Radio Paradise','world','Monde, groove','192 kbps')
+  rp('global-192','Radio Paradise','world','Monde, groove','192 kbps'),
+  rp('mellow-192','Radio Paradise Mellow','chill','Doux, planant','192 kbps'),
+  rp('rock-192','Radio Paradise Rock','rock','Rock, indé','192 kbps'),
+  {n:'NTS 1',g:'Radio libre, tous styles',c:'world',q:'',u:'https://stream-relay-geo.ntslive.net/stream',alts:[]},
+  {n:'NTS 2',g:'Radio libre, tous styles',c:'world',q:'',u:'https://stream-relay-geo.ntslive.net/stream2',alts:[]},
+  {n:'KEXP Seattle',g:'Indé, découvertes',c:'rock',q:'160 kbps',u:'https://kexp.streamguys1.com/kexp160.aac',alts:[]},
+  {n:'Radio Swiss Jazz',g:'Jazz, 24 h/24',c:'jazz',q:'128 kbps',u:'https://stream.srg-ssr.ch/m/rsj/mp3_128',alts:[]},
+  fip('fip','FIP','fr','Éclectique, sans pub'),
+  fip('franceinter','France Inter','fr','Généraliste'),
+  fip('franceculture','France Culture','fr','Culture, débats'),
+  fip('francemusique','France Musique','fr','Classique, jazz'),
+  fip('mouv','Mouv’','fr','Rap, urbain'),
+  fip('franceinfo','franceinfo','fr','Info en continu'),
+  {n:'Radio Nova',g:'Mix, groove, monde',c:'fr',q:'128 kbps',u:'https://novazz.ice.infomaniak.ch/novazz-128.mp3',alts:[]}
 ];
 
 let customStations = [];
@@ -2348,9 +2375,13 @@ const favsList = document.getElementById('favsList');
 const favsMsg = document.getElementById('favsMsg');
 
 function setStatus(msg) { npState.textContent = msg; statusMini.textContent = msg; }
-function title(t) { npName.textContent = t; }
+function title(t) {
+  npName.textContent = t;
+  try { if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: t, artist: 'Radio The Core' }); } catch (e) {}
+}
 function render() {
   const p = isPlaying;
+  try { if ('mediaSession' in navigator) navigator.mediaSession.playbackState = p ? 'playing' : 'paused'; } catch (e) {}
   const sb = document.getElementById('snif');
   if (sb) { sb.classList.toggle('live', capSnif); sb.textContent = capSnif ? '● Snif ON' : '👂 Snif Audio'; }
   waveEl.classList.toggle('on', p);
@@ -2435,6 +2466,7 @@ const TABS = [
   {id:'all',label:'Tout'},
   {id:'fav',label:'★ Favoris', cls:'fav-tab'},
   {id:'custom',label:'Mes ajouts'},
+  {id:'fr',label:'🇫🇷 France'},
   {id:'chill',label:'Chill'},
   {id:'house',label:'House'},
   {id:'jazz',label:'Jazz'},
@@ -2447,6 +2479,26 @@ const TABS = [
 
 let tab = 'all', query = '', online = [];
 
+/* ===== BIBLIOTHÈQUE EN LIGNE — Radio Browser (annuaire communautaire testé en continu) =====
+   Chaque onglet de style va chercher les stations les plus votées dont le flux a répondu récemment. */
+const WEBTABS = {
+  fr:     { cc: 'FR' },
+  chill:  { tags: ['chillout', 'ambient'] },
+  house:  { tags: ['house', 'deep house'] },
+  jazz:   { tags: ['jazz', 'smooth jazz'] },
+  rock:   { tags: ['rock', 'alternative'] },
+  retro:  { tags: ['80s', 'oldies'] },
+  world:  { tags: ['world music', 'reggae'] },
+  urban:  { tags: ['hip hop', 'rnb'] },
+  trance: { tags: ['trance', 'psytrance'] }
+};
+const LIB_KEY = 'core_lib2', LIB_TTL = 6 * 3600e3;
+let libRows = {}, libState = {};
+let dead = {};                                           // flux qui ne répondent plus (oubliés au bout de 7 jours)
+try { dead = JSON.parse(localStorage.getItem('core_dead') || '{}') || {}; } catch (e) { dead = {}; }
+(function () { const now = Date.now(); Object.keys(dead).forEach(u => { if (now - dead[u] > 7 * 864e5) delete dead[u]; }); })();
+function markDead(st) { dead[st.u] = Date.now(); try { localStorage.setItem('core_dead', JSON.stringify(dead)); } catch (e) {} }
+
 TABS.forEach(t => {
   const b = document.createElement('button');
   b.textContent = t.label;
@@ -2457,6 +2509,7 @@ TABS.forEach(t => {
     tabsEl.querySelectorAll('button').forEach(x => x.classList.remove('sel'));
     b.classList.add('sel');
     paintList();
+    ensureTab(t.id);
   });
   tabsEl.appendChild(b);
 });
@@ -2470,6 +2523,7 @@ function filterRows() {
   if (tab === 'fav') return favs.slice();
   if (tab === 'all') return CORE.slice();
   if (tab === 'custom') return CORE.filter(s => s.custom === true);
+  if (WEBTABS[tab]) return CORE.filter(s => s.c === tab).concat((libRows[tab] || []).filter(s => !dead[s.u]));
   return CORE.filter(s => s.c === tab);
 }
 
@@ -2488,6 +2542,11 @@ function paintList() {
   if (!rows.length && query) {
     listMsg.innerHTML = '<b>Rien trouvé.</b>';
     return;
+  }
+  if (!query && WEBTABS[tab]) {
+    const ls = libState[tab];
+    if (ls === 'loading' && !rows.length) { listMsg.innerHTML = '<b>Chargement des radios…</b>'; return; }
+    if (ls === 'err' && !rows.length) { listMsg.innerHTML = '<b>Bibliothèque en ligne injoignable.</b><br>Vérifie ta connexion puis rouvre cet onglet.'; return; }
   }
   listMsg.textContent = '';
 
@@ -2527,6 +2586,12 @@ function paintList() {
     }
     listEl.appendChild(r);
   });
+  if (!query && WEBTABS[tab]) {
+    const n = (libRows[tab] || []).filter(s => !dead[s.u]).length;
+    if (libState[tab] === 'loading') listMsg.innerHTML = '<small>Chargement de radios en ligne…</small>';
+    else if (libState[tab] === 'err') listMsg.innerHTML = '<small>Radios en ligne injoignables : liste de base seulement.</small>';
+    else if (n) listMsg.innerHTML = '<small>' + n + ' radios en ligne testées récemment · Radio Browser</small>';
+  }
 }
 
 function toggleFav(st) {
@@ -2561,32 +2626,104 @@ document.getElementById('search').addEventListener('input', function() {
   searchTimer = setTimeout(() => searchLibrary(query), 450);
 });
 
+/* --- accès à Radio Browser : plusieurs serveurs miroirs, on prend le premier qui répond --- */
+const RB_FALLBACK = ['de1', 'de2', 'fi1', 'nl1', 'at1'].map(h => 'https://' + h + '.api.radio-browser.info');
+const RB_COMMON = 'hidebroken=true&is_https=true&order=votes&reverse=true';
+let rbHosts = null, rbGood = null;
+function rbFetchJson(url, ms) {
+  const ctl = ('AbortController' in window) ? new AbortController() : null;
+  const t = setTimeout(() => { if (ctl) ctl.abort(); }, ms || 7000);
+  return fetch(url, ctl ? { signal: ctl.signal } : {})
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .finally(() => clearTimeout(t));
+}
+async function rbHostList() {
+  if (rbHosts) return rbHosts;
+  let list = [];
+  try {
+    const sv = await rbFetchJson('https://all.api.radio-browser.info/json/servers', 4000);
+    list = (sv || []).map(x => x && x.name).filter(Boolean).map(n => 'https://' + n);
+  } catch (e) {}
+  list = Array.from(new Set(list.concat(RB_FALLBACK)));
+  for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = list[i]; list[i] = list[j]; list[j] = t; }
+  rbHosts = list; return rbHosts;
+}
+async function rbGet(path) {
+  const hosts = await rbHostList();
+  const order = rbGood ? [rbGood].concat(hosts.filter(h => h !== rbGood)) : hosts;
+  let lastErr = null;
+  for (const h of order.slice(0, 5)) {
+    try { const j = await rbFetchJson(h + path, 7000); rbGood = h; return j; } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error('Radio Browser injoignable');
+}
+function rbNorm(x) { return (x || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+// ne garde que les flux qui ont de bonnes chances de jouer dans un navigateur
+function rbRows(rows, tabId) {
+  const now = Date.now(), seenU = {}, seenN = {}, out = [];
+  CORE.forEach(x => { seenU[x.u] = 1; seenN[rbNorm(x.n)] = 1; });
+  (rows || []).forEach(r => {
+    const u = r.url_resolved || r.url;
+    if (!u || u.indexOf('https://') !== 0 || seenU[u] || dead[u]) return;
+    if (r.lastcheckok !== 1 || r.hls === 1) return;                          // flux en panne ou HLS (non lisible partout)
+    const codec = (r.codec || '').toUpperCase();
+    if (codec && !/^(MP3|AAC|AAC\+|OGG|VORBIS|OPUS)/.test(codec)) return;
+    if (r.bitrate && r.bitrate < 64) return;                                 // trop mauvaise qualité
+    const ok = Date.parse(r.lastcheckoktime_iso8601 || '');
+    if (ok && now - ok > 7 * 864e5) return;                                  // pas vérifiée depuis 7 jours
+    if ((r.votes || 0) < 3 && (r.clickcount || 0) < 40) return;              // stations confidentielles = souvent mortes
+    const name = (r.name || '').trim().replace(/\s+/g, ' ');
+    const key = rbNorm(name);
+    if (!name || !key || seenN[key]) return;                                 // doublons (même nom, autre débit)
+    seenU[u] = 1; seenN[key] = 1;
+    out.push({
+      n: name.slice(0, 46),
+      g: (r.tags || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 2).join(', '),
+      c: tabId || 'web',
+      q: [r.bitrate ? r.bitrate + ' kbps' : '', codec && codec !== 'UNKNOWN' ? codec : ''].filter(Boolean).join(' '),
+      u: u, alts: [], web: true
+    });
+  });
+  return out;
+}
+function paintIfTab(id) { if (tab === id && !query) paintList(); }
+async function ensureTab(id) {
+  const def = WEBTABS[id];
+  if (!def || libState[id] === 'loading') return;
+  if (libRows[id] && libRows[id].length) return;
+  try {                                                                      // copie locale de moins de 6 h
+    const c = (JSON.parse(localStorage.getItem(LIB_KEY) || '{}'))[id];
+    if (c && c.rows && c.rows.length && Date.now() - c.t < LIB_TTL) { libRows[id] = c.rows; libState[id] = 'ok'; paintIfTab(id); return; }
+  } catch (e) {}
+  libState[id] = 'loading'; paintIfTab(id);
+  try {
+    const qs = def.cc ? [RB_COMMON + '&limit=150&countrycode=' + def.cc]
+                      : def.tags.map(t => RB_COMMON + '&limit=80&tag=' + encodeURIComponent(t));
+    const sets = await Promise.all(qs.map(q => rbGet('/json/stations/search?' + q).catch(() => null)));
+    if (sets.every(x => x === null)) throw new Error('injoignable');
+    const merged = []; sets.forEach(x => (x || []).forEach(r => merged.push(r)));
+    merged.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+    const rows = rbRows(merged, id).slice(0, 40);
+    libRows[id] = rows; libState[id] = 'ok';
+    try { const all = JSON.parse(localStorage.getItem(LIB_KEY) || '{}'); all[id] = { t: Date.now(), rows: rows }; localStorage.setItem(LIB_KEY, JSON.stringify(all)); } catch (e) {}
+  } catch (e) { libState[id] = 'err'; }
+  paintIfTab(id);
+}
+
 function searchLibrary(q) {
   listMsg.innerHTML = '<b>Recherche…</b>';
-  const base = 'https://de1.api.radio-browser.info/json/stations/search?hidebroken=true'
-    + '&order=clickcount&reverse=true&limit=30&';
+  const base = '/json/stations/search?' + RB_COMMON + '&limit=60&';
   Promise.all([
-    fetch(base + 'tag=' + encodeURIComponent(q)).then(r => r.json()).catch(() => []),
-    fetch(base + 'name=' + encodeURIComponent(q)).then(r => r.json()).catch(() => [])
+    rbGet(base + 'name=' + encodeURIComponent(q)).catch(() => null),
+    rbGet(base + 'tag=' + encodeURIComponent(q)).catch(() => null)
   ]).then(sets => {
     if (query !== q) return;
-    const have = {}, out = [];
-    CORE.forEach(x => have[x.u] = 1);
-    sets.forEach(rows => (rows || []).forEach(r => {
-      const u = r.url_resolved || r.url;
-      if (!u || u.indexOf('https://') !== 0 || have[u]) return;
-      have[u] = 1;
-      out.push({
-        n: (r.name || '').trim().slice(0, 46) || 'Sans nom',
-        g: (r.tags || '').split(',').slice(0, 2).join(', '),
-        c: 'web',
-        q: (r.bitrate ? r.bitrate + ' kbps' : ''),
-        u: u, alts: []
-      });
-    }));
-    online = out;
-    listMsg.innerHTML = out.length
-      ? '<b>' + out.length + ' stations trouvées.</b>'
+    if (sets.every(x => x === null)) { listMsg.innerHTML = '<b>Bibliothèque injoignable.</b>'; return; }
+    const merged = []; sets.forEach(x => (x || []).forEach(r => merged.push(r)));
+    merged.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+    online = rbRows(merged, 'web').slice(0, 40);
+    listMsg.innerHTML = online.length
+      ? '<b>' + online.length + ' stations en ligne trouvées.</b>'
       : '<b>Rien pour ce mot.</b>';
     paintList();
   }).catch(() => { listMsg.innerHTML = '<b>Bibliothèque injoignable.</b>'; });
@@ -2700,6 +2837,14 @@ document.getElementById('power').addEventListener('click', () => {
   const st = (currentStation && !/^capture:/.test(currentStation.u)) ? currentStation : (lastRadio || CORE[0]);
   togglePlay(st);
 });
+try {                                                   // boutons du centre de notifications / écran verrouillé
+  const ms = navigator.mediaSession;
+  if (ms) {
+    ms.setActionHandler('play', () => { if (!isPlaying) document.getElementById('power').click(); });
+    ms.setActionHandler('pause', () => { if (isPlaying) document.getElementById('power').click(); });
+    ms.setActionHandler('stop', () => { if (isPlaying) document.getElementById('power').click(); });
+  }
+} catch (e) {}
 
 /* Mémoire d'équilibre : positions retenues pour les boutons de l'égaliseur */
 const EQ_MEMO_KEY = 'core_eq_memo';
@@ -2740,6 +2885,19 @@ function saveLoops() { try { localStorage.setItem(SLOT_KEY, JSON.stringify(loopS
 const KnobLoops = new Map();      // clé → { pts:[[t,v]], dur, t0, api }
 const autoMarks = [];             // repères d'automatisation des blocs (remplis plus bas)
 let loopTimer = null;
+// Minuteur dans un Worker : le navigateur ne le ralentit pas quand l'appli est réduite (un setInterval normal tombe à ~1 tick/s)
+function startTicker(fn, ms) {
+  let w = null, iv = null;
+  const fallback = () => { if (!iv) iv = setInterval(fn, ms); };
+  try {
+    const src = 'let id=null;onmessage=function(e){if(e.data==="start"){if(!id)id=setInterval(function(){postMessage(0)},' + ms + ')}else{clearInterval(id);id=null}}';
+    const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+    w = new Worker(url); URL.revokeObjectURL(url);
+    w.onmessage = fn; w.onerror = () => { try { w.terminate(); } catch (e) {} w = null; fallback(); };
+    w.postMessage('start');
+  } catch (e) { w = null; fallback(); }
+  return { stop() { if (w) { try { w.postMessage('stop'); w.terminate(); } catch (e) {} w = null; } if (iv) { clearInterval(iv); iv = null; } } };
+}
 function sampleLoop(pts, tt) {
   if (tt <= pts[0][0]) return pts[0][1];
   for (let i = 1; i < pts.length; i++) {
@@ -2753,9 +2911,9 @@ function sampleLoop(pts, tt) {
 let loopLast = 0;
 let dimOn = true;   // interrupteur Dimension : OFF = boucles en pause, boutons à leur point de départ
 function loopTick() {
-  if (!KnobLoops.size) { clearInterval(loopTimer); loopTimer = null; loopLast = 0; return; }
+  if (!KnobLoops.size) { if (loopTimer) loopTimer.stop(); loopTimer = null; loopLast = 0; return; }
   const now = performance.now(); let changed = false;
-  const dt = loopLast ? Math.min(200, now - loopLast) : 0; loopLast = now;
+  const dt = loopLast ? Math.min(1000, now - loopLast) : 0; loopLast = now;   // les boucles suivent l'horloge même si un tick est en retard
   const dim = (P.dimension !== undefined ? P.dimension : 100) / 100;   // rond central : amplitude
   const spd = (P.dimSpeed !== undefined ? P.dimSpeed : 100) / 100;     // anneau externe : vitesse
   KnobLoops.forEach(L => {
@@ -2777,7 +2935,7 @@ function loopTick() {
   if (changed) applyAll();
 }
 // un minuteur (et non l'affichage) : les boucles continuent même si tu es sur un autre onglet
-function ensureLoopTimer() { if (!loopTimer) loopTimer = setInterval(loopTick, 30); }
+function ensureLoopTimer() { if (!loopTimer) loopTimer = startTicker(loopTick, 30); }
 
 /* couleur « chaleur » : 0 = vert, 0,45 = jaune, 0,75 = orange, 1 = rouge */
 function heatColor(t) {
@@ -4562,6 +4720,11 @@ document.getElementById('recBtn').addEventListener('click', () => { if (recBusy)
 window.addEventListener('beforeunload', e => { if (recorder || recPcm) { e.preventDefault(); e.returnValue = ''; } });
 recFmtPaint();
 if (recFmt === 'mp3') loadLame();
+
+document.addEventListener('visibilitychange', () => {
+  loopLast = 0;                                          // pas de saut des boucles au retour
+  if (audioCtx && isPlaying && audioCtx.state !== 'running' && audioCtx.state !== 'closed') audioCtx.resume().catch(() => {});
+});
 
 initFxFavButtons();
 paintFxFavButtons();
