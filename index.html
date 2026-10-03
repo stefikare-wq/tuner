@@ -56,6 +56,10 @@
   .rec-wrap.on .rec-btn{background:#FF2D3F;animation:recPulse 1.2s ease-in-out infinite}
   .rec-wrap.on .rec-btn::before{display:none}
   .rec-wrap.on .rec-btn i{display:block}
+  .rec-fmt{height:28px;padding:0 10px;border-radius:14px;border:1px solid rgba(255,45,63,.55);background:#0b0f1a;color:#FF6B78;
+    font:800 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.08em;cursor:pointer}
+  .rec-fmt:active{transform:scale(.94)}
+  .rec-wrap.on .rec-fmt{opacity:.45;pointer-events:none}
   @keyframes recPulse{50%{box-shadow:0 0 0 7px rgba(255,45,63,.25),0 0 24px #FF2D3F}}
 
   .now{font-size:28px;font-weight:600;line-height:1.15;letter-spacing:-.03em;margin:0}
@@ -661,140 +665,10 @@
   .fxquick.bypass button.on{opacity:.4;box-shadow:none}
   .pedal.bypass{opacity:.45}
   @media (max-width:700px){.fxquick button{font-size:12px;letter-spacing:.02em;min-height:50px}}
-/* ===== ON AIR — module YouTube (style éditorial radio) ===== */
-.onair{--red:#FF2D3F;--ink:#EAF1FF;--dim:rgba(234,241,255,.46);--line:rgba(234,241,255,.12);
-  position:relative;overflow:hidden;padding:26px 28px 22px!important}
-.onair:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
-  background:radial-gradient(80% 120% at 100% 0%,rgba(255,45,63,.07),transparent 55%)}
-.onair>*{position:relative}
-.oa-mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-.oa-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.oa-top>div:first-child{min-width:0}
-.oa-kicker{display:flex;gap:14px;align-items:center;white-space:nowrap}
-.oa-kicker b{color:var(--ink);font-weight:600}
-.oa-title{white-space:nowrap;margin:10px 0 0;font-weight:900;font-size:clamp(40px,6.2vw,84px);line-height:.86;
-  letter-spacing:-.045em;color:var(--ink)}
-.oa-title em{font-family:"Instrument Serif",Georgia,"Times New Roman",serif;font-style:italic;
-  font-weight:400;letter-spacing:-.02em;color:transparent;-webkit-text-stroke:1px rgba(234,241,255,.55);
-  transition:color .5s,-webkit-text-stroke-color .5s}
-.onair.is-live .oa-title em{color:var(--red);-webkit-text-stroke-color:var(--red);
-  text-shadow:0 0 38px rgba(255,45,63,.35)}
-/* voyant ON AIR */
-.oa-lamp{flex:none;display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border-radius:6px;
-  border:1px solid rgba(255,45,63,.35);color:rgba(255,45,63,.5);background:rgba(255,45,63,.04);
-  font:800 12px/1 -apple-system,"Segoe UI",sans-serif;letter-spacing:.22em;transition:all .35s}
-.oa-lamp i{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.6}
-.oa-lamp.live{color:#fff;background:var(--red);border-color:var(--red);
-  box-shadow:0 0 0 4px rgba(255,45,63,.12),0 0 34px rgba(255,45,63,.55)}
-.oa-lamp.live i{opacity:1;animation:oaBlink 1.2s steps(2) infinite}
-@keyframes oaBlink{50%{opacity:.25}}
-.oa-lamp #ytOutputState{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-/* champ + bouton */
-.oa-input{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:end;margin-top:26px}
-.oa-field{position:relative;display:block}
-.oa-field .oa-mono{display:block;margin-bottom:8px}
-.oa-field input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);
-  color:var(--ink);font:500 20px/1.2 -apple-system,"Segoe UI",sans-serif;padding:6px 0 12px;outline:none;
-  letter-spacing:-.01em;border-radius:0}
-.oa-field input::placeholder{color:rgba(234,241,255,.25)}
-.oa-field:after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--ink);
-  transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.32,.72,0,1)}
-.oa-field:focus-within:after{transform:scaleX(1)}
-.oa-go{display:inline-flex;align-items:center;gap:14px;border:0;cursor:pointer;border-radius:999px;
-  padding:8px 8px 8px 24px;background:var(--ink);color:#07101f;font:800 14px/1 -apple-system,"Segoe UI",sans-serif;
-  letter-spacing:-.01em;transition:transform .2s,background .3s,color .3s;white-space:nowrap}
-.oa-go .ic{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#07101f;color:var(--ink);
-  font-size:13px;transition:transform .45s cubic-bezier(.32,.72,0,1)}
-.oa-go:hover .ic{transform:rotate(-45deg)}
-.oa-go:active{transform:scale(.97)}
-.oa-go.active{background:var(--red);color:#fff}
-.oa-go.active .ic{background:#fff;color:var(--red);transform:none}
-.oa-go:disabled{opacity:.7;cursor:wait}
-.oa-go:disabled .ic{animation:oaSpin 1s linear infinite}
-@keyframes oaSpin{to{transform:rotate(360deg)}}
-/* cadran de fréquence = progression */
-.oa-dial{position:relative;margin-top:30px;height:74px;--needle:12.5%}
-.oa-scale{position:absolute;left:0;right:0;top:0;height:22px;
-  background:
-    repeating-linear-gradient(90deg,rgba(234,241,255,.16) 0 1px,transparent 1px 2.5%);
-  background-size:100% 55%;background-repeat:no-repeat;
-  border-top:1px solid var(--line)}
-.oa-needle{position:absolute;top:-6px;left:var(--needle);width:2px;height:36px;background:var(--red);
-  box-shadow:0 0 14px var(--red);transform:translateX(-1px);transition:left .9s cubic-bezier(.32,.72,0,1)}
-.oa-needle:after{content:"";position:absolute;top:-4px;left:-3px;width:8px;height:8px;border-radius:50%;background:var(--red)}
-.onair.is-wait .oa-needle{animation:oaHunt 1.6s ease-in-out infinite}
-@keyframes oaHunt{50%{transform:translateX(-7px)}}
-.oa-stations{position:absolute;left:0;right:0;top:36px;display:grid;grid-template-columns:repeat(4,1fr)}
-.oa-stations .yt-step{position:relative;text-align:center;padding:0 6px;color:rgba(234,241,255,.3);transition:color .4s}
-.oa-stations .yt-step:before{content:"";position:absolute;left:50%;top:-36px;width:1px;height:22px;background:rgba(234,241,255,.38)}
-.oa-stations .yt-step.done:before,.oa-stations .yt-step.active:before{background:rgba(234,241,255,.8)}
-.oa-stations .yt-step b{display:block;font:800 13px/1.2 -apple-system,"Segoe UI",sans-serif;letter-spacing:-.01em;color:inherit}
-.oa-stations .yt-step .oa-mono{display:block;margin-bottom:3px;color:inherit;font-size:9.5px}
-.oa-stations .yt-step.done{color:rgba(234,241,255,.62)}
-.oa-stations .yt-step.active{color:var(--ink)}
-.oa-stations .yt-step.active .oa-mono{color:var(--red)}
-/* ligne d'état + VU */
-.oa-foot{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,300px);gap:24px;align-items:end;
-  margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
-/* plusieurs onglets partagés en même temps */
-.yt-tabs{display:none;flex-direction:column;gap:8px;margin-top:14px}
-.onair.is-live .yt-tabs{display:flex}
-.yt-tab{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.25)}
-.yt-tab i{width:8px;height:8px;border-radius:50%;background:#B9FF45;box-shadow:0 0 8px #B9FF45;flex:none}
-.yt-tab.muted i{background:rgba(234,241,255,.3);box-shadow:none}
-.yt-tab span{flex:1;font-weight:700;color:var(--ink);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.yt-tab.muted span{color:var(--dim);text-decoration:line-through}
-.yt-tab button{height:34px;min-width:34px;padding:0 12px;border-radius:17px;border:1px solid var(--line);background:#07101f;color:var(--ink);font:800 13px/1 -apple-system,"Segoe UI",sans-serif;cursor:pointer}
-.yt-tab button.x{color:#ffb3bc}
-.yt-add{align-self:flex-start;height:40px;padding:0 18px;border-radius:20px;border:1px dashed rgba(234,241,255,.45);
-  background:none;color:var(--ink);font-weight:800;font-size:14px;cursor:pointer}
-.yt-add:hover{border-color:#B9FF45;color:#B9FF45}
-.yt-status{font-size:13px;line-height:1.5;color:var(--dim);padding-left:16px;position:relative;min-height:20px}
-.yt-status:before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:rgba(234,241,255,.35)}
-.yt-status strong{color:var(--ink);font-weight:700}
-.yt-status b{color:var(--ink);font-weight:600}
-.yt-status code{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink)}
-.yt-status.live:before{background:#B9FF45;box-shadow:0 0 10px #B9FF45}
-.yt-status.bad{color:#ffb3bc}.yt-status.bad:before{background:var(--red);box-shadow:0 0 10px var(--red)}
-.oa-vu-head{display:flex;justify-content:space-between;margin-bottom:8px}
-.oa-vu-head strong{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink);font-weight:500}
-.oa-vu{height:12px;position:relative;background:rgba(234,241,255,.06);
-  -webkit-mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px);
-          mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px)}
-.oa-vu .yt-meter-fill{height:100%;width:0;background:linear-gradient(90deg,#B9FF45 0 62%,#FFC24B 62% 84%,#FF2D3F 84%);
-  background-size:300px 100%;transition:width .09s linear}
-.oa-chain{margin-top:14px;display:flex;flex-wrap:wrap;gap:4px 10px}
-.oa-chain span:not(:last-child):after{content:"/";margin-left:10px;color:rgba(234,241,255,.2)}
-@media(max-width:760px){
-  .onair{padding:20px 16px 18px!important}
-  .oa-kicker span:first-child{display:none}.oa-title{font-size:clamp(34px,11vw,48px)}
-  .oa-top{display:block;position:relative}.oa-top>div:first-child{min-width:0}
-  .oa-lamp{position:absolute;top:-4px;right:0;padding:6px 9px;font-size:10px;letter-spacing:.16em}
-  .oa-input{grid-template-columns:1fr}.oa-go{justify-content:space-between}
-  .oa-foot{grid-template-columns:1fr}
-  .oa-stations .yt-step b{font-size:11px}.oa-stations .yt-step .oa-mono{letter-spacing:.1em}
-}
-
-  /* ===== Bouton YouTube dans la barre du haut ===== */
+  /* ===== Barre du haut ===== */
   .tb-btns{grid-template-columns:repeat(6,1fr)!important}
   .tb-btns .pill{grid-column:span 2}
-  .tb-btns #power,.tb-btns #openYT{grid-column:span 3}
-  .pill.yt-btn{background:linear-gradient(135deg,#FF2D3F,#A3122A);color:#fff}
-  .pill.yt-btn.live{box-shadow:0 0 0 3px rgba(255,45,63,.25),0 0 26px rgba(255,45,63,.6)}
-  @media (min-width:900px){ .tb-btns{grid-template-columns:repeat(5,1fr)!important} .tb-btns .pill,.tb-btns #power,.tb-btns #openYT{grid-column:auto} }
-  @media (max-width:700px){ .tb-btns .pill{font-size:15px;padding:0 8px;white-space:nowrap;min-height:48px} .tb-btns #power,.tb-btns #openYT{font-size:17px} }
-
-  /* ===== Tiroir YouTube (depuis le haut) ===== */
-  .drawer-top{left:0;right:0;top:0;max-height:94vh;max-height:94dvh;overflow-y:auto;
-    border-bottom-left-radius:24px;border-bottom-right-radius:24px;border-bottom:1px solid var(--edge2);
-    transform:translateY(-101%);box-shadow:0 20px 60px rgba(0,0,0,.6)}
-  .drawer-top.open{transform:translateY(0)}
-  .drawer-top .onair{border:0;border-radius:0;background:transparent;display:block}
-  .drawer-top .yt-status{font-size:17px}
-  .drawer-top .oa-lamp{margin-right:60px}
-  .yt-close{position:absolute;top:16px;right:18px;z-index:3;width:48px;height:48px;border-radius:50%;
-    border:1px solid var(--edge2);background:rgba(234,241,255,.06);font-size:22px;display:flex;align-items:center;justify-content:center}
+  @media (max-width:700px){ .tb-btns .pill{font-size:15px;padding:0 8px;white-space:nowrap;min-height:48px} .tb-btns #power{font-size:17px} }
 
   /* ===== Pédale CHORUS ===== */
   .chor-display{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
@@ -866,10 +740,10 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
 .agent > summary .ag-onoff{margin-left:10px}
 .agent.off > summary .ag-onoff{margin-left:auto}
   /* ===== Snif Audio : 6e bouton de la barre ===== */
-  .tb-btns #power,.tb-btns #openYT,.tb-btns #snif{grid-column:span 2}
+  .tb-btns #power,.tb-btns #snif{grid-column:span 3}
   .pill.snif-btn{background:linear-gradient(135deg,#B9FF45,#4FA81A);color:#08150A}
   .pill.snif-btn.live{box-shadow:0 0 0 3px rgba(185,255,69,.25),0 0 26px rgba(185,255,69,.6)}
-  @media (min-width:900px){ .tb-btns{grid-template-columns:repeat(6,1fr)!important} .tb-btns #snif{grid-column:auto} }
+  @media (min-width:900px){ .tb-btns{grid-template-columns:repeat(5,1fr)!important} .tb-btns .pill,.tb-btns #power,.tb-btns #snif{grid-column:auto} }
   @media (max-width:700px){ .tb-btns #snif{font-size:17px} }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -886,8 +760,9 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
   <div class="card topbar">
     <div class="brand-row">
       <span class="orb"></span>
-      <span class="brand">RADIO THE CORE <small>• ESSAI · V45</small></span>
+      <span class="brand">RADIO THE CORE <small>• ESSAI · V5.0</small></span>
       <div class="rec-wrap" id="recWrap">
+        <button class="rec-fmt" id="recFmt" type="button" title="Format de l’enregistrement : WEBM / WAV / MP3 (touche pour changer)">MP3</button>
         <span class="rec-time" id="recTime">00:00</span>
         <button class="rec-btn" id="recBtn" type="button" title="Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur"><i></i><i></i></button>
       </div>
@@ -897,7 +772,6 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
 
     <div class="tb-btns">
       <button class="pill" id="power">▶ Écouter</button>
-      <button class="pill yt-btn" id="openYT">▶ YouTube</button>
       <button class="pill snif-btn" id="snif" title="Capter le son de n'importe quel onglet (radio, site, vidéo…) et le passer dans l'EQ + les effets">👂 Snif Audio</button>
       <button class="pill fav-btn" id="openFavs">★ Favoris</button>
       <button class="pill ghost" id="openFx">✦ Effets <span class="fx-master on" id="fxMaster" role="switch" aria-checked="true" title="Activer / couper tous les effets">ON</span></button>
@@ -1105,7 +979,7 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
                autocorrect="off" placeholder="Nom (facultatif)">
         <button class="pill" id="addUrl" style="flex:0 0 auto;padding:0 26px">＋ Ajouter</button>
       </div>
-      <label class="capopt"><input type="checkbox" id="capDefault" checked><span>Anti-coupure : partager le son de l’onglet <small>(comme YouTube)</small></span></label>
+      <label class="capopt"><input type="checkbox" id="capDefault" checked><span>Anti-coupure : partager le son de l’onglet <small>(comme Snif Audio)</small></span></label>
     </div>
     <div class="searchbox">
       <input type="text" class="txtin" id="search" placeholder="Chercher une station…"
@@ -1270,43 +1144,6 @@ html.julia-on .app{padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(s
   </div>
 </aside>
 
-<aside class="drawer drawer-top" id="ytDrawer" aria-modal="true" aria-label="YouTube vers les effets">
-  <button class="yt-close" id="closeYT" aria-label="Fermer">✕</button>
-  <section class="onair" id="ytCard">
-    <div class="oa-top">
-      <div>
-        <div class="oa-kicker oa-mono"><span>Entrée 02</span><b>YouTube</b><span id="ytFlowState">Prêt</span></div>
-        <h2 class="oa-title">YouTube <em>on air</em></h2>
-      </div>
-      <div class="oa-lamp" id="ytOutputBadge"><i></i>ON AIR<span id="ytOutputState">OFF</span></div>
-    </div>
-    <div class="oa-input">
-      <label class="oa-field"><span class="oa-mono">Lien de la vidéo</span>
-        <input id="ytUrl" type="text" inputmode="url" autocomplete="off" placeholder="youtube.com/watch?v=…"></label>
-      <button class="oa-go" id="ytMainButton" type="button"><span class="lb">Passer à l’antenne</span><span class="ic">↗</span></button>
-    </div>
-    <div class="oa-dial" id="ytDial">
-      <div class="oa-scale"></div>
-      <div class="oa-needle"></div>
-      <div class="oa-stations">
-        <div class="yt-step" data-step="1"><span class="oa-mono">01</span><b>Lien</b></div>
-        <div class="yt-step" data-step="2"><span class="oa-mono">02</span><b>Onglet</b></div>
-        <div class="yt-step" data-step="3"><span class="oa-mono">03</span><b>Partage audio</b></div>
-        <div class="yt-step" data-step="4"><span class="oa-mono">04</span><b>À l’antenne</b></div>
-      </div>
-    </div>
-    <div class="oa-foot">
-      <div>
-        <div id="ytStatus" class="yt-status">Colle un lien, puis <b>Passer à l’antenne</b>. Choisis l’onglet YouTube et coche <b>Partager l’audio</b>.</div>
-        <div class="yt-tabs"><div id="ytTabList" style="display:contents"></div>
-          <button class="yt-add" id="ytAddTab" type="button" title="Colle un autre lien (ou laisse le même) puis choisis un autre onglet : tous les onglets jouent ensemble, au même volume">＋ Ajouter un onglet</button></div>
-      </div>
-      <div><div class="oa-vu-head oa-mono"><span>Signal</span><strong id="ytMeterDb">−∞ dB</strong></div>
-        <div class="oa-vu"><div id="ytMeterFill" class="yt-meter-fill"></div></div></div>
-    </div>
-    <div class="oa-chain oa-mono"><span>Balance</span><span>Spatial</span><span>EQ L/R</span><span>Drive</span><span>Reverb</span><span>Écho</span><span>Chichorus</span><span>Limiter</span></div>
-  </section>
-</aside>
 
 <script id="julia-fs" type="x-shader/x-fragment">#version 300 es
 precision highp float;
@@ -1367,7 +1204,13 @@ void main(){
   vec2 d = abs(q) / half_;
   float rim = max(d.x, d.y);
   // Bords fins au repos ; à fond, la fractale envahit presque tout l'écran
-  float edge = smoothstep(0.88 - 0.46*pow(lv, 1.15), 1.0, rim);   // à fond : s'arrête à ~40 % du centre, les côtés ne se touchent jamais
+  float edge = smoothstep(0.88 - 0.46*pow(lv, 1.15), 1.0, rim);
+  // Montée : deux ponts passent par le centre (bas↔haut, gauche↔droite)
+  float hi  = smoothstep(0.55, 0.97, lv);
+  float arm = max(exp(-d.x*d.x/(2.0*0.13*0.13)), exp(-d.y*d.y/(2.0*0.13*0.13)));
+  edge = max(edge, hi*arm);
+  // Puis, tout à fond : les coins se remplissent aussi, la fractale couvre tout l'écran
+  edge = max(edge, smoothstep(0.80, 0.95, lv));
   float wave = 0.5 + 0.5*sin(t*0.9 - r*5.0 - lvm*3.0);
 
   float squeeze = 1.0 - 0.7*edge*(0.65 + 0.35*wave);
@@ -1509,7 +1352,7 @@ let reverbChain = null;
 let echoChain = null;
 let chorusChain = null, chorusOn = false;
 let fxMasterOn = true;   // interrupteur général du bouton Effets
-let ytCaptureActive = false, lastRadio = null;
+let tabCaptureActive = false, lastRadio = null;
 let capBroken = false, capSnif = false, capStream = false, capPopup = null, capOpenedUrl = '', capDirect = false;   // flux radio lu dans un onglet, son partagé à l'app
 
 let graphBuilt = false;
@@ -2191,7 +2034,7 @@ async function streamSession(station, mySession) {
 }
 
 /* =========================================================
-   FLUX « ANTI-COUPURE » — même système que YouTube :
+   FLUX « ANTI-COUPURE » — même système que Snif Audio :
    le flux est lu tel quel par un onglet du navigateur (sans proxy, sans CORS),
    puis le son de cet onglet est partagé à l'app et passe dans l'EQ + les pédales.
    ========================================================= */
@@ -2299,7 +2142,7 @@ async function startStreamCapture(st) {
   setStatus('👆 Choisis l’onglet du flux et coche « Partager l’audio »');
   const t0 = performance.now();
   try {
-    await ytCapture();
+    await tabCapture();
   } catch (e) {
     const msg = String(e && e.message ? e.message : e), nm = String(e && e.name ? e.name : '');
     if (performance.now() - t0 < 700 && !/activation|gesture/i.test(msg)) {   // refus instantané = aucune fenêtre de partage = pas géré ici
@@ -2317,14 +2160,14 @@ async function startStreamCapture(st) {
     }
     render(); return true;
   }
-  if (sessionId !== mySession) { ytTabs.slice().forEach(ytRemoveTab); return true; }
+  if (sessionId !== mySession) { capTabs.slice().forEach(tabRemove); return true; }
   applyAll();
-  ytCaptureActive = true; capStream = true; isPlaying = true; usingMix = true; currentStation = st;
+  tabCaptureActive = true; capStream = true; isPlaying = true; usingMix = true; currentStation = st;
   title(st.n); setStatus('● En direct · onglet partagé · EQ + pédales');
   render(); paintList(); paintFavsList();
   // petit contrôle : si rien n'arrive au bout de 8 s, on le dit
   setTimeout(() => {
-    if (!(ytCaptureActive && capStream && agAna)) return;
+    if (!(tabCaptureActive && capStream && agAna)) return;
     const d = new Float32Array(agAna.fftSize); agAna.getFloatTimeDomainData(d);
     let s = 0; for (let i = 0; i < d.length; i++) s += d[i] * d[i];
     if (Math.sqrt(s / d.length) < 0.0005) setStatus('⚠ Pas de son : regarde l’onglet du flux (bouton ▶ ?)');
@@ -2333,7 +2176,7 @@ async function startStreamCapture(st) {
 }
 
 async function togglePlay(station) {
-  if (ytCaptureActive) { await stopYT(true); return; }
+  if (tabCaptureActive) { await stopCapture(true); return; }
   if (isPlaying) {
     isPlaying = false;
     sessionId++;
@@ -2348,7 +2191,7 @@ async function togglePlay(station) {
   }
   if (!station || /^capture:/.test(station.u)) { setStatus('⚠️ Aucune station.'); return; }
 
-  // flux « anti-coupure » : lu par le navigateur dans un onglet, dont on partage le son (comme YouTube)
+  // flux « anti-coupure » : lu par le navigateur dans un onglet, dont on partage le son (comme Snif Audio)
   if (station.cap && !capBroken && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
     if (await startStreamCapture(station)) return;
     // sinon (navigateur sans partage d'onglet, ex. Second Life) : lecture classique ci-dessous
@@ -2445,8 +2288,6 @@ function setStatus(msg) { npState.textContent = msg; statusMini.textContent = ms
 function title(t) { npName.textContent = t; }
 function render() {
   const p = isPlaying;
-  const yb = document.getElementById('openYT');
-  if (yb) { const ytLive = ytCaptureActive && !capStream && !capSnif; yb.classList.toggle('live', ytLive); yb.textContent = ytLive ? '● On air' : '▶ YouTube'; }
   const sb = document.getElementById('snif');
   if (sb) { sb.classList.toggle('live', capSnif); sb.textContent = capSnif ? '● Snif ON' : '👂 Snif Audio'; }
   waveEl.classList.toggle('on', p);
@@ -2498,12 +2339,12 @@ function paintFavsList() {
 }
 
 function playStation(st) {
-  if (ytCaptureActive && capStream && st.cap && capPopup && !capPopup.closed) {
+  if (tabCaptureActive && capStream && st.cap && capPopup && !capPopup.closed) {
     lastRadio = st; currentStation = st; title(st.n);
     plays[st.u] = (plays[st.u] || 0) + 1; savePlays();
     if (capSwitch(st)) { render(); paintFavsList(); paintList(); setStatus('● En direct · onglet partagé · EQ + pédales'); return; }
   }
-  if (ytCaptureActive) { stopYT(false).then(() => playStation(st)); return; }
+  if (tabCaptureActive) { stopCapture(false).then(() => playStation(st)); return; }
   lastRadio = st;
   currentStation = st;
   title(st.n);
@@ -2743,9 +2584,7 @@ const scrim = document.getElementById('scrim');
 const fxDrawer = document.getElementById('fxDrawer');
 const favsDrawer = document.getElementById('favsDrawer');
 
-const ytDrawer = document.getElementById('ytDrawer');
 function closeAllDrawers() {
-  ytDrawer.classList.remove('open');
   drawer.classList.remove('open');
   fxDrawer.classList.remove('open');
   favsDrawer.classList.remove('open');
@@ -2790,18 +2629,11 @@ document.getElementById('fxAll').addEventListener('click', () => openFxDrawer(tr
 document.getElementById('closeFxDrawer').addEventListener('click', () => openFxDrawer(false));
 document.getElementById('openFavs').addEventListener('click', () => openFavsDrawer(true));
 document.getElementById('closeFavsDrawer').addEventListener('click', () => openFavsDrawer(false));
-function openYTDrawer(o) {
-  closeAllDrawers();
-  if (o) { ytDrawer.classList.add('open'); scrim.classList.add('open');
-    setTimeout(() => { const i = document.getElementById('ytUrl'); if (i && !ytCaptureActive) i.focus(); }, 350); }
-}
-document.getElementById('openYT').addEventListener('click', () => openYTDrawer(true));
-document.getElementById('closeYT').addEventListener('click', () => openYTDrawer(false));
 scrim.addEventListener('click', closeAllDrawers);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllDrawers(); });
 
 document.getElementById('power').addEventListener('click', () => {
-  if (ytCaptureActive || isPlaying) { togglePlay(); return; }
+  if (tabCaptureActive || isPlaying) { togglePlay(); return; }
   const st = (currentStation && !/^capture:/.test(currentStation.u)) ? currentStation : (lastRadio || CORE[0]);
   togglePlay(st);
 });
@@ -2881,7 +2713,7 @@ function loopTick() {
   });
   if (changed) applyAll();
 }
-// un minuteur (et non l'affichage) : les boucles continuent même si tu es sur l'onglet YouTube
+// un minuteur (et non l'affichage) : les boucles continuent même si tu es sur un autre onglet
 function ensureLoopTimer() { if (!loopTimer) loopTimer = setInterval(loopTick, 30); }
 
 /* couleur « chaleur » : 0 = vert, 0,45 = jaune, 0,75 = orange, 1 = rouge */
@@ -3604,7 +3436,6 @@ let idle = 0, lastFrame = 0;
 
   const playing = isPlaying;
   const live = playing && usingMix && analyser && _waveData;
-  if (live && ytCaptureActive) ytTickMeter();
   if (live && chorusOn) updateChorusDisplay(t);
 
   if (live) {
@@ -3659,28 +3490,18 @@ let idle = 0, lastFrame = 0;
 })();
 
 /* =========================================================
-   YOUTUBE ON AIR — capture audio de l'onglet
+   CAPTURE D'ONGLET — partage du son d'un onglet du navigateur
+   (utilisée par Snif Audio et par les flux « anti-coupure »)
    ========================================================= */
-let ytFlowStep = 1, ytPopup = null, ytOpenedUrl = '';
-let ytTabs = [];       // onglets partagés en même temps : { stream, src, gain, n, muted }
-let ytTabCount = 0;
+let capTabs = [];       // onglets partagés en même temps : { stream, src, gain, n, muted }
+let capTabCount = 0;
 // tous les onglets au même volume (baissé ensemble pour que la somme ne sature pas)
-function ytRegain() {
+function tabRegain() {
   if (!audioCtx) return;
-  const on = ytTabs.filter(t => !t.muted).length || 1, g = 1 / Math.sqrt(on);
-  ytTabs.forEach(t => t.gain.gain.setTargetAtTime(t.muted ? 0 : g, audioCtx.currentTime, 0.05));
+  const on = capTabs.filter(t => !t.muted).length || 1, g = 1 / Math.sqrt(on);
+  capTabs.forEach(t => t.gain.gain.setTargetAtTime(t.muted ? 0 : g, audioCtx.currentTime, 0.05));
 }
-function paintYtTabs() {
-  const box = document.getElementById('ytTabList'); box.innerHTML = '';
-  ytTabs.forEach((t, i) => {
-    const row = document.createElement('div'); row.className = 'yt-tab' + (t.muted ? ' muted' : '');
-    row.innerHTML = '<i></i><span>Onglet ' + (i + 1) + '</span><button type="button" class="m">' + (t.muted ? 'Remettre' : 'Couper') + '</button><button type="button" class="x" title="Retirer cet onglet">✕</button>';
-    row.querySelector('.m').addEventListener('click', () => { t.muted = !t.muted; ytRegain(); paintYtTabs(); });
-    row.querySelector('.x').addEventListener('click', () => ytRemoveTab(t));
-    box.appendChild(row);
-  });
-}
-async function ytCapture() {
+async function tabCapture() {
   const stream = await navigator.mediaDevices.getDisplayMedia({
     video: { displaySurface: 'browser' },
     audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, suppressLocalAudioPlayback: true },
@@ -3694,124 +3515,28 @@ async function ytCapture() {
   if (audioCtx.state === 'suspended') await audioCtx.resume();
   const src = audioCtx.createMediaStreamSource(stream), gain = audioCtx.createGain();
   src.connect(gain); gain.connect(inBus);
-  const tab = { stream, src, gain, n: ++ytTabCount, muted: false };
-  ytTabs.push(tab); ytRegain(); paintYtTabs();
-  stream.getAudioTracks().forEach(t => t.addEventListener('ended', () => ytRemoveTab(tab), { once: true }));
+  const tab = { stream, src, gain, n: ++capTabCount, muted: false };
+  capTabs.push(tab); tabRegain();
+  stream.getAudioTracks().forEach(t => t.addEventListener('ended', () => tabRemove(tab), { once: true }));
   return tab;
 }
-function ytRemoveTab(tab) {
-  const i = ytTabs.indexOf(tab); if (i < 0) return;
-  ytTabs.splice(i, 1);
+function tabRemove(tab) {
+  const i = capTabs.indexOf(tab); if (i < 0) return;
+  capTabs.splice(i, 1);
   try { tab.src.disconnect(); tab.gain.disconnect(); } catch (e) {}
   tab.stream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
-  if (!ytTabs.length && ytCaptureActive) { stopYT(true); return; }
-  ytRegain(); paintYtTabs();
-  if (ytCaptureActive) ytSetStatus('<strong>À l’antenne</strong> · ' + ytTabs.length + ' onglet' + (ytTabs.length > 1 ? 's' : '') + ' ensemble.', 'live');
+  if (!capTabs.length && tabCaptureActive) { stopCapture(); return; }
+  tabRegain();
 }
-async function ytAddTab() {
-  if (!ytCaptureActive) { startYT(); return; }
-  const url = normalizeYT(document.getElementById('ytUrl').value);
-  if (url && url !== ytOpenedUrl) { const w = window.open(url, '_blank'); if (w) { ytPopup = w; ytOpenedUrl = url; } }
-  ytSetStatus('<strong>Choisis l’onglet suivant</strong> et coche <b>Partager l’audio</b>.');
-  try {
-    await ytCapture();
-    ytSetStatus('<strong>À l’antenne</strong> · ' + ytTabs.length + ' onglets ensemble, au même volume.', 'live');
-  } catch (e) {
-    ytSetStatus('<strong>Onglet non ajouté :</strong> ' + String(e && e.message ? e.message : e), 'bad');
-  }
-}
-// ytFlowStep = 1, ytPopup = null, ytOpenedUrl = '';
-function ytSetStatus(msg, mode) {
-  const el = document.getElementById('ytStatus');
-  el.className = 'yt-status' + (mode ? ' ' + mode : ''); el.innerHTML = msg;
-}
-function ytSetStep(step, done) {
-  ytFlowStep = step;
-  document.querySelectorAll('.yt-step').forEach(el => {
-    const n = Number(el.dataset.step);
-    el.classList.toggle('active', !done && n === step);
-    el.classList.toggle('done', done ? n <= step : n < step);
-  });
-  document.getElementById('ytFlowState').textContent = ['Prêt', 'Prêt', 'Choix de l’onglet', 'Partage audio', 'En direct'][Math.max(0, Math.min(4, step))];
-  document.getElementById('ytDial').style.setProperty('--needle', ((Math.max(1, Math.min(4, step)) - 1) * 25 + 12.5) + '%');
-  document.getElementById('ytCard').classList.toggle('is-wait', !done && (step === 2 || step === 3));
-}
-function ytButton(mode) {
-  const b = document.getElementById('ytMainButton');
-  const L = { idle: ['Passer à l’antenne', '↗'], live: ['Couper l’antenne', '■'], wait: ['Connexion', '◌'] }[mode];
-  b.innerHTML = '<span class="lb">' + L[0] + '</span><span class="ic">' + L[1] + '</span>';
-  b.classList.toggle('active', mode === 'live'); b.disabled = mode === 'wait';
-  document.getElementById('ytCard').classList.toggle('is-live', mode === 'live');
-}
-function ytSetMeter(rms) {
-  const live = ytCaptureActive && rms > 0.001;
-  document.getElementById('ytOutputState').textContent = live ? 'LIVE' : 'OFF';
-  document.getElementById('ytOutputBadge').classList.toggle('live', live);
-  const dbv = 20 * Math.log10(Math.max(0.0001, rms || 0));
-  document.getElementById('ytMeterFill').style.width = Math.max(0, Math.min(100, (dbv + 60) / 60 * 100)) + '%';
-  document.getElementById('ytMeterDb').textContent = (dbv <= -59 ? '−∞' : dbv.toFixed(1)) + ' dB';
-}
-function normalizeYT(raw) {
-  const u = (raw || '').trim(); if (!u) return null;
-  try {
-    const url = new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u), h = url.hostname.toLowerCase();
-    if (h === 'youtu.be' || h.endsWith('youtube.com') || h.endsWith('youtube-nocookie.com')) return url.href;
-  } catch (e) {}
-  return null;
-}
-async function stopYT(showStatus) {
+async function stopCapture() {
   const wasStream = capStream || capSnif;
   capSnif = false; capStream = false; capOpenedUrl = '';
   if (capPopup) { try { capPopup.close(); } catch (e) {} capPopup = null; }
-  ytCaptureActive = false;
-  ytTabs.slice().forEach(ytRemoveTab); ytTabCount = 0;
-  isPlaying = false; ytSetMeter(0); ytButton('idle'); ytSetStep(1);
-  if (showStatus) ytSetStatus('<strong>Antenne coupée.</strong> Colle un autre lien ou relance.');
+  tabCaptureActive = false;
+  capTabs.slice().forEach(tabRemove); capTabCount = 0;
+  isPlaying = false;
   title(lastRadio ? lastRadio.n : 'Rien en lecture');
-  render(); setStatus(wasStream ? '⏹ Flux coupé.' : '⏹ YouTube coupé.');
-}
-async function startYT() {
-  if (ytCaptureActive) { await stopYT(true); return; }
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-    ytSetStatus('<strong>Capture indisponible.</strong> Utilise Chrome ou Edge, page ouverte via <code>LANCER.bat</code>.', 'bad'); return;
-  }
-  const url = normalizeYT(document.getElementById('ytUrl').value);
-  if (!url) { ytSetStatus('<strong>Lien invalide.</strong> Colle une adresse youtube.com ou youtu.be.', 'bad'); document.getElementById('ytUrl').focus(); return; }
-  ytButton('wait');
-  try {
-    // coupe la radio en cours
-    if (isPlaying) {
-      isPlaying = false; sessionId++;
-      [mixEl, player].forEach(el => { try { el.pause(); el.removeAttribute('src'); el.load(); } catch (e) {} });
-    }
-    buildGraph();
-    // n'ouvre la vidéo qu'une fois (un 2e clic relance juste le partage)
-    if (!(ytPopup && !ytPopup.closed && ytOpenedUrl === url)) {
-      ytSetStep(1);
-      ytPopup = window.open(url, '_blank'); ytOpenedUrl = url;
-      if (!ytPopup) throw new Error('Pop-up bloquée : autorise les fenêtres pour cette page puis réessaie.');
-    }
-    ytSetStep(2);
-    ytSetStatus('<strong>Choisis l’onglet YouTube</strong> dans la fenêtre du navigateur et coche <b>Partager l’audio</b>.');
-    const tab = await ytCapture();
-    ytSetStep(3);
-    applyAll();
-    const aTracks = tab.stream.getAudioTracks();
-    const muted = (aTracks[0].getSettings ? aTracks[0].getSettings() : {}).suppressLocalAudioPlayback === true;
-    ytCaptureActive = true; isPlaying = true; usingMix = true;
-    currentStation = { n: 'YouTube — On air', g: 'Capture onglet', u: 'capture://youtube', alts: [] };
-    title('YouTube — On air'); setStatus('● On air · EQ + pédales');
-    ytSetStep(4, true); ytButton('live');
-    ytSetStatus('<strong>À l’antenne.</strong> Tous les réglages agissent en direct.' + (muted ? '' : ' Son en double ? Coupe le son de l’onglet YouTube.'), 'live');
-    render();
-  } catch (e) {
-    ytCaptureActive = false; ytButton('idle'); ytSetStep(Math.max(1, ytFlowStep));
-    const msg = String(e && e.message ? e.message : e);
-    ytSetStatus(/activation|gesture|user/i.test(msg)
-      ? '<strong>Clique encore une fois sur Passer à l’antenne</strong> : la vidéo est déjà ouverte.'
-      : '<strong>Connexion interrompue :</strong> ' + msg, 'bad');
-    render();
-  }
+  render(); setStatus(wasStream ? '⏹ Flux coupé.' : '⏹ Capture coupée.');
 }
 
 /* =========================================================
@@ -3823,7 +3548,7 @@ async function snifAudio() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
     setStatus('⚠ Capture indisponible : utilise Chrome ou Edge sur ordinateur.'); return;
   }
-  const first = !ytCaptureActive;
+  const first = !tabCaptureActive;
   let tSnif = performance.now();
   try {
     if (first) {
@@ -3835,14 +3560,14 @@ async function snifAudio() {
     }
     setStatus('👆 Choisis l’onglet puis coche « Partager l’audio »');
     tSnif = performance.now();
-    await ytCapture();
+    await tabCapture();
     applyAll();
     if (first) {
-      ytCaptureActive = true; capSnif = true; capStream = false; isPlaying = true; usingMix = true;
+      tabCaptureActive = true; capSnif = true; capStream = false; isPlaying = true; usingMix = true;
       currentStation = { n: 'Snif Audio', g: 'Capture onglet', u: 'capture://snif', alts: [] };
       title('Snif Audio');
     }
-    setStatus('● Snif Audio · ' + ytTabs.length + ' onglet' + (ytTabs.length > 1 ? 's' : '') + ' · EQ + pédales');
+    setStatus('● Snif Audio · ' + capTabs.length + ' onglet' + (capTabs.length > 1 ? 's' : '') + ' · EQ + pédales');
     render();
   } catch (e) {
     const nm = String(e && e.name ? e.name : ''), msg = String(e && e.message ? e.message : e);
@@ -3858,10 +3583,6 @@ document.getElementById('snif').addEventListener('click', snifAudio);
 if (!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia)) {
   const sb = document.getElementById('snif'); sb.style.opacity = '.45'; sb.title = 'Indisponible dans ce navigateur (Chrome ou Edge sur ordinateur)';
 }
-document.getElementById('ytMainButton').addEventListener('click', startYT);
-document.getElementById('ytAddTab').addEventListener('click', ytAddTab);
-document.getElementById('ytUrl').addEventListener('keydown', e => { if (e.key === 'Enter') startYT(); });
-ytButton('idle'); ytSetStep(1);
 
 
 /* =========================================================
@@ -4155,18 +3876,6 @@ function resetChorusDisplay() {
   document.getElementById('chorDisplay').classList.remove('locked');
 }
 
-/* ---- vu-mètre YouTube ---- */
-let _ytBuf = null, ytMeterLast = 0;
-function ytTickMeter() {
-  const now = performance.now(); if (now - ytMeterLast < 150 || !analyser) return;
-  ytMeterLast = now;
-  if (!_ytBuf || _ytBuf.length !== analyser.fftSize) _ytBuf = new Float32Array(analyser.fftSize);
-  analyser.getFloatTimeDomainData(_ytBuf);
-  let s = 0; for (let i = 0; i < _ytBuf.length; i++) s += _ytBuf[i] * _ytBuf[i];
-  ytSetMeter(Math.sqrt(s / _ytBuf.length));
-}
-
-
 /* =========================================================
    PRESETS D'ÉGALISEUR : 5 thèmes × 5 sous-genres
    Courbes publiques (WiiM, Eversolo, Music Guy Mixing, Sonifex…) ramenées aux
@@ -4441,7 +4150,7 @@ function agExplore(strength) {
 }
 async function agRun(strength) {
   if (agBusy || !agOn) return;
-  if (!graphBuilt || !agAna || !isPlaying) { showMemoToast('🤖 Lance d\'abord la radio ou YouTube : l\'agent doit écouter la musique', '#FFC23D', true); return; }
+  if (!graphBuilt || !agAna || !isPlaying) { showMemoToast('🤖 Lance d\'abord la radio ou Snif Audio : l\'agent doit écouter la musique', '#FFC23D', true); return; }
   agBusy = true; const go = document.getElementById('agGo'); go.disabled = true;
   if (audioCtx.state === 'suspended') await audioCtx.resume();
   const a = await agListen(8000);
@@ -4595,9 +4304,15 @@ setInterval(() => {
 /* =========================================================
    ENREGISTREMENT : tout ce qu'on entend → fichier sur le disque dur
    (dossier « enregistrements » à côté de la page ; sinon Téléchargements)
+   Formats : MP3 (192 kbps), WAV (16 bits, stéréo), WEBM/Opus
    ========================================================= */
 let recorder = null, recChunks = [], recT0 = 0, recTick = null;
-const recWrap = document.getElementById('recWrap'), recTimeEl = document.getElementById('recTime');
+let recPcm = null, recBusy = false;
+let recFmt = 'mp3';
+try { const f = localStorage.getItem('core_rec_fmt'); if (f === 'webm' || f === 'wav' || f === 'mp3') recFmt = f; } catch (e) {}
+const recWrap = document.getElementById('recWrap'), recTimeEl = document.getElementById('recTime'), recFmtBtn = document.getElementById('recFmt');
+const REC_TITLE_OFF = 'Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur';
+function recFmtPaint() { recFmtBtn.textContent = recFmt.toUpperCase(); }
 function recPaint() {
   const t = Math.floor((performance.now() - recT0) / 1000);
   recTimeEl.textContent = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
@@ -4620,10 +4335,127 @@ async function recSave(blob, ext) {
     showMemoToast('💾 Enregistré dans Téléchargements : ' + name, '#FF2D3F', true);
   }
 }
-function recStart() {
-  if (!window.MediaRecorder) { showMemoToast('Enregistrement impossible avec ce navigateur (utilise Chrome ou Edge)', '#FF2D3F', true); return; }
-  buildGraph();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+function recUi(on) {
+  recWrap.classList.toggle('on', on);
+  document.getElementById('recBtn').title = on ? 'Arrêter l’enregistrement et l’écrire sur le disque dur' : REC_TITLE_OFF;
+  if (on) { recT0 = performance.now(); recPaint(); recTick = setInterval(recPaint, 500); }
+  else { clearInterval(recTick); recTick = null; }
+}
+
+/* --- encodeur MP3 (lamejs, chargé à la demande) --- */
+const LAME_RATES = [8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000];
+let lamePromise = null;
+function loadLame() {
+  if (window.lamejs) return Promise.resolve(true);
+  if (!lamePromise) lamePromise = new Promise(res => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js';
+    sc.onload = () => res(!!window.lamejs);
+    sc.onerror = () => { lamePromise = null; res(false); };
+    document.head.appendChild(sc);
+  });
+  return lamePromise;
+}
+
+/* --- capture PCM de la sortie finale (AudioWorklet, sinon ScriptProcessor) --- */
+const REC_WORKLET = `class RecTap extends AudioWorkletProcessor {
+  constructor() { super(); this.n = 0; this.on = true; this.l = new Int16Array(4096); this.r = new Int16Array(4096);
+    this.port.onmessage = e => { if (e.data === 'stop') { this.flush(); this.on = false; this.port.postMessage('done'); } }; }
+  flush() { if (!this.n) return; this.port.postMessage({ l: this.l.slice(0, this.n), r: this.r.slice(0, this.n) }); this.n = 0; }
+  process(inp) {
+    if (!this.on) return false;
+    const c = inp[0];
+    if (c && c.length) {
+      const a = c[0], b = c[1] || c[0];
+      for (let i = 0; i < a.length; i++) {
+        let x = a[i], y = b[i];
+        x = x < -1 ? -1 : x > 1 ? 1 : x; y = y < -1 ? -1 : y > 1 ? 1 : y;
+        this.l[this.n] = x < 0 ? x * 32768 : x * 32767; this.r[this.n] = y < 0 ? y * 32768 : y * 32767;
+        if (++this.n === 4096) this.flush();
+      }
+    }
+    return true;
+  }
+}
+registerProcessor('rec-tap', RecTap);`;
+let recWorkletReady = null;
+async function pcmTapCreate(onBlock) {
+  const sink = audioCtx.createGain(); sink.gain.value = 0; sink.connect(audioCtx.destination);
+  let node, stop;
+  if (audioCtx.audioWorklet && window.AudioWorkletNode) {
+    try {
+      if (!recWorkletReady) {
+        const u = URL.createObjectURL(new Blob([REC_WORKLET], { type: 'text/javascript' }));
+        recWorkletReady = audioCtx.audioWorklet.addModule(u).finally(() => URL.revokeObjectURL(u));
+      }
+      await recWorkletReady;
+      node = new AudioWorkletNode(audioCtx, 'rec-tap', { numberOfInputs: 1, numberOfOutputs: 1, channelCount: 2, channelCountMode: 'explicit', outputChannelCount: [1] });
+      let doneRes = null;
+      node.port.onmessage = e => { if (e.data === 'done') { if (doneRes) doneRes(); } else if (e.data && e.data.l) onBlock(e.data.l, e.data.r); };
+      stop = () => new Promise(res => { doneRes = res; node.port.postMessage('stop'); setTimeout(res, 800); });
+    } catch (e) { recWorkletReady = null; node = null; }
+  }
+  if (!node) {                                           // navigateur sans AudioWorklet
+    node = audioCtx.createScriptProcessor(4096, 2, 2);
+    node.onaudioprocess = e => {
+      const a = e.inputBuffer.getChannelData(0), b = e.inputBuffer.getChannelData(1), l = new Int16Array(a.length), r = new Int16Array(a.length);
+      for (let i = 0; i < a.length; i++) {
+        const x = Math.max(-1, Math.min(1, a[i])), y = Math.max(-1, Math.min(1, b[i]));
+        l[i] = x < 0 ? x * 32768 : x * 32767; r[i] = y < 0 ? y * 32768 : y * 32767;
+      }
+      onBlock(l, r);
+    };
+    stop = () => Promise.resolve();
+  }
+  softLimiter.connect(node); node.connect(sink);
+  return { stop, close() { try { softLimiter.disconnect(node); } catch (e) {} try { node.disconnect(); sink.disconnect(); } catch (e) {} if (node.onaudioprocess) node.onaudioprocess = null; } };
+}
+function wavHeader(frames, sr) {
+  const dl = frames * 4, b = new DataView(new ArrayBuffer(44));
+  const w = (o, t) => { for (let i = 0; i < t.length; i++) b.setUint8(o + i, t.charCodeAt(i)); };
+  w(0, 'RIFF'); b.setUint32(4, 36 + dl, true); w(8, 'WAVE'); w(12, 'fmt '); b.setUint32(16, 16, true);
+  b.setUint16(20, 1, true); b.setUint16(22, 2, true); b.setUint32(24, sr, true); b.setUint32(28, sr * 4, true);
+  b.setUint16(32, 4, true); b.setUint16(34, 16, true); w(36, 'data'); b.setUint32(40, dl, true);
+  return b.buffer;
+}
+async function recStartPcm(fmt) {
+  const sr = audioCtx.sampleRate;
+  let enc = null, useFmt = fmt;
+  if (fmt === 'mp3') {
+    const ok = await loadLame();
+    if (ok && LAME_RATES.includes(sr)) enc = new window.lamejs.Mp3Encoder(2, sr, 192);
+    else {
+      useFmt = 'wav';
+      showMemoToast(ok ? 'MP3 impossible à ' + sr + ' Hz → enregistrement en WAV' : 'Encodeur MP3 indisponible (connexion ?) → enregistrement en WAV', '#FF2D3F', true);
+    }
+  }
+  const st = { fmt: useFmt, enc, parts: [], frames: 0, sr, tap: null };
+  const onBlock = (l, r) => {
+    st.frames += l.length;
+    if (st.enc) { const out = st.enc.encodeBuffer(l, r); if (out.length) st.parts.push(new Uint8Array(out)); }
+    else { const o = new Int16Array(l.length * 2); for (let i = 0; i < l.length; i++) { o[2 * i] = l[i]; o[2 * i + 1] = r[i]; } st.parts.push(o); }
+  };
+  st.tap = await pcmTapCreate(onBlock);
+  recPcm = st;
+  recUi(true);
+  showMemoToast('● Enregistrement ' + useFmt.toUpperCase() + '… appuie sur ⏸ pour arrêter et sauvegarder', '#FF2D3F', true);
+}
+async function recStopPcm() {
+  const st = recPcm; recPcm = null;
+  recUi(false);
+  await st.tap.stop(); st.tap.close();
+  if (!st.frames) { showMemoToast('○ Rien d’enregistré', '#FF2D3F', true); return; }
+  if (st.enc) {
+    const tail = st.enc.flush(); if (tail.length) st.parts.push(new Uint8Array(tail));
+    recSave(new Blob(st.parts, { type: 'audio/mpeg' }), 'mp3');
+  } else {
+    recSave(new Blob([wavHeader(st.frames, st.sr)].concat(st.parts), { type: 'audio/wav' }), 'wav');
+  }
+}
+
+/* --- WEBM / Opus (MediaRecorder, comme avant) --- */
+function recStartWebm() {
+  if (!window.MediaRecorder) { showMemoToast('Enregistrement WEBM impossible avec ce navigateur : choisis WAV ou MP3', '#FF2D3F', true); return; }
   const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find(m => MediaRecorder.isTypeSupported(m)) || '';
   try { recorder = new MediaRecorder(recDest.stream, mime ? { mimeType: mime, audioBitsPerSecond: 256000 } : {}); }
   catch (e) { showMemoToast('Enregistrement impossible : ' + e.message, '#FF2D3F', true); recorder = null; return; }
@@ -4635,20 +4467,36 @@ function recStart() {
     recorder = null; recChunks = [];
   };
   recorder.start(1000);
-  recT0 = performance.now(); recPaint(); recTick = setInterval(recPaint, 500);
-  recWrap.classList.add('on');
-  document.getElementById('recBtn').title = 'Arrêter l’enregistrement et l’écrire sur le disque dur';
-  showMemoToast('● Enregistrement… appuie sur ⏸ pour arrêter et sauvegarder', '#FF2D3F', true);
+  recUi(true);
+  showMemoToast('● Enregistrement WEBM… appuie sur ⏸ pour arrêter et sauvegarder', '#FF2D3F', true);
+}
+async function recStart() {
+  buildGraph();
+  if (audioCtx.state === 'suspended') { try { await audioCtx.resume(); } catch (e) {} }
+  if (recFmt === 'webm') { recStartWebm(); return; }
+  recBusy = true;
+  try { await recStartPcm(recFmt); }
+  catch (e) { recPcm = null; recUi(false); showMemoToast('Enregistrement impossible : ' + (e && e.message ? e.message : e), '#FF2D3F', true); }
+  recBusy = false;
 }
 function recStop() {
+  if (recPcm) { recStopPcm(); return; }
   if (!recorder) return;
-  clearInterval(recTick); recTick = null;
-  recWrap.classList.remove('on');
-  document.getElementById('recBtn').title = 'Enregistrer tout ce que tu entends (avec effets et boucles) sur le disque dur';
+  recUi(false);
   try { recorder.stop(); } catch (e) {}
 }
-document.getElementById('recBtn').addEventListener('click', () => recorder ? recStop() : recStart());
-window.addEventListener('beforeunload', e => { if (recorder) { e.preventDefault(); e.returnValue = ''; } });
+recFmtBtn.addEventListener('click', () => {
+  if (recorder || recPcm || recBusy) return;
+  recFmt = { webm: 'wav', wav: 'mp3', mp3: 'webm' }[recFmt];
+  try { localStorage.setItem('core_rec_fmt', recFmt); } catch (e) {}
+  recFmtPaint();
+  if (recFmt === 'mp3') loadLame();
+  showMemoToast('Format d’enregistrement : ' + recFmt.toUpperCase(), '#FF2D3F', true);
+});
+document.getElementById('recBtn').addEventListener('click', () => { if (recBusy) return; (recorder || recPcm) ? recStop() : recStart(); });
+window.addEventListener('beforeunload', e => { if (recorder || recPcm) { e.preventDefault(); e.returnValue = ''; } });
+recFmtPaint();
+if (recFmt === 'mp3') loadLame();
 
 initFxFavButtons();
 paintFxFavButtons();
